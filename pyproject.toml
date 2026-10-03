@@ -32,6 +32,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 bench = [
+    "anthropic>=1",
     "numpy>=2.5.3",
     "scipy>=1.18.1",
 ]
