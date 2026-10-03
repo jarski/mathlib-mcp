@@ -19,7 +19,7 @@ TASK_IDS = [t.id for t in ALL_TASKS]
 
 
 def test_task_set_shape():
-    assert len(ALL_TASKS) == 25
+    assert len(ALL_TASKS) == 26
     assert len(set(TASK_IDS)) == len(TASK_IDS)
     assert {t.family for t in ALL_TASKS} == {"cuBLAS", "cuFFT", "cuSOLVER", "cuSPARSE",
                                              "cuDSS", "cuTENSOR"}

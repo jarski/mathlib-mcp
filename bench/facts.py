@@ -155,21 +155,31 @@ FACTS = [
         cards=("nvmath.fft.fft",),
     ),
     Fact(
-        "nvmath_ifft_normalization",
-        "observe: how nvmath.fft.ifft is normalized",
+        "nvmath_ifft_unnormalized",
+        "nvmath.fft.ifft is unnormalized: ifft(fft(x)) == n * x (first GPU run measured 64x "
+        "for n=64)",
         "import cupy as cp, nvmath\nx = cp.random.rand(64).astype(cp.complex128)\n"
-        "y = nvmath.fft.ifft(nvmath.fft.fft(x))\n"
-        "print('ifft(fft(x)) / x =', complex((y / x).mean()))",
-        "observe",
+        "y = nvmath.fft.ifft(nvmath.fft.fft(x))\nassert cp.allclose(y, 64 * x)",
         requires=("nvmath",),
-        cards=("nvmath.fft.fft",),
+        cards=("nvmath.fft.fft", "nvmath.fft.ifft", "nvmath.fft.FFT"),
+    ),
+    Fact(
+        "nvmath_irfft_unnormalized",
+        "nvmath.fft.irfft is unnormalized: irfft(rfft(x)) == n * x",
+        "import cupy as cp, nvmath\nx = cp.random.rand(4, 64)\n"
+        "y = nvmath.fft.irfft(nvmath.fft.rfft(x, axes=[-1]), axes=[-1])\n"
+        "assert cp.allclose(y, 64 * x)",
+        requires=("nvmath",),
+        cards=("nvmath.fft.irfft",),
     ),
     Fact(
         "nvmath_numpy_fft_runs_on_cpu",
-        "observe: nvmath.fft.fft with a NumPy operand returns NumPy (execution space)",
+        "nvmath.fft with a NumPy operand executes on the CPU and returns NumPy",
         "import numpy as np, nvmath\n"
-        "r = nvmath.fft.fft(np.ones(16, np.complex64))\nprint(type(r).__module__)",
-        "observe",
+        "with nvmath.fft.FFT(np.ones(16, np.complex64)) as f:\n"
+        "    f.plan()\n    r = f.execute()\n"
+        "    assert f.execution_space == 'cpu', f.execution_space\n"
+        "assert isinstance(r, np.ndarray)",
         requires=("nvmath",),
         cards=("nvmath.fft.fft",),
     ),

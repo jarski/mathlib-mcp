@@ -1404,6 +1404,7 @@ Detailed information on each step described above can be obtained by passing in 
 
 **Pitfalls**
 - Workflow: construct -> `plan()` -> `execute(direction=...)` (repeatable) -> `free()`. Use it as a context manager. One object can run both forward and inverse C2C transforms.
+- `execute(direction='inverse')` is unnormalized: scale by `1/n` to undo a forward transform.
 - `reset_operand(new)` reuses the plan for a new array with the same shape, dtype and layout.
 - Prolog/epilog device callbacks (compiled with `nvmath.fft.compile_prolog`/`compile_epilog`) fuse elementwise work into the FFT, but compiling them requires Numba with CUDA support (`RuntimeError` otherwise).
 
@@ -1462,6 +1463,7 @@ Further examples can be found in the nvmath/examples/fft (https://github.com/NVI
 - Without `axes` it is an N-D FFT over all axes (like `numpy.fft.fftn`, not `numpy.fft.fft`). Pass `axes=[-1]` for a batched 1-D FFT along the last axis.
 - `axes` must be contiguous and include the first or the last dimension; at most 3-D transforms.
 - Host (NumPy) input executes on the CPU by default, because the execution space follows the operand's memory space. Pass CuPy/PyTorch GPU arrays or `execution='cuda'` to run on the GPU.
+- Unlike NumPy and CuPy, the inverse transforms are unnormalized (cuFFT convention): `nvmath.fft.ifft(nvmath.fft.fft(x))` returns `n * x`. Divide by the transform size yourself.
 
 **Notes:** - This function only takes complex operand for C2C transformation. If the user
   wishes to perform full FFT transformation on real input, please cast the input to
@@ -1485,6 +1487,59 @@ assert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)
 **See also:** `ifft`, `irfft`, `rfft`, `FFT`
 
 Docs: https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.fft.html
+
+### `nvmath.fft.ifft`
+
+```python
+ifft(operand, /, *, axes=None, options=None, execution=None, prolog=None, epilog=None, stream=None)
+```
+
+*nvmath-python 1.0.0 · function · backend: cuFFT (C2C inverse) · NumPy/SciPy equivalent: `numpy.fft.ifftn(x, norm='forward') (over `axes`)`*
+
+Perform an N-D *complex-to-complex* (C2C) inverse FFT on the provided complex operand.
+
+The direction is implicitly inverse.
+
+**Parameters**
+- `operand`: A tensor (ndarray-like object). The currently supported types are `numpy.ndarray`, `cupy.ndarray`, and `torch.Tensor`.
+- `axes` = `None`: The dimensions along which the FFT is performed. `axes[-1]` is the 'last transformed' axis for rffts. Currently, it is required that the axes are contiguous and include the first or the last dimension. Only up to 3D FFTs are supported.
+- `options` = `None`: Specify options for the FFT as a `FFTOptions` object. Alternatively, a `dict` containing the parameters for the `FFTOptions` constructor can also be provided. If not specified, the value will be set to the default-constructed `FFTOptions` object.
+- `execution` = `None`: Specify execution space options for the FFT as a `ExecutionCUDA` or `ExecutionCPU` object. Alternatively, a string ('cuda' or 'cpu'), or a `dict` with the 'name' key set to 'cpu' or 'cuda' and optional parameters relevant to the given execution space. If not specified, the execution space will be selected to match operand's storage (in GPU or host memory), and the corresponding `ExecutionCUDA` or…
+- `prolog` = `None`: Provide device-callable function in LTO-IR format to use as load-callback as an object of type `DeviceCallable`. Alternatively, a `dict` containing the parameters for the `DeviceCallable` constructor can also be provided. The default is no prolog. Currently, callbacks are supported only with CUDA execution. .. experimental:: parameter
+- `epilog` = `None`: Provide device-callable function in LTO-IR format to use as store-callback as an object of type `DeviceCallable`. Alternatively, a `dict` containing the parameters for the `DeviceCallable` constructor can also be provided. The default is no epilog. Currently, callbacks are supported only with CUDA execution. .. experimental:: parameter
+- `stream` = `None`: Provide the CUDA stream to use for executing the operation. Acceptable inputs include `cudaStream_t` (as Python `int`), `cupy.cuda.Stream`, and `torch.cuda.Stream`. If a stream is not provided, the current stream from the operand package will be used. See `stream-semantics-guide` for more details on stream handling.
+
+**Returns:** A transformed operand that retains the same data type and shape as the input. It remains on the same device and uses the same package as the input operand.
+
+**Pitfalls**
+- Unnormalized: `ifft(fft(x))` returns `n * x` (n = product of the transformed lengths), whereas `numpy.fft.ifft` divides by n. Scale the result by `1/n`.
+- Complex input only, and without `axes` all axes are transformed (N-D), as for `nvmath.fft.fft`.
+
+**Notes:** - This function only takes complex operand for C2C transformation. If the user wishes
+  to perform full FFT transformation on real input, please cast the input to the
+  corresponding complex data type.
+- This function is a convenience wrapper around `FFT` and is specifically
+  meant for *single* use. The same computation can be performed with the stateful
+  API by passing the argument `direction='inverse'` when calling
+  `FFT.execute`.
+
+**Example** (curated, not yet verified on a GPU)
+```python
+import numpy as np
+import cupy as cp
+import nvmath
+
+x = cp.random.rand(8, 64).astype(cp.complex128)
+X = nvmath.fft.fft(x, axes=[-1])
+y = nvmath.fft.ifft(X, axes=[-1])                 # unnormalized inverse
+assert np.allclose(y.get(), 64 * x.get())         # NumPy's ifft would return x
+x_back = y / 64                                   # normalize explicitly
+assert np.allclose(x_back.get(), x.get())
+```
+
+**See also:** `fft`, `irfft`, `FFT`
+
+Docs: https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html
 
 ### `nvmath.fft.irfft`
 
@@ -1511,6 +1566,7 @@ The direction is implicitly inverse.
 
 **Pitfalls**
 - There is no `n` argument. The output length of the last axis is `2*(m-1)` by default; for odd-length signals pass `options={'last_axis_parity': 'odd'}` to get `2*(m-1)+1`.
+- Unnormalized: `irfft(rfft(x))` returns `n * x`, not `x` as with NumPy/CuPy. Divide by the output length.
 - The input must be Hermitian-symmetric along the last axis (e.g. the output of `rfft`), otherwise the result is undefined.
 
 **Notes:** - This function performs an inverse C2R N-D FFT, which is similar to `irfftn` but
@@ -1527,6 +1583,7 @@ The direction is implicitly inverse.
 
 **Example** (curated, not yet verified on a GPU)
 ```python
+import numpy as np
 import cupy as cp
 import nvmath
 
@@ -1536,6 +1593,7 @@ y_even = nvmath.fft.irfft(X, axes=[-1])
 y_odd = nvmath.fft.irfft(X, axes=[-1], options={"last_axis_parity": "odd"})
 assert y_even.shape == (4, 998)
 assert y_odd.shape == (4, 999)
+assert np.allclose((y_odd / 999).get(), x.get())  # unnormalized: divide by n
 ```
 
 **See also:** `fft`, `ifft`, `FFT`
@@ -5396,31 +5454,6 @@ Estimate the workspace size in bytes for the given FFT key.
 **See also:** `FFT.create_key`, `FFT.create_key_from_metadata`
 
 Docs: https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.estimate_workspace_size.html
-
-### `nvmath.fft.ifft`
-
-```python
-ifft(operand, /, *, axes=None, options=None, execution=None, prolog=None, epilog=None, stream=None)
-```
-
-*nvmath-python 1.0.0 · function*
-
-Perform an N-D *complex-to-complex* (C2C) inverse FFT on the provided complex operand.
-
-**Parameters**
-- `operand`: A tensor (ndarray-like object). The currently supported types are `numpy.ndarray`, `cupy.ndarray`, and `torch.Tensor`.
-- `axes` = `None`: The dimensions along which the FFT is performed. `axes[-1]` is the 'last transformed' axis for rffts. Currently, it is required that the axes are contiguous and include the first or the last dimension. Only up to 3D FFTs are supported.
-- `options` = `None`: Specify options for the FFT as a `FFTOptions` object. Alternatively, a `dict` containing the parameters for the `FFTOptions` constructor can also be provided. If not specified, the value will be set to the default-constructed `FFTOptions` object.
-- `execution` = `None`: Specify execution space options for the FFT as a `ExecutionCUDA` or `ExecutionCPU` object. Alternatively, a string ('cuda' or 'cpu'), or a `dict` with the 'name' key set to 'cpu' or 'cuda' and optional parameters relevant to the given execution space. If not specified, the execution space will be selected to match operand's storage (in GPU or host memory), and the corresponding `ExecutionCUDA` or…
-- `prolog` = `None`: Provide device-callable function in LTO-IR format to use as load-callback as an object of type `DeviceCallable`. Alternatively, a `dict` containing the parameters for the `DeviceCallable` constructor can also be provided. The default is no prolog. Currently, callbacks are supported only with CUDA execution. .. experimental:: parameter
-- `epilog` = `None`: Provide device-callable function in LTO-IR format to use as store-callback as an object of type `DeviceCallable`. Alternatively, a `dict` containing the parameters for the `DeviceCallable` constructor can also be provided. The default is no epilog. Currently, callbacks are supported only with CUDA execution. .. experimental:: parameter
-- `stream` = `None`: Provide the CUDA stream to use for executing the operation. Acceptable inputs include `cudaStream_t` (as Python `int`), `cupy.cuda.Stream`, and `torch.cuda.Stream`. If a stream is not provided, the current stream from the operand package will be used. See `stream-semantics-guide` for more details on stream handling.
-
-**Returns:** A transformed operand that retains the same data type and shape as the input. It remains on the same device and uses the same package as the input operand.
-
-**See also:** `fft`, `irfft`, `FFT`
-
-Docs: https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html
 
 ### `nvmath.linalg.ComputeType`
 

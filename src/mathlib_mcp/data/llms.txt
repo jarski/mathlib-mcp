@@ -229,7 +229,7 @@
 - [nvmath.fft.compile_prolog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.compile_prolog.html): Compile a Python function to LTO-IR to provide as a prolog function for `nvmath.fft.fft` and `nvmath.fft.FFT.plan`.
 - [nvmath.fft.estimate_workspace_size](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.estimate_workspace_size.html): Estimate the workspace size in bytes for the given FFT key.
 - [nvmath.fft.fft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.fft.html) (curated): Perform an N-D *complex-to-complex* (C2C) FFT on the provided complex operand.
-- [nvmath.fft.ifft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html): Perform an N-D *complex-to-complex* (C2C) inverse FFT on the provided complex operand.
+- [nvmath.fft.ifft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html) (curated): Perform an N-D *complex-to-complex* (C2C) inverse FFT on the provided complex operand.
 - [nvmath.fft.irfft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.irfft.html) (curated): Perform an N-D *complex-to-real* (C2R) FFT on the provided complex operand.
 - [nvmath.fft.rfft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.rfft.html) (curated): Perform an N-D *real-to-complex* (R2C) FFT on the provided real operand.
 

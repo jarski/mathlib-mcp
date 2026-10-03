@@ -29,6 +29,11 @@ def _rfft_inputs(rng, case):
     return np.fft.rfft(signals, axis=-1), n
 
 
+def _gain_inputs(rng, case):
+    n = 256 if case == 0 else 1024
+    return rng.standard_normal((8, n)), rng.random(n // 2 + 1)
+
+
 TASKS = [
     Task(
         id="fft_convolve",
@@ -190,6 +195,48 @@ import nvmath
 
 def full_spectrum(x):
     return nvmath.fft.fft(x)
+""",
+    ),
+    Task(
+        id="nvmath_spectral_gain",
+        family="cuFFT",
+        difficulty="hard",
+        prompt="""\
+Implement `apply_gain(x, gain)` with nvmath-python.
+
+`x` is a real float64 CuPy array of shape (B, N) with N even, and `gain` is a real
+float64 CuPy array of shape (N//2 + 1,). For every row, multiply its real FFT (along
+the last axis) by `gain` and transform back. Return the real float64 (B, N) result,
+i.e. the same values as
+`numpy.fft.irfft(numpy.fft.rfft(x, axis=-1) * gain, n=N, axis=-1)`. Use nvmath-python's
+FFT functions (`nvmath.fft`), not `cupy.fft`.""",
+        entry_point="apply_gain",
+        solution="""\
+import nvmath
+
+
+def apply_gain(x, gain):
+    n = x.shape[-1]
+    X = nvmath.fft.rfft(x, axes=[-1])
+    # nvmath's inverse transforms are unnormalized (cuFFT convention): divide by n
+    return nvmath.fft.irfft(X * gain, axes=[-1]) / n
+""",
+        make_inputs=_gain_inputs,
+        reference=lambda x, gain: np.fft.irfft(np.fft.rfft(x, axis=-1) * gain,
+                                               n=x.shape[-1], axis=-1),
+        rtol=1e-8,
+        atol=1e-10,
+        required_api=("nvmath.fft",),
+        requires=("nvmath",),
+        trap="nvmath's irfft is unnormalized (returns n times NumPy's result); found by "
+             "the GPU validation run, not stated in the docstrings.",
+        naive="""\
+import nvmath
+
+
+def apply_gain(x, gain):
+    X = nvmath.fft.rfft(x, axes=[-1])
+    return nvmath.fft.irfft(X * gain, axes=[-1])
 """,
     ),
 ]

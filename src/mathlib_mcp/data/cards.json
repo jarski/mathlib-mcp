@@ -11694,6 +11694,7 @@
    ],
    "pitfalls": [
     "Workflow: construct -> `plan()` -> `execute(direction=...)` (repeatable) -> `free()`. Use it as a context manager. One object can run both forward and inverse C2C transforms.",
+    "`execute(direction='inverse')` is unnormalized: scale by `1/n` to undo a forward transform.",
     "`reset_operand(new)` reuses the plan for a new array with the same shape, dtype and layout.",
     "Prolog/epilog device callbacks (compiled with `nvmath.fft.compile_prolog`/`compile_epilog`) fuse elementwise work into the FFT, but compiling them requires Numba with CUDA support (`RuntimeError` otherwise)."
    ],
@@ -12174,7 +12175,8 @@
     "Complex input only: real input raises `ValueError` (\"This function expects complex operand\"). Use `nvmath.fft.rfft` for real data, or cast with `.astype(cupy.complex64)`.",
     "Without `axes` it is an N-D FFT over all axes (like `numpy.fft.fftn`, not `numpy.fft.fft`). Pass `axes=[-1]` for a batched 1-D FFT along the last axis.",
     "`axes` must be contiguous and include the first or the last dimension; at most 3-D transforms.",
-    "Host (NumPy) input executes on the CPU by default, because the execution space follows the operand's memory space. Pass CuPy/PyTorch GPU arrays or `execution='cuda'` to run on the GPU."
+    "Host (NumPy) input executes on the CPU by default, because the execution space follows the operand's memory space. Pass CuPy/PyTorch GPU arrays or `execution='cuda'` to run on the GPU.",
+    "Unlike NumPy and CuPy, the inverse transforms are unnormalized (cuFFT convention): `nvmath.fft.ifft(nvmath.fft.fft(x))` returns `n * x`. Divide by the transform size yourself."
    ],
    "example": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(16, 256).astype(cp.complex64)  # complex input required\nX = nvmath.fft.fft(x, axes=[-1])                  # batched 1-D FFT along the last axis\nassert isinstance(X, cp.ndarray) and X.dtype == cp.complex64\nassert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)",
    "example_verified_on": null
@@ -12253,12 +12255,21 @@
    "source": "nvmath/fft/fft.py:2976",
    "doc_url": "https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html",
    "aliases": [],
-   "curated": false,
-   "backend": [],
-   "numpy_equivalent": null,
-   "tags": [],
-   "pitfalls": [],
-   "example": null,
+   "curated": true,
+   "backend": [
+    "cuFFT (C2C inverse)"
+   ],
+   "numpy_equivalent": "numpy.fft.ifftn(x, norm='forward') (over `axes`)",
+   "tags": [
+    "fft",
+    "c2c",
+    "inverse"
+   ],
+   "pitfalls": [
+    "Unnormalized: `ifft(fft(x))` returns `n * x` (n = product of the transformed lengths), whereas `numpy.fft.ifft` divides by n. Scale the result by `1/n`.",
+    "Complex input only, and without `axes` all axes are transformed (N-D), as for `nvmath.fft.fft`."
+   ],
+   "example": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(8, 64).astype(cp.complex128)\nX = nvmath.fft.fft(x, axes=[-1])\ny = nvmath.fft.ifft(X, axes=[-1])                 # unnormalized inverse\nassert np.allclose(y.get(), 64 * x.get())         # NumPy's ifft would return x\nx_back = y / 64                                   # normalize explicitly\nassert np.allclose(x_back.get(), x.get())",
    "example_verified_on": null
   },
   {
@@ -12349,9 +12360,10 @@
    ],
    "pitfalls": [
     "There is no `n` argument. The output length of the last axis is `2*(m-1)` by default; for odd-length signals pass `options={'last_axis_parity': 'odd'}` to get `2*(m-1)+1`.",
+    "Unnormalized: `irfft(rfft(x))` returns `n * x`, not `x` as with NumPy/CuPy. Divide by the output length.",
     "The input must be Hermitian-symmetric along the last axis (e.g. the output of `rfft`), otherwise the result is undefined."
    ],
-   "example": "import cupy as cp\nimport nvmath\n\nx = cp.random.rand(4, 999)                        # odd length\nX = nvmath.fft.rfft(x, axes=[-1])                 # 500 complex values\ny_even = nvmath.fft.irfft(X, axes=[-1])\ny_odd = nvmath.fft.irfft(X, axes=[-1], options={\"last_axis_parity\": \"odd\"})\nassert y_even.shape == (4, 998)\nassert y_odd.shape == (4, 999)",
+   "example": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(4, 999)                        # odd length\nX = nvmath.fft.rfft(x, axes=[-1])                 # 500 complex values\ny_even = nvmath.fft.irfft(X, axes=[-1])\ny_odd = nvmath.fft.irfft(X, axes=[-1], options={\"last_axis_parity\": \"odd\"})\nassert y_even.shape == (4, 998)\nassert y_odd.shape == (4, 999)\nassert np.allclose((y_odd / 999).get(), x.get())  # unnormalized: divide by n",
    "example_verified_on": null
   },
   {
