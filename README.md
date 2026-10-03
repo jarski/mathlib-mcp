@@ -100,8 +100,8 @@ Before any model is scored, everything is checked on a real GPU: the canonical s
 The traps fail for the intended reasons. Examples: `OutOfMemoryError: ... 28,800,000,000 bytes` (svd with full matrices), `ValueError: The M dimension of the bias vector (48) must match the M dimension of A` (per-row bias epilog), and `TypeError: ... must be a matrix or vector with col-major layout` (cuDSS). The first run also found something the docstrings do not say: **nvmath-python's inverse FFTs are unnormalized** (`ifft(fft(x)) == n * x`, unlike NumPy and CuPy). That finding is now a checked fact, a pitfall on four cards, and a benchmark task.
 
 ```bash
-uv run python bench/kaggle/make_kernel.py --user <kaggle-user>   # self-contained script
-uvx --from kaggle kaggle kernels push -p bench/kaggle/build       # runs on a Kaggle T4
+uv run python bench/kaggle/make_kernel.py validate --user <kaggle-user>   # self-contained script
+uvx --from kaggle kaggle kernels push -p bench/kaggle/build/validate      # runs on a Kaggle T4
 uvx --from kaggle kaggle kernels output <kaggle-user>/mathlib-mcp-gpu-validation -p out
 uv run python -m bench.summarize_validation out/gpu_validation.json
 uv run python -m bench.record_verification out/gpu_validation.json && uv run mathlib-mcp-build
