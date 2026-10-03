@@ -9,3 +9,4 @@ bench/results/raw/
 .env
 .DS_Store
 bench/kaggle/build/
+bench/results/kaggle_run*/

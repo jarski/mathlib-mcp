@@ -6,12 +6,12 @@ LLMs write plausible but wrong code for GPU math libraries. They call functions 
 
 | Part | What it is |
 |---|---|
-| **API cards** | 2,741 public symbols and 275 API cards extracted from the library *sources* (no GPU or import needed). 41 cards are curated with the CUDA-X backend, pitfalls checked against the source, and a self-checking example. |
+| **API cards** | 2,741 public symbols and 275 API cards extracted from the library *sources* (no GPU or import needed). 42 cards are curated with the CUDA-X backend, pitfalls checked against the source and on a GPU, and an example verified on a GPU. |
 | **MCP server** | `search_api`, `get_api_card`, `get_example`, `check_snippet`, plus an `llms.txt` resource. |
 | **`check_snippet`** | Static checker that finds hallucinated APIs, wrong or positional-only keywords, too many positional arguments and missing arguments, and suggests the real name. |
-| **Benchmark** | 25 GPU tasks across six CUDA-X libraries with NumPy/SciPy references; 16 have a "naive" solution that falls into a documented trap. |
+| **Benchmark** | 26 GPU tasks across six CUDA-X libraries with NumPy/SciPy references; 17 have a "naive" solution that falls into a documented trap. |
 
-> Status: phases 0–3 (extraction, curation, MCP server, benchmark) are done. The GPU validation run on Kaggle and the model evaluation (phase 4) are next; results will appear here.
+> Status: extraction, curation, MCP server, benchmark and GPU validation are done. Next: the model evaluation (with/without the MCP server); results will appear here.
 
 ## Example
 
@@ -78,7 +78,7 @@ library sources ──► static extractor ──► symbols.json  (existence + 
 | Family | Tasks | Examples of traps |
 |---|---|---|
 | cuBLAS / cuBLASLt | 6 | in-place `gemm(out=, beta=)`; per-row bias epilog; 24 GB broadcasting |
-| cuFFT | 5 | `irfft` length for odd sizes; `nvmath.fft.fft` rejects real input and transforms all axes |
+| cuFFT | 6 | `irfft` length for odd sizes; `nvmath.fft.fft` rejects real input and transforms all axes; nvmath inverse FFTs are unnormalized |
 | cuSOLVER | 8 | batched `solve` needs `(B, M, 1)`; silent NaN unless `cupyx.errstate(linalg='raise')`; `svd` full matrices on a 60000×50 input |
 | cuSPARSE | 4 | `cg(rtol=)` not `tol=`; `eigsh` has no `'SM'` and keyword-only `which` |
 | cuDSS | 1 | column-major right-hand sides |
@@ -86,10 +86,25 @@ library sources ──► static extractor ──► symbols.json  (existence + 
 
 Each task has a prompt, a NumPy/SciPy reference, a correctness check and a canonical GPU solution. Candidates run in a separate subprocess and are classified as `pass`, `wrong_answer`, `exception`, `not_on_gpu`, `expected_error_not_raised`, `timeout` or `crash`. Static scoring adds the API-error count from `check_snippet` and checks for the required API.
 
+### GPU validation
+
+Before any model is scored, everything is checked on a real GPU: the canonical solutions must pass, the naive trap solutions must fail, every curated example must run, and every behavioural pitfall must hold. Latest run ([report](bench/results/gpu_validation.json)):
+
+| Tesla T4 (sm_75, 15 GB) · CUDA 12.9 · CuPy 14.2.0 · nvmath-python 1.0.0 | Result |
+|---|---|
+| Canonical task solutions pass | 26 / 26 |
+| Naive trap solutions fail as designed | 17 / 17 |
+| Curated card examples pass | 38 / 38 |
+| Pitfall facts hold | 23 / 23 |
+
+The traps fail for the intended reasons. Examples: `OutOfMemoryError: ... 28,800,000,000 bytes` (svd with full matrices), `ValueError: The M dimension of the bias vector (48) must match the M dimension of A` (per-row bias epilog), and `TypeError: ... must be a matrix or vector with col-major layout` (cuDSS). The first run also found something the docstrings do not say: **nvmath-python's inverse FFTs are unnormalized** (`ifft(fft(x)) == n * x`, unlike NumPy and CuPy). That finding is now a checked fact, a pitfall on four cards, and a benchmark task.
+
 ```bash
-uv run python bench/kaggle/make_kernel.py   # self-contained Kaggle GPU script
-# run it on a Kaggle GPU, then:
-uv run python -m bench.record_verification gpu_validation.json && uv run mathlib-mcp-build
+uv run python bench/kaggle/make_kernel.py --user <kaggle-user>   # self-contained script
+uvx --from kaggle kaggle kernels push -p bench/kaggle/build       # runs on a Kaggle T4
+uvx --from kaggle kaggle kernels output <kaggle-user>/mathlib-mcp-gpu-validation -p out
+uv run python -m bench.summarize_validation out/gpu_validation.json
+uv run python -m bench.record_verification out/gpu_validation.json && uv run mathlib-mcp-build
 ```
 
 ## Development

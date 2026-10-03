@@ -32,7 +32,7 @@ This is equivalent to `array(a, dtype, copy=False, order=order)`.
 this function automatically swaps its byte order to little-endian,
 which is the NVIDIA and AMD GPU architecture's native use.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -72,7 +72,7 @@ Returns an array on the host memory from an arbitrary source array.
 - Blocks until the GPU work that produces the array has finished (`blocking=True` by default). It is the usual implicit synchronization point; GPU timings taken without a sync measure only kernel launches.
 - `x.get()` does the same for a `cupy.ndarray`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -114,7 +114,7 @@ op(b) = b.T.conj() if transb is 'H'.
 - Only 2-D operands. Use `cupy.matmul` for batched products.
 - With `out` given, the result is accumulated in place: `out = alpha * op(a) @ op(b) + beta * out`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -197,7 +197,7 @@ Using the Einstein summation convention, many common multi-dimensional array ope
 - If `CUPY_ACCELERATORS` includes `cutensor`, `einsum` will be
   accelerated by the cuTENSOR backend whenever possible.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -235,7 +235,7 @@ Compute the one-dimensional FFT.
 - cuFFT plans are cached per device (`cupy.fft.config.get_plan_cache()`). The first call for a new shape/dtype pays the planning cost, so warm up before timing.
 - Lengths with only small prime factors (2, 3, 5, 7) are fastest; `cupyx.scipy.fft.next_fast_len(n)` gives a good padded length.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -272,7 +272,7 @@ Compute the N-dimensional FFT.
 - Transforms all axes by default. For a batch of images shaped (B, H, W), pass `axes=(-2, -1)` or use `fft2`, otherwise the batch axis is transformed too.
 - One cuFFT N-D plan covers up to 3 adjacent axes that include the first or last axis. Other axis combinations fall back to successive 1-D transforms.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -335,7 +335,7 @@ Compute the one-dimensional FFT for real input.
 - For real input, `rfft` does about half the work and memory of `fft`. The output has `n//2 + 1` points along the transformed axis.
 - To invert, call `irfft` with `n=` set to the original length, otherwise odd lengths are not recovered.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -377,7 +377,7 @@ transpose operator.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -428,7 +428,7 @@ corresponding eigenvectors (in columns).
 **Notes:** There is no guarantee of the order of the eigenvalues:
 it can even be different from `numpy.linalg.eig`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -471,7 +471,7 @@ corresponding eigenvectors (in columns).
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -512,7 +512,7 @@ This function computes matrix `a_inv` from n-dimensional regular matrix
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -558,7 +558,7 @@ the "exact" solution of the equation.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -599,7 +599,7 @@ See numpy.linalg.norm for more detail.
 **Pitfalls**
 - Returns a 0-d CuPy array, not a Python float. Use `float(...)` or `.item()` to get a host scalar (this synchronizes).
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -637,7 +637,7 @@ is an orthonormal and `R` is an upper-triangular matrix.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -680,7 +680,7 @@ where `a` is a square and full rank matrix.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -737,7 +737,7 @@ a QR method (`gesvd`) is used.
 On ROCm, there is no such a fast code path that switches the underlying
 algorithm.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -781,7 +781,7 @@ than 2 dimensions. For more information see `numpy.matmul`.
 - float32 GEMM uses full FP32 by default. Setting the environment variable `CUPY_TF32=1` lets cuBLAS use TF32 tensor cores (faster, ~10-bit mantissa). It is read once, at the first float32 matmul, so set it at process start.
 - Mixed dtypes promote like NumPy (float32 @ float64 -> float64), which can be much slower on GPUs with low FP64 throughput.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -818,7 +818,7 @@ TODO(hvy): Write docs.
 - Only `linalg=` is implemented, with values 'ignore' (default) or 'raise'. Passing `divide=`, `over=`, `under=` or `invalid=` raises `NotImplementedError` (unlike `numpy.errstate`).
 - With `linalg='raise'`, failed cuSOLVER/cuBLAS factorizations raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -882,7 +882,7 @@ If this function is called under the context of
 `cupy.fft.config.set_cufft_callbacks`, the generated plan will
 have callbacks enabled.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -925,7 +925,7 @@ Find the next fast size to `fft`.
 as pocketfft's prime factors are different from cuFFT's factors.
 For details, see the `cuFFT documentation`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import cupy as cp
 from cupyx.scipy.fft import next_fast_len
@@ -966,7 +966,7 @@ unit diagonal elements, and `U` upper-triangular matrix.
 - Factor once with `lu_factor` and reuse the `(lu, piv)` tuple in `lu_solve` for many right-hand sides; this is cheaper than calling `solve` repeatedly.
 - `check_finite=True` by default, which scans the input for inf/nan and forces a device sync. Pass `check_finite=False` in hot loops.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1039,7 +1039,7 @@ Solve the equation a x = b for x, assuming a is a triangular matrix.
 **Notes:** Unlike the SciPy counterpart, the CuPy implementation supports batches
 of matrices.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1094,7 +1094,7 @@ This can be instantiated in several ways.
 - `csr_matrix * x` is a matrix product (SciPy spmatrix semantics), but `csr_array * x` is elementwise. Use `A @ x` to be unambiguous.
 - Index arrays are int32 by default, and some cuSPARSE/cuSOLVER paths (e.g. `spsolve`) require int32 indices.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1147,7 +1147,7 @@ The result from `diags` is the sparse equivalent of::
 
 Repeated diagonal offsets are disallowed.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1190,7 +1190,7 @@ Uses Conjugate Gradient iteration to solve `Ax = b`.
 - Returns `(x, info)`. `info == 0` means converged and `info > 0` is the iteration count reached without converging. Always check `info`.
 - `A` must be symmetric (Hermitian) positive definite; for general matrices use `gmres` or `bicgstab`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1242,7 +1242,7 @@ with corresponding eigenvectors `x`.
 **Notes:** This function uses the thick-restart Lanczos methods
 (https://sdm.lbl.gov/~kewu/ps/trlan.html).
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1293,7 +1293,7 @@ Reference:
 - Returns `(x, info)` with `info == 0` on convergence.
 - Increase `restart` if convergence stalls on hard problems (more memory per restart cycle).
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1333,7 +1333,7 @@ Solves a sparse linear system `A x = b`
 - A 2-D `b` is solved one column at a time (slow for many right-hand sides). For large systems or many right-hand sides consider `nvmath.sparse.advanced.direct_solver` (cuDSS).
 - `b` is cast to `A.dtype`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1414,7 +1414,7 @@ Detailed information on each step described above can be obtained by passing in 
   `FFTOptions.last_axis_parity` must be set to `odd` to recover the original
   signal.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1472,7 +1472,7 @@ Further examples can be found in the nvmath/examples/fft (https://github.com/NVI
   meant for *single* use. The same computation can be performed with the stateful
   API using the default `direction` argument in `FFT.execute`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1523,7 +1523,7 @@ The direction is implicitly inverse.
   API by passing the argument `direction='inverse'` when calling
   `FFT.execute`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1581,7 +1581,7 @@ The direction is implicitly inverse.
   additional constraints (https://docs.nvidia.com/cuda/cufft/#fourier-transform-types). As a specific
   example, 1-D transfor…
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1625,7 +1625,7 @@ Perform an N-D *real-to-complex* (R2C) FFT on the provided real operand.
 - Real input only. The last transformed axis has `n//2 + 1` complex outputs.
 - Without `axes`, all axes are transformed (N-D). Pass `axes=[-1]` for a batched 1-D transform.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1710,7 +1710,7 @@ obtained by passing in a `logging.Logger` object to `MatmulOp…
     * If argument `a` is 1-D, it is promoted to a matrix by prefixing `1` to its dimensions. After matrix
       multiplication, the prefixed `1` is removed from the result's dimensions if the operation is not i…
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1782,7 +1782,7 @@ A data class for providing options to the `Matmul` object and the wrapper functi
 - Choose the GEMM precision with `compute_type`, e.g. `MatmulOptions(compute_type=nvmath.linalg.advanced.MatmulComputeType.COMPUTE_32F_FAST_TF32)` to allow TF32 tensor cores for float32.
 - A plain dict also works: `options={'compute_type': ...}`.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1858,7 +1858,7 @@ directory.
     * If argument `a` is 1-D, it is promoted to a matrix by prefixing `1` to its dimensions. After matrix
       multiplication, the prefixed `1` is removed from the result's dimensions if the operation is not i…
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -1937,7 +1937,7 @@ directory.
       * An **explicitly-batched** LHS is provided as a Python sequence of sparse CSR matrices `[a_0, a_1, ..., a_n]`.
         Likewise an explicitly-batched RHS is provided as a sequence of vectors or matrices `[b_0, b_1, ..., b_n]`.…
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp
@@ -2008,7 +2008,7 @@ directory.
 **Notes:** - This function is a convenience wrapper around `BinaryContraction` and is
   specifically meant for *single* use.
 
-**Example** (curated, not yet verified on a GPU)
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
 ```python
 import numpy as np
 import cupy as cp

@@ -1,0 +1,168 @@
+[{"stream_name":"stdout","time":0.839140511,"data":"Sat Oct  3 19:18:51 2026       \n"}
+,{"stream_name":"stdout","time":0.839368942,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":0.839384157,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":0.839389452,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":0.839394379,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":0.83939898,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":0.839404324,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":0.839409103,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":0.935040266,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":0.935068567,"data":"| N/A   41C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":0.935079673,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":0.935092677,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":0.935097442,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":0.935101575,"data":"| N/A   44C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":0.935105087,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":0.935109186,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":0.935113362,"data":"\n"}
+,{"stream_name":"stdout","time":0.935117031,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":0.93512053,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":0.935123643,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":0.935126853,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":0.935129995,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":0.941341274,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":0.941360757,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":6.674065357,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.7/135.7 MB 14.0 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":6.774759413,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 76.2 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":8.108442374,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 109.1/109.1 MB 17.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":8.200514423,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 90.6 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":12.77521892,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 306.6/306.6 MB 6.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":12.821420547,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 966.9/966.9 kB 34.3 MB/s eta 0:00:00\n"}
+,{"stream_name":"stderr","time":32.716422999,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":32.716451209,"data":"dask-cuda 26.2.0 requires cuda-core==0.3.*, but you have cuda-core 1.2.1 which is incompatible.\n"}
+,{"stream_name":"stderr","time":32.716454993,"data":"numba-cuda 0.22.2 requires cuda-core\u003c1.0.0,\u003e=0.3.2, but you have cuda-core 1.2.1 which is incompatible.\n"}
+,{"stream_name":"stdout","time":41.513354818,"data":"[solution] batched_matmul                                pass\n"}
+,{"stream_name":"stdout","time":42.696503273,"data":"[solution] gemm_update_inplace                           pass\n"}
+,{"stream_name":"stdout","time":44.507989419,"data":"[solution] batched_quadratic_forms                       pass\n"}
+,{"stream_name":"stdout","time":46.884823374,"data":"[solution] pairwise_sq_dists                             pass\n"}
+,{"stream_name":"stdout","time":48.629437251,"data":"[solution] fused_linear_relu                             pass\n"}
+,{"stream_name":"stdout","time":50.121450002,"data":"[solution] matmul_plan_reuse                             pass\n"}
+,{"stream_name":"stdout","time":52.141970568,"data":"[solution] fft_convolve                                  pass\n"}
+,{"stream_name":"stdout","time":53.763950399,"data":"[solution] power_spectrum                                pass\n"}
+,{"stream_name":"stdout","time":56.234077873,"data":"[solution] lowpass_images                                pass\n"}
+,{"stream_name":"stdout","time":57.47944788,"data":"[solution] irfft_reconstruct                             pass\n"}
+,{"stream_name":"stdout","time":59.011014369,"data":"[solution] nvmath_full_spectrum                          pass\n"}
+,{"stream_name":"stdout","time":60.806245361,"data":"[solution] nvmath_spectral_gain                          pass\n"}
+,{"stream_name":"stdout","time":62.50161285,"data":"[solution] batched_solve_vectors                         pass\n"}
+,{"stream_name":"stdout","time":66.573259685,"data":"[solution] cholesky_solve_logdet                         pass\n"}
+,{"stream_name":"stdout","time":69.250027685,"data":"[solution] lstsq_with_rank                               pass\n"}
+,{"stream_name":"stdout","time":70.555003224,"data":"[solution] general_eigenvalues                           pass\n"}
+,{"stream_name":"stdout","time":72.118361267,"data":"[solution] symmetric_top_k                               pass\n"}
+,{"stream_name":"stdout","time":73.889546907,"data":"[solution] low_rank_approx                               pass\n"}
+,{"stream_name":"stdout","time":75.425226021,"data":"[solution] solve_or_raise                                pass\n"}
+,{"stream_name":"stdout","time":76.663136071,"data":"[solution] triangular_transposed_solve                   pass\n"}
+,{"stream_name":"stdout","time":83.069108009,"data":"[solution] spmv_from_triplets                            pass\n"}
+,{"stream_name":"stdout","time":86.735109563,"data":"[solution] cg_poisson_1d                                 pass\n"}
+,{"stream_name":"stdout","time":98.289197155,"data":"[solution] laplacian_2d_smallest_eigs                    pass\n"}
+,{"stream_name":"stdout","time":104.410046062,"data":"[solution] sparse_row_normalize                          pass\n"}
+,{"stream_name":"stdout","time":106.067341549,"data":"[solution] cudss_multiple_rhs                            pass\n"}
+,{"stream_name":"stdout","time":107.952455439,"data":"[solution] cutensor_contraction                          pass\n"}
+,{"stream_name":"stdout","time":109.401960038,"data":"[naive   ] gemm_update_inplace                           wrong_answer\n"}
+,{"stream_name":"stdout","time":110.865818768,"data":"[naive   ] pairwise_sq_dists                             exception\n"}
+,{"stream_name":"stdout","time":112.389411929,"data":"[naive   ] fused_linear_relu                             exception\n"}
+,{"stream_name":"stdout","time":113.680318873,"data":"[naive   ] fft_convolve                                  wrong_answer\n"}
+,{"stream_name":"stdout","time":114.938865355,"data":"[naive   ] irfft_reconstruct                             wrong_answer\n"}
+,{"stream_name":"stdout","time":116.392690677,"data":"[naive   ] nvmath_full_spectrum                          exception\n"}
+,{"stream_name":"stdout","time":117.892278328,"data":"[naive   ] nvmath_spectral_gain                          wrong_answer\n"}
+,{"stream_name":"stdout","time":119.032109486,"data":"[naive   ] batched_solve_vectors                         exception\n"}
+,{"stream_name":"stdout","time":120.534243806,"data":"[naive   ] cholesky_solve_logdet                         wrong_answer\n"}
+,{"stream_name":"stdout","time":121.923784284,"data":"[naive   ] general_eigenvalues                           wrong_answer\n"}
+,{"stream_name":"stdout","time":123.313084384,"data":"[naive   ] symmetric_top_k                               wrong_answer\n"}
+,{"stream_name":"stdout","time":124.798872871,"data":"[naive   ] low_rank_approx                               exception\n"}
+,{"stream_name":"stdout","time":126.073090456,"data":"[naive   ] solve_or_raise                                expected_error_not_raised\n"}
+,{"stream_name":"stdout","time":127.335217443,"data":"[naive   ] triangular_transposed_solve                   wrong_answer\n"}
+,{"stream_name":"stdout","time":128.757486158,"data":"[naive   ] cg_poisson_1d                                 exception\n"}
+,{"stream_name":"stdout","time":130.216625984,"data":"[naive   ] laplacian_2d_smallest_eigs                    exception\n"}
+,{"stream_name":"stdout","time":131.722561266,"data":"[naive   ] cudss_multiple_rhs                            exception\n"}
+,{"stream_name":"stdout","time":132.93590232,"data":"[example ] cupy.asarray                                  ok\n"}
+,{"stream_name":"stdout","time":134.000028125,"data":"[example ] cupy.asnumpy                                  ok\n"}
+,{"stream_name":"stdout","time":134.8801206,"data":"[example ] cupy.cublas.gemm                              ok\n"}
+,{"stream_name":"stdout","time":135.772642228,"data":"[example ] cupy.einsum                                   ok\n"}
+,{"stream_name":"stdout","time":136.839997911,"data":"[example ] cupy.fft.fft                                  ok\n"}
+,{"stream_name":"stdout","time":137.863352465,"data":"[example ] cupy.fft.fftn                                 ok\n"}
+,{"stream_name":"stdout","time":138.741671668,"data":"[example ] cupy.fft.rfft                                 ok\n"}
+,{"stream_name":"stdout","time":140.075062088,"data":"[example ] cupy.linalg.cholesky                          ok\n"}
+,{"stream_name":"stdout","time":141.717051836,"data":"[example ] cupy.linalg.eig                               ok\n"}
+,{"stream_name":"stdout","time":143.009997575,"data":"[example ] cupy.linalg.eigh                              ok\n"}
+,{"stream_name":"stdout","time":144.149609216,"data":"[example ] cupy.linalg.inv                               ok\n"}
+,{"stream_name":"stdout","time":145.381649892,"data":"[example ] cupy.linalg.lstsq                             ok\n"}
+,{"stream_name":"stdout","time":146.266401145,"data":"[example ] cupy.linalg.norm                              ok\n"}
+,{"stream_name":"stdout","time":147.544392193,"data":"[example ] cupy.linalg.qr                                ok\n"}
+,{"stream_name":"stdout","time":148.735651187,"data":"[example ] cupy.linalg.solve                             ok\n"}
+,{"stream_name":"stdout","time":149.954184392,"data":"[example ] cupy.linalg.svd                               ok\n"}
+,{"stream_name":"stdout","time":150.865090779,"data":"[example ] cupy.matmul                                   ok\n"}
+,{"stream_name":"stdout","time":152.012993845,"data":"[example ] cupyx.errstate                                ok\n"}
+,{"stream_name":"stdout","time":153.341360854,"data":"[example ] cupyx.scipy.fft.get_fft_plan                  ok\n"}
+,{"stream_name":"stdout","time":154.552243131,"data":"[example ] cupyx.scipy.fft.next_fast_len                 ok\n"}
+,{"stream_name":"stdout","time":156.265626585,"data":"[example ] cupyx.scipy.linalg.lu_factor                  ok\n"}
+,{"stream_name":"stdout","time":157.684924365,"data":"[example ] cupyx.scipy.linalg.solve_triangular           ok\n"}
+,{"stream_name":"stdout","time":159.088125625,"data":"[example ] cupyx.scipy.sparse.csr_matrix                 ok\n"}
+,{"stream_name":"stdout","time":160.278740898,"data":"[example ] cupyx.scipy.sparse.diags                      ok\n"}
+,{"stream_name":"stdout","time":166.06072253,"data":"[example ] cupyx.scipy.sparse.linalg.cg                  ok\n"}
+,{"stream_name":"stdout","time":167.550957928,"data":"[example ] cupyx.scipy.sparse.linalg.eigsh               ok\n"}
+,{"stream_name":"stdout","time":168.977595549,"data":"[example ] cupyx.scipy.sparse.linalg.gmres               ok\n"}
+,{"stream_name":"stdout","time":170.37377529,"data":"[example ] cupyx.scipy.sparse.linalg.spsolve             ok\n"}
+,{"stream_name":"stdout","time":171.581607109,"data":"[example ] nvmath.fft.FFT                                ok\n"}
+,{"stream_name":"stdout","time":172.798862287,"data":"[example ] nvmath.fft.fft                                ok\n"}
+,{"stream_name":"stdout","time":174.403353623,"data":"[example ] nvmath.fft.ifft                               ok\n"}
+,{"stream_name":"stdout","time":176.024249694,"data":"[example ] nvmath.fft.irfft                              ok\n"}
+,{"stream_name":"stdout","time":177.263383732,"data":"[example ] nvmath.fft.rfft                               ok\n"}
+,{"stream_name":"stdout","time":178.450850651,"data":"[example ] nvmath.linalg.advanced.Matmul                 ok\n"}
+,{"stream_name":"stdout","time":179.710704876,"data":"[example ] nvmath.linalg.advanced.MatmulOptions          ok\n"}
+,{"stream_name":"stdout","time":181.44630293,"data":"[example ] nvmath.linalg.advanced.matmul                 ok\n"}
+,{"stream_name":"stdout","time":183.178462031,"data":"[example ] nvmath.sparse.advanced.direct_solver          ok\n"}
+,{"stream_name":"stdout","time":184.750383386,"data":"[example ] nvmath.tensor.binary_contraction              ok\n"}
+,{"stream_name":"stdout","time":185.580109744,"data":"[fact    ] no_implicit_numpy_conversion                  holds\n"}
+,{"stream_name":"stdout","time":186.220662419,"data":"[fact    ] linalg_rejects_numpy_input                    holds\n"}
+,{"stream_name":"stdout","time":187.484986826,"data":"[fact    ] singular_solve_is_silent                      holds\n"}
+,{"stream_name":"stdout","time":188.666879955,"data":"[fact    ] errstate_raise_on_singular                    holds\n"}
+,{"stream_name":"stdout","time":189.311286539,"data":"[fact    ] errstate_divide_not_implemented               holds\n"}
+,{"stream_name":"stdout","time":190.38473496699999,"data":"[fact    ] batched_solve_rejects_stacked_vectors         holds\n"}
+,{"stream_name":"stdout","time":191.22256561,"data":"[fact    ] cholesky_has_no_upper                         holds\n"}
+,{"stream_name":"stdout","time":192.405526224,"data":"[fact    ] cg_has_no_tol                                 holds\n"}
+,{"stream_name":"stdout","time":193.695299387,"data":"[fact    ] eigsh_which_keyword_only                      holds\n"}
+,{"stream_name":"stdout","time":194.985762408,"data":"[fact    ] eigsh_no_sm                                   holds\n"}
+,{"stream_name":"stdout","time":196.432667432,"data":"[fact    ] sparse_rejects_int_data                       holds\n"}
+,{"stream_name":"stdout","time":198.102403176,"data":"[fact    ] spmatrix_star_is_matmul                       holds\n"}
+,{"stream_name":"stdout","time":199.105615259,"data":"[fact    ] fft_keeps_single_precision                    holds\n"}
+,{"stream_name":"stdout","time":199.973732203,"data":"[fact    ] norm_returns_0d_array                         holds\n"}
+,{"stream_name":"stdout","time":201.144880405,"data":"[fact    ] eig_available                                 holds\n"}
+,{"stream_name":"stdout","time":202.299679399,"data":"[fact    ] nvmath_fft_rejects_real                       holds\n"}
+,{"stream_name":"stdout","time":203.674268655,"data":"[fact    ] nvmath_fft_default_axes_all                   holds\n"}
+,{"stream_name":"stdout","time":205.106976813,"data":"[fact    ] nvmath_ifft_unnormalized                      holds\n"}
+,{"stream_name":"stdout","time":206.386845991,"data":"[fact    ] nvmath_irfft_unnormalized                     holds\n"}
+,{"stream_name":"stdout","time":207.183338765,"data":"[fact    ] nvmath_numpy_fft_runs_on_cpu                  holds\n"}
+,{"stream_name":"stdout","time":208.656878647,"data":"[fact    ] nvmath_bias_is_per_row                        holds\n"}
+,{"stream_name":"stdout","time":209.883493526,"data":"[fact    ] nvmath_aux_epilog_returns_tuple               holds\n"}
+,{"stream_name":"stdout","time":211.366046198,"data":"[fact    ] cudss_rejects_c_ordered_rhs                   holds\n"}
+,{"stream_name":"stdout","time":211.368122458,"data":"{\n"}
+,{"stream_name":"stdout","time":211.371909688,"data":" \"python\": \"3.13.15\",\n"}
+,{"stream_name":"stdout","time":211.371920483,"data":" \"platform\": \"Linux-6.18.48+-x86_64-with-glibc2.39\",\n"}
+,{"stream_name":"stdout","time":211.371925821,"data":" \"gpu\": \"Tesla T4\",\n"}
+,{"stream_name":"stdout","time":211.371931043,"data":" \"compute_capability\": \"7.5\",\n"}
+,{"stream_name":"stdout","time":211.371946181,"data":" \"memory_gb\": 14.6,\n"}
+,{"stream_name":"stdout","time":211.371956334,"data":" \"cuda_runtime\": \"12.9\",\n"}
+,{"stream_name":"stdout","time":211.371961118,"data":" \"cuda_driver\": \"13.0\",\n"}
+,{"stream_name":"stdout","time":211.371965853,"data":" \"cupy\": \"14.2.0\",\n"}
+,{"stream_name":"stdout","time":211.371970225,"data":" \"cusolver\": 11703,\n"}
+,{"stream_name":"stdout","time":211.371975265,"data":" \"nvmath\": \"1.0.0\",\n"}
+,{"stream_name":"stdout","time":211.371988668,"data":" \"numpy\": \"2.1.3\",\n"}
+,{"stream_name":"stdout","time":211.371992556,"data":" \"scipy\": \"1.16.3\"\n"}
+,{"stream_name":"stdout","time":211.371996331,"data":"}\n"}
+,{"stream_name":"stdout","time":211.372000091,"data":"{\n"}
+,{"stream_name":"stdout","time":211.37200392,"data":" \"solutions_pass\": 26,\n"}
+,{"stream_name":"stdout","time":211.372007932,"data":" \"solutions_total\": 26,\n"}
+,{"stream_name":"stdout","time":211.372011361,"data":" \"traps_confirmed\": 17,\n"}
+,{"stream_name":"stdout","time":211.372014606,"data":" \"traps_total\": 17,\n"}
+,{"stream_name":"stdout","time":211.372018541,"data":" \"examples_pass\": 38,\n"}
+,{"stream_name":"stdout","time":211.37202199,"data":" \"examples_total\": 38,\n"}
+,{"stream_name":"stdout","time":211.372026378,"data":" \"facts_hold\": 23,\n"}
+,{"stream_name":"stdout","time":211.372030053,"data":" \"facts_checked\": 23\n"}
+,{"stream_name":"stdout","time":211.372033522,"data":"}\n"}
+,{"stream_name":"stderr","time":213.788229865,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":213.788258163,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":214.090040774,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":214.090080705,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":215.036114261,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":216.087754439,"data":"[NbConvertApp] Writing 451143 bytes to __results__.html\n"}
+]

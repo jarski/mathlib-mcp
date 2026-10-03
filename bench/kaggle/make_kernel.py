@@ -47,7 +47,8 @@ def bundle() -> str:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
         for path in sorted((REPO / "bench").rglob("*.py")):
-            if "kaggle" in path.parts or "__pycache__" in path.parts:
+            parts = path.relative_to(REPO / "bench").parts
+            if parts[0] in ("kaggle", "results") or "__pycache__" in parts:
                 continue
             archive.write(path, path.relative_to(REPO))
         cards = REPO / "src" / "mathlib_mcp" / "data" / "cards.json"
