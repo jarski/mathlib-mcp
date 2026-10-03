@@ -8,3 +8,4 @@ dist/
 bench/results/raw/
 .env
 .DS_Store
+bench/kaggle/build/
