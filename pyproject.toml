@@ -1,0 +1,48 @@
+[project]
+name = "mathlib-mcp"
+version = "0.1.0"
+description = "LLM-friendly API cards, an MCP server and a codegen benchmark for GPU math libraries (CuPy, nvmath-python: cuBLAS, cuFFT, cuSOLVER, cuSPARSE, cuDSS, cuTENSOR)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Jarno Rantala", email = "jarno@numberi.fi" }
+]
+requires-python = ">=3.12"
+keywords = ["mcp", "llm", "cuda", "cupy", "nvmath", "cublas", "cufft", "cusolver", "cusparse"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Code Generators",
+]
+dependencies = [
+    "mcp>=2.3",
+]
+
+[project.optional-dependencies]
+embeddings = ["fastembed>=0.8", "numpy>=1.26"]
+
+[project.scripts]
+mathlib-mcp = "mathlib_mcp.server:main"
+mathlib-mcp-build = "mathlib_mcp.extract.build:main"
+
+[build-system]
+requires = ["uv_build>=0.12.22,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".sources"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

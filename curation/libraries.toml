@@ -1,0 +1,59 @@
+# Which library versions and namespaces the API data covers.
+#
+# packages      top-level packages read from the source tree
+# resolve_packages  extra packages read only to resolve re-exports (not indexed)
+# exclude       namespaces left out of the symbol index (check_snippet reports
+#               names inside them as "unverified" instead of checking them)
+# card_modules  every public function/class in these modules gets an API card
+# card_names    extra individual symbols that get a card
+# doc_url       {qualname}, {version} and {section} (second dotted component) are filled in
+
+[[library]]
+name = "cupy"
+version = "14.2.0"
+source = ".sources/cupy-14.2.0"
+packages = ["cupy", "cupyx"]
+resolve_packages = ["cupy_backends"]
+exclude = ["cupy.testing", "cupyx.tools", "cupyx.jit"]
+doc_url = "https://docs.cupy.dev/en/v{version}/reference/generated/{qualname}.html"
+card_modules = [
+    "cupy.linalg",
+    "cupy.fft",
+    "cupy.cublas",
+    "cupyx.scipy.linalg",
+    "cupyx.scipy.fft",
+    "cupyx.scipy.sparse",
+    "cupyx.scipy.sparse.linalg",
+]
+card_names = [
+    "cupy.matmul",
+    "cupy.dot",
+    "cupy.vdot",
+    "cupy.inner",
+    "cupy.outer",
+    "cupy.tensordot",
+    "cupy.einsum",
+    "cupy.kron",
+    "cupy.asarray",
+    "cupy.asnumpy",
+    "cupy.ascontiguousarray",
+    "cupy.asfortranarray",
+    "cupyx.errstate",
+    "cupyx.seterr",
+]
+
+[[library]]
+name = "nvmath-python"
+version = "1.0.0"
+source = ".sources/nvmath-python-1.0.0"
+packages = ["nvmath"]
+exclude = ["nvmath.bindings", "nvmath.internal", "nvmath.device", "nvmath.distributed"]
+doc_url = "https://docs.nvidia.com/cuda/nvmath-python/{version}/host-apis/{section}/generated/{qualname}.html"
+card_modules = [
+    "nvmath.linalg",
+    "nvmath.linalg.advanced",
+    "nvmath.fft",
+    "nvmath.sparse",
+    "nvmath.sparse.advanced",
+    "nvmath.tensor",
+]

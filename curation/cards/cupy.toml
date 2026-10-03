@@ -1,0 +1,624 @@
+# Curated knowledge for CuPy 14.2.0 API cards.
+#
+# Every claim below was checked against the CuPy 14.2.0 source (file references in
+# comments). Every `example` runs on a GPU and asserts its own result; the examples
+# are executed by `bench/gpu_validate.py`.
+#
+# Fields: backend, numpy_equivalent, tags, pitfalls, example
+
+# ---------------------------------------------------------------- host <-> device
+
+[cards."cupy.asarray"]
+backend = ["CUDA runtime (host-to-device copy)"]
+numpy_equivalent = "numpy.asarray"
+tags = ["transfer", "host-to-device", "array-creation"]
+pitfalls = [
+    "Copies host data to the current GPU. Transfers are often slower than the computation itself, so move data once and keep it on the GPU.",
+    "There is no implicit conversion back: `numpy.asarray(cupy_array)` raises `TypeError`. Use `cupy.asnumpy(x)` or `x.get()`.",
+    "Python floats and NumPy's default dtype give float64. Pass `dtype=cupy.float32` when single precision is enough: many GPUs (e.g. T4, consumer cards) have far lower FP64 throughput.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+x_host = np.arange(6, dtype=np.float32).reshape(2, 3)
+x = cp.asarray(x_host)             # host -> device copy
+y = (x * 2).sum(axis=1)            # computed on the GPU
+y_host = cp.asnumpy(y)             # device -> host copy (waits for the GPU)
+assert isinstance(y, cp.ndarray) and isinstance(y_host, np.ndarray)
+assert np.allclose(y_host, (x_host * 2).sum(axis=1))
+'''
+
+[cards."cupy.asnumpy"]
+backend = ["CUDA runtime (device-to-host copy)"]
+numpy_equivalent = "numpy.asarray"
+tags = ["transfer", "device-to-host", "synchronization"]
+pitfalls = [
+    "Blocks until the GPU work that produces the array has finished (`blocking=True` by default). It is the usual implicit synchronization point; GPU timings taken without a sync measure only kernel launches.",
+    "`x.get()` does the same for a `cupy.ndarray`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+x = cp.linspace(0.0, 1.0, 5, dtype=cp.float32)
+host = cp.asnumpy(x)               # same as x.get()
+assert isinstance(host, np.ndarray)
+assert np.allclose(host, np.linspace(0.0, 1.0, 5))
+'''
+
+# ------------------------------------------------------------------- dense BLAS
+
+[cards."cupy.matmul"]
+backend = ["cuBLAS (GEMM / batched GEMM)"]
+numpy_equivalent = "numpy.matmul"
+tags = ["gemm", "matrix-multiply", "batched", "blas3"]
+pitfalls = [
+    "Stacked inputs `(..., M, K) @ (..., K, N)` run as a single batched cuBLAS GEMM. Prefer this over a Python loop of 2-D products.",
+    "float32 GEMM uses full FP32 by default. Setting the environment variable `CUPY_TF32=1` lets cuBLAS use TF32 tensor cores (faster, ~10-bit mantissa). It is read once, at the first float32 matmul, so set it at process start.",
+    "Mixed dtypes promote like NumPy (float32 @ float64 -> float64), which can be much slower on GPUs with low FP64 throughput.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+a = cp.random.rand(8, 64, 32, dtype=cp.float32)   # batch of 8 matrices
+b = cp.random.rand(8, 32, 16, dtype=cp.float32)
+c = cp.matmul(a, b)                               # one batched GEMM; same as a @ b
+assert c.shape == (8, 64, 16) and c.dtype == cp.float32
+assert np.allclose(c.get(), a.get() @ b.get(), rtol=1e-4, atol=1e-4)
+'''
+
+[cards."cupy.dot"]
+backend = ["cuBLAS"]
+numpy_equivalent = "numpy.dot"
+tags = ["gemm", "gemv", "dot-product"]
+pitfalls = [
+    "For N-D inputs `dot` contracts the last axis of `a` with the second-to-last axis of `b` (NumPy semantics) and does not broadcast batch dimensions. Use `cupy.matmul` (`@`) for batched matrix products.",
+]
+
+[cards."cupy.einsum"]
+backend = ["cuBLAS (via tensordot)", "cuTENSOR (optional, CUPY_ACCELERATORS=cutensor)"]
+numpy_equivalent = "numpy.einsum"
+tags = ["einsum", "tensor-contraction", "batched"]
+pitfalls = [
+    "Pairwise contractions are reduced to `tensordot`/cuBLAS GEMMs by default. With `CUPY_ACCELERATORS=cutensor` and cuTENSOR installed, CuPy can use cuTENSOR contractions instead.",
+    "Expressions like `'bij,bj->bi'` (batched matrix-vector) are a clear, fast alternative to `matmul` with reshaping.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+A = cp.random.rand(32, 8, 8)
+x = cp.random.rand(32, 8)
+y = cp.einsum('bij,bj->bi', A, x)                 # batched matrix-vector product
+assert np.allclose(y.get(), np.einsum('bij,bj->bi', A.get(), x.get()))
+'''
+
+[cards."cupy.cublas.gemm"]
+backend = ["cuBLAS (gemm)"]
+numpy_equivalent = "alpha * (op(a) @ op(b)) + beta * out"
+tags = ["gemm", "blas3", "low-level"]
+pitfalls = [
+    "`transa`/`transb` take 'N', 'T' or 'H' and apply op() to the inputs without materializing a transposed copy.",
+    "Only 2-D operands. Use `cupy.matmul` for batched products.",
+    "With `out` given, the result is accumulated in place: `out = alpha * op(a) @ op(b) + beta * out`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+from cupy import cublas
+
+a = cp.random.rand(64, 32)
+b = cp.random.rand(64, 16)
+c = cublas.gemm('T', 'N', a, b)                   # a.T @ b without a transposed copy
+assert np.allclose(c.get(), a.get().T @ b.get())
+'''
+
+# ------------------------------------------------------------------ dense LAPACK
+
+[cards."cupy.linalg.solve"]
+backend = ["cuSOLVER (getrf/getrs)", "cuBLAS (batched getrf/getrs for small stacked matrices)"]
+numpy_equivalent = "numpy.linalg.solve"
+tags = ["linear-system", "lu", "batched", "dense"]
+pitfalls = [
+    "Both arguments must be CuPy arrays. NumPy inputs raise `LinAlgError('cupy.linalg only supports cupy.ndarray')` instead of being copied implicitly.",
+    "For a batch `a` of shape `(..., M, M)`, `b` must be `(M,)` (shared) or `(..., M, K)`. A per-system vector of shape `(..., M)` is rejected (NumPy 2 semantics). Pass `b[..., None]` and take `[..., 0]` of the result.",
+    "A singular matrix does not raise by default. cuSOLVER's error flag is not checked (that would need a device sync), so the result silently contains inf/nan. Use `with cupyx.errstate(linalg='raise'):` to get `LinAlgError`.",
+    "Prefer `solve(a, b)` over `inv(a) @ b`: it is faster and more accurate.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+n = 256
+a = cp.random.rand(n, n) + n * cp.eye(n)          # well-conditioned
+b = cp.random.rand(n)
+x = cp.linalg.solve(a, b)
+assert np.allclose((a @ x).get(), b.get())
+
+# 32 independent 8x8 systems, each with its own right-hand side vector
+A = cp.random.rand(32, 8, 8) + 8 * cp.eye(8)
+B = cp.random.rand(32, 8)
+X = cp.linalg.solve(A, B[..., None])[..., 0]      # b must be (..., M, K)
+assert np.allclose(cp.einsum('bij,bj->bi', A, X).get(), B.get())
+'''
+
+[cards."cupy.linalg.lstsq"]
+backend = ["cuSOLVER (gesvd)"]
+numpy_equivalent = "numpy.linalg.lstsq"
+tags = ["least-squares", "svd", "regression", "dense"]
+pitfalls = [
+    "Implemented with an SVD (`full_matrices=False`): robust for rank-deficient problems, but slower than QR. For tall, well-conditioned problems `qr` + `cupyx.scipy.linalg.solve_triangular` is faster.",
+    "Returns a 4-tuple `(x, residuals, rank, s)`. `rcond=None` uses `eps * max(M, N)` (the NumPy 2 default).",
+    "Only 2-D `a` is supported; there is no batched least squares.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+m, n = 500, 20
+A = cp.random.rand(m, n)
+x_true = cp.arange(n, dtype=A.dtype)
+b = A @ x_true
+x, residuals, rank, s = cp.linalg.lstsq(A, b, rcond=None)
+assert int(rank) == n
+assert np.allclose(x.get(), x_true.get(), atol=1e-6)
+'''
+
+[cards."cupy.linalg.inv"]
+backend = ["cuSOLVER (gesv)", "cuBLAS (getrfBatched/getriBatched for stacked input)"]
+numpy_equivalent = "numpy.linalg.inv"
+tags = ["inverse", "batched", "dense"]
+pitfalls = [
+    "To solve `a x = b`, use `cupy.linalg.solve` instead of `inv(a) @ b`.",
+    "Stacked input `(..., M, M)` is inverted with batched cuBLAS routines in one call.",
+    "Singular input gives inf/nan silently unless inside `cupyx.errstate(linalg='raise')`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+A = cp.random.rand(16, 4, 4) + 4 * cp.eye(4)     # batch of 16 matrices
+Ainv = cp.linalg.inv(A)
+assert np.allclose((A @ Ainv).get(), np.broadcast_to(np.eye(4), (16, 4, 4)), atol=1e-10)
+'''
+
+[cards."cupy.linalg.cholesky"]
+backend = ["cuSOLVER (potrf / potrfBatched)"]
+numpy_equivalent = "numpy.linalg.cholesky"
+tags = ["cholesky", "spd", "decomposition", "batched"]
+pitfalls = [
+    "Returns the lower-triangular factor `L` with `a = L @ L.conj().T`. CuPy 14 has no `upper=` keyword (NumPy 2 does); use `L.conj().T` for the upper factor.",
+    "A matrix that is not positive definite gives nan silently unless inside `cupyx.errstate(linalg='raise')`.",
+    "To solve with the factor, use two `cupyx.scipy.linalg.solve_triangular` calls (`lower=True`, then `trans='C'`).",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.linalg
+
+n = 64
+X = cp.random.rand(n, n)
+A = X @ X.T + n * cp.eye(n)                       # symmetric positive definite
+L = cp.linalg.cholesky(A)
+assert np.allclose((L @ L.T).get(), A.get())
+
+b = cp.random.rand(n)
+y = cupyx.scipy.linalg.solve_triangular(L, b, lower=True)
+x = cupyx.scipy.linalg.solve_triangular(L, y, lower=True, trans='C')
+assert np.allclose((A @ x).get(), b.get())
+'''
+
+[cards."cupy.linalg.qr"]
+backend = ["cuSOLVER (geqrf/orgqr)"]
+numpy_equivalent = "numpy.linalg.qr"
+tags = ["qr", "decomposition", "batched"]
+pitfalls = [
+    "`mode` is one of 'reduced' (default), 'complete', 'r', 'raw'. For an (M, N) matrix with M > N, 'complete' allocates an (M, M) Q.",
+    "Stacked input `(..., M, N)` is supported.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+A = cp.random.rand(100, 10)
+Q, R = cp.linalg.qr(A)                            # reduced: Q (100, 10), R (10, 10)
+assert Q.shape == (100, 10) and R.shape == (10, 10)
+assert np.allclose((Q @ R).get(), A.get())
+assert np.allclose((Q.T @ Q).get(), np.eye(10), atol=1e-10)
+'''
+
+[cards."cupy.linalg.svd"]
+backend = ["cuSOLVER (gesvd; gesvdj for small batched matrices)"]
+numpy_equivalent = "numpy.linalg.svd"
+tags = ["svd", "decomposition", "batched"]
+pitfalls = [
+    "`full_matrices=True` is the default (like NumPy). For a tall (M, N) matrix this allocates an (M, M) `u`; pass `full_matrices=False` unless the full basis is needed.",
+    "Returns `(u, s, vh)` where `vh` is V^H, not V.",
+    "Stacked input with matrices up to 32x32 uses the fast batched Jacobi solver (`gesvdj`); larger stacked matrices are processed with `gesvd`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+A = cp.random.rand(1000, 50)
+u, s, vh = cp.linalg.svd(A, full_matrices=False)  # u: (1000, 50), not (1000, 1000)
+assert u.shape == (1000, 50) and s.shape == (50,) and vh.shape == (50, 50)
+assert np.allclose(((u * s) @ vh).get(), A.get())
+'''
+
+[cards."cupy.linalg.eigh"]
+backend = ["cuSOLVER (syevd; syevj for stacked input)"]
+numpy_equivalent = "numpy.linalg.eigh"
+tags = ["eigenvalues", "symmetric", "hermitian", "batched"]
+pitfalls = [
+    "Only the triangle selected by `UPLO` ('L' by default) is read. Symmetry is not checked, so a non-symmetric input gives a wrong answer silently.",
+    "Eigenvalues are returned in ascending order; eigenvectors are the columns `v[:, i]`.",
+    "Stacked `(..., M, M)` input uses the Jacobi solver `syevj`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+X = cp.random.rand(50, 50)
+A = (X + X.T) / 2
+w, v = cp.linalg.eigh(A)
+assert np.all(np.diff(w.get()) >= 0)              # ascending
+assert np.allclose((A @ v).get(), (v * w).get(), atol=1e-8)
+'''
+
+[cards."cupy.linalg.eig"]
+backend = ["cuSOLVER (Xgeev, needs cuSOLVER >= 11.7 / CUDA 12.6)"]
+numpy_equivalent = "numpy.linalg.eig"
+tags = ["eigenvalues", "non-symmetric", "general"]
+pitfalls = [
+    "Requires cuSOLVER 11.7 (CUDA 12.6) or newer; older CUDA raises `RuntimeError('geev is not available')`. For symmetric/Hermitian matrices use `eigh`, which is faster and works everywhere.",
+    "Always returns complex arrays (complex64/complex128), even when every eigenvalue is real. NumPy returns real arrays in that case.",
+    "The order of the eigenvalues is not guaranteed and can differ from NumPy. Sort before comparing.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+A = cp.asarray([[2.0, 1.0], [0.0, 3.0]])
+w, v = cp.linalg.eig(A)
+assert w.dtype.kind == 'c'                        # complex even for real eigenvalues
+assert np.allclose(np.sort(w.get().real), [2.0, 3.0])
+assert np.allclose((A @ v).get(), (v * w).get())
+'''
+
+[cards."cupy.linalg.norm"]
+backend = ["CuPy reduction kernels", "cuSOLVER (gesvd for ord=2 / 'nuc')"]
+numpy_equivalent = "numpy.linalg.norm"
+tags = ["norm", "reduction"]
+pitfalls = [
+    "Returns a 0-d CuPy array, not a Python float. Use `float(...)` or `.item()` to get a host scalar (this synchronizes).",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+x = cp.asarray([3.0, 4.0])
+n = cp.linalg.norm(x)
+assert isinstance(n, cp.ndarray) and n.ndim == 0
+assert float(n) == 5.0
+'''
+
+# ------------------------------------------------------------- cupyx.scipy.linalg
+
+[cards."cupyx.scipy.linalg.solve_triangular"]
+backend = ["cuBLAS (trsm)"]
+numpy_equivalent = "scipy.linalg.solve_triangular"
+tags = ["triangular", "linear-system", "trsm"]
+pitfalls = [
+    "Uses the upper triangle by default (`lower=False`), as in SciPy. Pass `lower=True` for factors from `cholesky` or the L of an LU.",
+    "`trans` accepts 0/'N', 1/'T', 2/'C' to solve with the (conjugate) transpose without forming it.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+from cupyx.scipy.linalg import solve_triangular
+
+L = cp.tril(cp.random.rand(20, 20)) + 20 * cp.eye(20)
+b = cp.random.rand(20)
+x = solve_triangular(L, b, lower=True)
+assert np.allclose((L @ x).get(), b.get())
+'''
+
+[cards."cupyx.scipy.linalg.lu_factor"]
+backend = ["cuSOLVER (getrf)"]
+numpy_equivalent = "scipy.linalg.lu_factor"
+tags = ["lu", "decomposition", "factorize-once"]
+pitfalls = [
+    "Factor once with `lu_factor` and reuse the `(lu, piv)` tuple in `lu_solve` for many right-hand sides; this is cheaper than calling `solve` repeatedly.",
+    "`check_finite=True` by default, which scans the input for inf/nan and forces a device sync. Pass `check_finite=False` in hot loops.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+from cupyx.scipy.linalg import lu_factor, lu_solve
+
+A = cp.random.rand(100, 100) + 100 * cp.eye(100)
+lu_piv = lu_factor(A, check_finite=False)
+for _ in range(3):                                # reuse the factorization
+    b = cp.random.rand(100)
+    x = lu_solve(lu_piv, b, check_finite=False)
+    assert np.allclose((A @ x).get(), b.get())
+'''
+
+[cards."cupyx.scipy.linalg.lu_solve"]
+backend = ["cuSOLVER (getrs)"]
+numpy_equivalent = "scipy.linalg.lu_solve"
+tags = ["lu", "linear-system", "factorize-once"]
+pitfalls = [
+    "The first argument is the `(lu, piv)` tuple returned by `lu_factor`, not the original matrix.",
+    "`check_finite=True` by default (forces a device sync); pass `check_finite=False` in loops.",
+]
+
+# ------------------------------------------------------------------------- FFT
+
+[cards."cupy.fft.fft"]
+backend = ["cuFFT"]
+numpy_equivalent = "numpy.fft.fft"
+tags = ["fft", "spectral", "c2c"]
+pitfalls = [
+    "Single precision is preserved: float16/float32/complex64 input gives complex64 output; other real or integer input gives complex128. NumPy < 2 always returned complex128.",
+    "cuFFT plans are cached per device (`cupy.fft.config.get_plan_cache()`). The first call for a new shape/dtype pays the planning cost, so warm up before timing.",
+    "Lengths with only small prime factors (2, 3, 5, 7) are fastest; `cupyx.scipy.fft.next_fast_len(n)` gives a good padded length.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+x = cp.random.rand(1024, dtype=cp.float32)
+X = cp.fft.fft(x)
+assert X.dtype == cp.complex64                    # precision is kept
+assert np.allclose(X.get(), np.fft.fft(x.get()), rtol=1e-3, atol=1e-3)
+'''
+
+[cards."cupy.fft.rfft"]
+backend = ["cuFFT (R2C)"]
+numpy_equivalent = "numpy.fft.rfft"
+tags = ["fft", "real-input", "r2c", "spectral"]
+pitfalls = [
+    "For real input, `rfft` does about half the work and memory of `fft`. The output has `n//2 + 1` points along the transformed axis.",
+    "To invert, call `irfft` with `n=` set to the original length, otherwise odd lengths are not recovered.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+x = cp.random.rand(4, 1001)                       # odd length, batched along axis 0
+X = cp.fft.rfft(x, axis=-1)
+assert X.shape == (4, 1001 // 2 + 1)
+x_back = cp.fft.irfft(X, n=1001, axis=-1)         # pass n for odd lengths
+assert np.allclose(x_back.get(), x.get())
+'''
+
+[cards."cupy.fft.irfft"]
+backend = ["cuFFT (C2R)"]
+numpy_equivalent = "numpy.fft.irfft"
+tags = ["fft", "inverse", "c2r", "spectral"]
+pitfalls = [
+    "Without `n`, the output length is `2 * (m - 1)` (always even). Pass `n=original_length` to recover odd-length signals.",
+    "Normalization follows NumPy (`norm='backward'`): `irfft(rfft(x), n)` returns `x` with no manual scaling.",
+]
+
+[cards."cupy.fft.fftn"]
+backend = ["cuFFT (multi-dimensional plans)"]
+numpy_equivalent = "numpy.fft.fftn"
+tags = ["fft", "2d", "3d", "batched", "image"]
+pitfalls = [
+    "Transforms all axes by default. For a batch of images shaped (B, H, W), pass `axes=(-2, -1)` or use `fft2`, otherwise the batch axis is transformed too.",
+    "One cuFFT N-D plan covers up to 3 adjacent axes that include the first or last axis. Other axis combinations fall back to successive 1-D transforms.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+
+imgs = cp.random.rand(16, 64, 64).astype(cp.complex64)   # batch of 16 images
+F = cp.fft.fftn(imgs, axes=(-2, -1))              # 2-D FFT of each image
+assert F.shape == imgs.shape
+assert np.allclose(F.get(), np.fft.fftn(imgs.get(), axes=(-2, -1)), rtol=1e-3, atol=1e-2)
+'''
+
+[cards."cupyx.scipy.fft.get_fft_plan"]
+backend = ["cuFFT (plan creation)"]
+tags = ["fft", "plan", "performance"]
+pitfalls = [
+    "The plan can be used as a context manager (`with plan: y = cupy.fft.fft(x)`) or passed as `plan=` to `cupyx.scipy.fft` functions. Reusing it avoids plan look-ups in hot loops.",
+    "`value_type` must match the transform: 'C2C' (default), 'R2C' for rfft, 'C2R' for irfft. A plan whose dtype, size or batch does not match the call raises `ValueError`.",
+    "The plan is tied to the array's shape, dtype, layout and the transformed axes.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.fft as cufft
+
+x = cp.random.rand(64, 128).astype(cp.complex64)
+plan = cufft.get_fft_plan(x, axes=(-1,))         # plan a 1-D C2C FFT along the last axis
+y = cufft.fft(x, axis=-1, plan=plan)
+with plan:                                        # plan also works as a context manager
+    y2 = cp.fft.fft(x, axis=-1)
+assert np.allclose(y.get(), y2.get())
+assert np.allclose(y.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)
+'''
+
+[cards."cupyx.scipy.fft.next_fast_len"]
+backend = ["cuFFT size heuristics"]
+numpy_equivalent = "scipy.fft.next_fast_len"
+tags = ["fft", "padding", "performance"]
+pitfalls = [
+    "Pad signals to `next_fast_len(n)` (sizes with small prime factors) before FFT-based convolution or correlation; awkward prime sizes are much slower.",
+]
+example = '''
+import cupy as cp
+from cupyx.scipy.fft import next_fast_len
+
+n = next_fast_len(1009)                           # 1009 is prime
+assert n >= 1009
+x = cp.random.rand(1009)
+X = cp.fft.rfft(x, n=n)                           # zero-padded transform
+assert X.shape == (n // 2 + 1,)
+'''
+
+# ----------------------------------------------------------------------- sparse
+
+[cards."cupyx.scipy.sparse.csr_matrix"]
+backend = ["cuSPARSE (SpMV/SpMM)"]
+numpy_equivalent = "scipy.sparse.csr_matrix"
+tags = ["sparse", "csr", "spmv"]
+pitfalls = [
+    "Only bool, float32, float64, complex64 and complex128 values are supported. Integer data raises `ValueError`; cast to float first.",
+    "Create it on the GPU from `(data, indices, indptr)` CuPy arrays, from a dense CuPy array, or from a SciPy sparse matrix (copied to the device).",
+    "`csr_matrix * x` is a matrix product (SciPy spmatrix semantics), but `csr_array * x` is elementwise. Use `A @ x` to be unambiguous.",
+    "Index arrays are int32 by default, and some cuSPARSE/cuSOLVER paths (e.g. `spsolve`) require int32 indices.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+
+data = cp.asarray([1.0, 2.0, 3.0, 4.0])
+indices = cp.asarray([0, 2, 1, 2], dtype=cp.int32)
+indptr = cp.asarray([0, 2, 3, 4], dtype=cp.int32)
+A = sp.csr_matrix((data, indices, indptr), shape=(3, 3))
+x = cp.asarray([1.0, 1.0, 1.0])
+y = A @ x                                         # cuSPARSE SpMV
+assert np.allclose(y.get(), [3.0, 3.0, 4.0])
+assert np.allclose(A.toarray().get(), [[1, 0, 2], [0, 3, 0], [0, 0, 4]])
+'''
+
+[cards."cupyx.scipy.sparse.diags"]
+backend = ["CuPy kernels (sparse construction)"]
+numpy_equivalent = "scipy.sparse.diags"
+tags = ["sparse", "construction", "banded", "laplacian"]
+pitfalls = [
+    "Pass `format='csr'` when the matrix goes to SpMV or a solver. The default format is unspecified and may change.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+
+n = 5
+lap = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')   # 1-D Laplacian
+assert lap.format == 'csr'
+assert np.allclose(lap.toarray().get()[1, :3], [-1.0, 2.0, -1.0])
+'''
+
+[cards."cupyx.scipy.sparse.linalg.cg"]
+backend = ["cuSPARSE (SpMV)", "cuBLAS (vector ops)"]
+numpy_equivalent = "scipy.sparse.linalg.cg"
+tags = ["iterative-solver", "conjugate-gradient", "spd", "sparse"]
+pitfalls = [
+    "The tolerance keyword is `rtol` (keyword-only, matching SciPy >= 1.12). The old `tol=` raises `TypeError`.",
+    "Returns `(x, info)`. `info == 0` means converged and `info > 0` is the iteration count reached without converging. Always check `info`.",
+    "`A` must be symmetric (Hermitian) positive definite; for general matrices use `gmres` or `bicgstab`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+from cupyx.scipy.sparse.linalg import cg
+
+n = 200
+A = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')
+b = cp.ones(n)
+x, info = cg(A, b, rtol=1e-10, maxiter=1000)
+assert info == 0                                  # converged
+assert np.allclose((A @ x).get(), b.get(), atol=1e-6)
+'''
+
+[cards."cupyx.scipy.sparse.linalg.gmres"]
+backend = ["cuSPARSE (SpMV)", "cuBLAS"]
+numpy_equivalent = "scipy.sparse.linalg.gmres"
+tags = ["iterative-solver", "gmres", "non-symmetric", "sparse"]
+pitfalls = [
+    "Tolerance is `rtol=` (keyword-only); `tol=` raises `TypeError`.",
+    "Returns `(x, info)` with `info == 0` on convergence.",
+    "Increase `restart` if convergence stalls on hard problems (more memory per restart cycle).",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+from cupyx.scipy.sparse.linalg import gmres
+
+n = 100
+A = sp.diags([-1.0, 3.0, -0.5], [-1, 0, 1], shape=(n, n), format='csr')   # non-symmetric
+b = cp.ones(n)
+x, info = gmres(A, b, rtol=1e-10, restart=50, maxiter=1000)
+assert info == 0
+assert np.allclose((A @ x).get(), b.get(), atol=1e-6)
+'''
+
+[cards."cupyx.scipy.sparse.linalg.spsolve"]
+backend = ["cuSOLVER (csrlsvqr, sparse QR)"]
+numpy_equivalent = "scipy.sparse.linalg.spsolve"
+tags = ["sparse", "direct-solver", "linear-system"]
+pitfalls = [
+    "Uses cuSOLVER's sparse QR (`csrlsvqr`). Non-CSR input is converted with a `SparseEfficiencyWarning`, so build the matrix in CSR format.",
+    "A 2-D `b` is solved one column at a time (slow for many right-hand sides). For large systems or many right-hand sides consider `nvmath.sparse.advanced.direct_solver` (cuDSS).",
+    "`b` is cast to `A.dtype`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+from cupyx.scipy.sparse.linalg import spsolve
+
+n = 50
+A = sp.diags([1.0, 4.0, 1.0], [-1, 0, 1], shape=(n, n), format='csr')
+b = cp.arange(n, dtype=cp.float64)
+x = spsolve(A, b)
+assert np.allclose((A @ x).get(), b.get())
+'''
+
+[cards."cupyx.scipy.sparse.linalg.eigsh"]
+backend = ["cuSPARSE (SpMV)", "cuBLAS", "Lanczos (thick restart)"]
+numpy_equivalent = "scipy.sparse.linalg.eigsh"
+tags = ["eigenvalues", "sparse", "symmetric", "lanczos"]
+pitfalls = [
+    "`which` supports only 'LM' (default), 'LA' and 'SA'. SciPy's 'SM' and shift-invert (`sigma=`) are not available.",
+    "Everything after `k` is keyword-only: `eigsh(A, 3, 'SA')` raises `TypeError`; write `eigsh(A, k=3, which='SA')`.",
+    "Needs `k < n`. For small dense problems, `cupy.linalg.eigh` is simpler and faster.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+from cupyx.scipy.sparse.linalg import eigsh
+
+n = 100
+A = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')
+w = eigsh(A, k=3, which='LA', return_eigenvectors=False)
+expected = 2 - 2 * np.cos(np.pi * np.arange(n - 2, n + 1) / (n + 1))   # analytic spectrum
+assert np.allclose(np.sort(w.get()), np.sort(expected), atol=1e-6)
+'''
+
+# ----------------------------------------------------------------- error state
+
+[cards."cupyx.errstate"]
+backend = ["cuSOLVER/cuBLAS devInfo checks"]
+numpy_equivalent = "numpy.errstate"
+tags = ["errors", "linalg", "debugging"]
+pitfalls = [
+    "Only `linalg=` is implemented, with values 'ignore' (default) or 'raise'. Passing `divide=`, `over=`, `under=` or `invalid=` raises `NotImplementedError` (unlike `numpy.errstate`).",
+    "With `linalg='raise'`, failed cuSOLVER/cuBLAS factorizations raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx
+
+singular = cp.zeros((3, 3))
+try:
+    with cupyx.errstate(linalg='raise'):
+        cp.linalg.cholesky(singular)
+    raised = False
+except np.linalg.LinAlgError:
+    raised = True
+assert raised
+'''

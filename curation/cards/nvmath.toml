@@ -1,0 +1,225 @@
+# Curated knowledge for nvmath-python 1.0.0 API cards.
+#
+# Claims were checked against the nvmath-python 1.0.0 sources and docstrings. Every
+# `example` runs on a GPU and asserts its own result (see `bench/gpu_validate.py`).
+
+# ---------------------------------------------------------------- matmul (cuBLASLt)
+
+[cards."nvmath.linalg.advanced.matmul"]
+backend = ["cuBLASLt"]
+numpy_equivalent = "epilog(alpha * (a @ b) + beta * c)"
+tags = ["gemm", "matrix-multiply", "epilog", "fusion", "bias", "relu", "gelu"]
+pitfalls = [
+    "`a` and `b` are positional-only; everything after `c` is keyword-only. If `c` is given, `beta` must be given too.",
+    "Epilogs fuse post-processing into the GEMM: `epilog=MatmulEpilog.RELU_BIAS, epilog_inputs={'bias': bias}`. The bias has length M (one value per row of the result) and is broadcast across the N columns, not across rows as in `x @ W + b`.",
+    "Epilogs with `AUX` in the name (e.g. `RELU_AUX`) return a tuple `(result, aux_dict)` instead of an array.",
+    "The result uses the same package and memory space as the inputs: CuPy in, CuPy out.",
+    "Every call plans from scratch. For repeated products with the same shapes, use the stateful `Matmul` object and `reset_operands` to amortize planning.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+M, N, K = 128, 64, 256
+a = cp.random.rand(M, K, dtype=cp.float32)
+b = cp.random.rand(K, N, dtype=cp.float32)
+bias = cp.random.rand(M, dtype=cp.float32) - 0.5  # one value per output ROW
+
+r = nvmath.linalg.advanced.matmul(
+    a, b,
+    epilog=nvmath.linalg.advanced.MatmulEpilog.RELU_BIAS,
+    epilog_inputs={"bias": bias},
+)
+expected = np.maximum(a.get() @ b.get() + bias.get()[:, None], 0)
+assert isinstance(r, cp.ndarray) and r.shape == (M, N)
+assert np.allclose(r.get(), expected, rtol=1e-3, atol=1e-3)
+'''
+
+[cards."nvmath.linalg.advanced.Matmul"]
+backend = ["cuBLASLt"]
+tags = ["gemm", "stateful", "plan", "autotune", "epilog"]
+pitfalls = [
+    "Workflow: construct -> `plan()` -> `execute()` (repeatable) -> `free()`. Use it as a context manager (`with Matmul(a, b) as mm:`) so resources are released.",
+    "In the stateful API the epilog is passed to `plan(epilog=..., epilog_inputs=...)`, not to the constructor.",
+    "`reset_operands(a=..., b=...)` swaps in new operands with the same shape, dtype and layout without re-planning. That is where the stateful API saves time.",
+    "`autotune()` after `plan()` benchmarks the candidate algorithms on the actual data.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+a = cp.random.rand(64, 32, dtype=cp.float32)
+b = cp.random.rand(32, 16, dtype=cp.float32)
+with nvmath.linalg.advanced.Matmul(a, b) as mm:
+    mm.plan()
+    r1 = mm.execute()
+    a2 = cp.random.rand(64, 32, dtype=cp.float32)
+    mm.reset_operands(a=a2)                       # same shape/dtype: no re-planning
+    r2 = mm.execute()
+assert np.allclose(r1.get(), a.get() @ b.get(), rtol=1e-4, atol=1e-4)
+assert np.allclose(r2.get(), a2.get() @ b.get(), rtol=1e-4, atol=1e-4)
+'''
+
+[cards."nvmath.linalg.advanced.MatmulEpilog"]
+backend = ["cuBLASLt epilogues (cublasLtEpilogue_t)"]
+tags = ["epilog", "bias", "relu", "gelu", "fusion", "backward"]
+pitfalls = [
+    "Epilogs with BIAS in the name need `epilog_inputs={'bias': ...}`. DRELU epilogs need 'relu_aux' and DGELU epilogs need 'gelu_aux'; those come from the aux output of the matching forward epilog (`RELU_AUX`, `GELU_AUX`, ...).",
+    "It is an alias of `nvmath.bindings.cublasLt.Epilogue` (an `IntEnum`), so members are accessed as `MatmulEpilog.RELU_BIAS`.",
+]
+
+[cards."nvmath.linalg.advanced.MatmulOptions"]
+backend = ["cuBLASLt"]
+tags = ["options", "compute-type", "tf32", "precision"]
+pitfalls = [
+    "Choose the GEMM precision with `compute_type`, e.g. `MatmulOptions(compute_type=nvmath.linalg.advanced.MatmulComputeType.COMPUTE_32F_FAST_TF32)` to allow TF32 tensor cores for float32.",
+    "A plain dict also works: `options={'compute_type': ...}`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+a = cp.random.rand(256, 256, dtype=cp.float32)
+b = cp.random.rand(256, 256, dtype=cp.float32)
+ct = nvmath.linalg.advanced.MatmulComputeType.COMPUTE_32F_FAST_TF32
+opts = nvmath.linalg.advanced.MatmulOptions(compute_type=ct)
+r = nvmath.linalg.advanced.matmul(a, b, options=opts)
+assert np.allclose(r.get(), a.get() @ b.get(), rtol=1e-2, atol=1e-1)   # TF32 tolerance
+'''
+
+# --------------------------------------------------------------------------- FFT
+
+[cards."nvmath.fft.fft"]
+backend = ["cuFFT (C2C)"]
+numpy_equivalent = "numpy.fft.fftn (over `axes`)"
+tags = ["fft", "c2c", "spectral"]
+pitfalls = [
+    "Complex input only: real input raises `ValueError` (\"This function expects complex operand\"). Use `nvmath.fft.rfft` for real data, or cast with `.astype(cupy.complex64)`.",
+    "Without `axes` it is an N-D FFT over all axes (like `numpy.fft.fftn`, not `numpy.fft.fft`). Pass `axes=[-1]` for a batched 1-D FFT along the last axis.",
+    "`axes` must be contiguous and include the first or the last dimension; at most 3-D transforms.",
+    "Host (NumPy) input executes on the CPU by default, because the execution space follows the operand's memory space. Pass CuPy/PyTorch GPU arrays or `execution='cuda'` to run on the GPU.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+x = cp.random.rand(16, 256).astype(cp.complex64)  # complex input required
+X = nvmath.fft.fft(x, axes=[-1])                  # batched 1-D FFT along the last axis
+assert isinstance(X, cp.ndarray) and X.dtype == cp.complex64
+assert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)
+'''
+
+[cards."nvmath.fft.rfft"]
+backend = ["cuFFT (R2C)"]
+numpy_equivalent = "numpy.fft.rfftn (over `axes`)"
+tags = ["fft", "r2c", "real-input"]
+pitfalls = [
+    "Real input only. The last transformed axis has `n//2 + 1` complex outputs.",
+    "Without `axes`, all axes are transformed (N-D). Pass `axes=[-1]` for a batched 1-D transform.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+x = cp.random.rand(8, 1000, dtype=cp.float32)
+X = nvmath.fft.rfft(x, axes=[-1])
+assert X.shape == (8, 501) and X.dtype == cp.complex64
+assert np.allclose(X.get(), np.fft.rfft(x.get(), axis=-1), rtol=1e-3, atol=1e-2)
+'''
+
+[cards."nvmath.fft.irfft"]
+backend = ["cuFFT (C2R)"]
+numpy_equivalent = "numpy.fft.irfftn (over `axes`)"
+tags = ["fft", "c2r", "inverse"]
+pitfalls = [
+    "There is no `n` argument. The output length of the last axis is `2*(m-1)` by default; for odd-length signals pass `options={'last_axis_parity': 'odd'}` to get `2*(m-1)+1`.",
+    "The input must be Hermitian-symmetric along the last axis (e.g. the output of `rfft`), otherwise the result is undefined.",
+]
+example = '''
+import cupy as cp
+import nvmath
+
+x = cp.random.rand(4, 999)                        # odd length
+X = nvmath.fft.rfft(x, axes=[-1])                 # 500 complex values
+y_even = nvmath.fft.irfft(X, axes=[-1])
+y_odd = nvmath.fft.irfft(X, axes=[-1], options={"last_axis_parity": "odd"})
+assert y_even.shape == (4, 998)
+assert y_odd.shape == (4, 999)
+'''
+
+[cards."nvmath.fft.FFT"]
+backend = ["cuFFT"]
+tags = ["fft", "stateful", "plan", "callbacks"]
+pitfalls = [
+    "Workflow: construct -> `plan()` -> `execute(direction=...)` (repeatable) -> `free()`. Use it as a context manager. One object can run both forward and inverse C2C transforms.",
+    "`reset_operand(new)` reuses the plan for a new array with the same shape, dtype and layout.",
+    "Prolog/epilog device callbacks (compiled with `nvmath.fft.compile_prolog`/`compile_epilog`) fuse elementwise work into the FFT, but compiling them requires Numba with CUDA support (`RuntimeError` otherwise).",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+x = cp.random.rand(32, 128).astype(cp.complex64)
+with nvmath.fft.FFT(x, axes=[-1]) as f:
+    f.plan()
+    X = f.execute(direction="forward")
+    x2 = cp.random.rand(32, 128).astype(cp.complex64)
+    f.reset_operand(x2)                           # reuse the plan
+    X2 = f.execute(direction="forward")
+assert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)
+assert np.allclose(X2.get(), np.fft.fft(x2.get(), axis=-1), rtol=1e-3, atol=1e-3)
+'''
+
+# ------------------------------------------------------------- sparse (cuDSS)
+
+[cards."nvmath.sparse.advanced.direct_solver"]
+backend = ["cuDSS"]
+numpy_equivalent = "scipy.sparse.linalg.spsolve"
+tags = ["sparse", "direct-solver", "linear-system", "lu", "cholesky"]
+pitfalls = [
+    "The left-hand side must be in CSR format (SciPy, `cupyx.scipy.sparse` CSR, or a PyTorch sparse CSR tensor).",
+    "A 2-D right-hand side must be column-major (Fortran order): use `cupy.asfortranarray(b)` or build it as `cupy.ones((k, n)).T`. C-ordered 2-D input is rejected.",
+    "Solves many right-hand sides in one factorization, unlike `cupyx.scipy.sparse.linalg.spsolve`, which loops over the columns.",
+    "For repeated solves with the same sparsity pattern, use the stateful `DirectSolver` (plan -> factorize -> solve) and `reset_operands`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import cupyx.scipy.sparse as sp
+import nvmath
+
+n = 200
+A = sp.diags([-1.0, 4.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')
+b = cp.asfortranarray(cp.random.rand(n, 3))       # 3 right-hand sides, column-major
+x = nvmath.sparse.advanced.direct_solver(A, b)
+assert x.shape == (n, 3)
+assert np.allclose((A @ x).get(), b.get())
+'''
+
+# ---------------------------------------------------------------- cuTENSOR
+
+[cards."nvmath.tensor.binary_contraction"]
+backend = ["cuTENSOR"]
+numpy_equivalent = "numpy.einsum (two operands)"
+tags = ["einsum", "tensor-contraction", "cutensor"]
+pitfalls = [
+    "The expression comes first: `binary_contraction('ij,jk->ik', a, b)`. Optional `c`, `alpha` and `beta` compute `alpha * contraction + beta * c` in one call.",
+    "Operands stay in their package (CuPy in, CuPy out); for repeated contractions use the stateful `BinaryContraction`.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+import nvmath
+
+a = cp.random.rand(8, 16, 32, dtype=cp.float32)
+b = cp.random.rand(32, 24, dtype=cp.float32)
+c = nvmath.tensor.binary_contraction("bij,jk->bik", a, b)
+assert c.shape == (8, 16, 24)
+assert np.allclose(c.get(), np.einsum("bij,jk->bik", a.get(), b.get()), rtol=1e-4, atol=1e-4)
+'''

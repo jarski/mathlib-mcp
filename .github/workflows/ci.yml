@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: uv run ruff check .
+      # The pinned library sources let the tests verify that the packaged API data
+      # is up to date with the extractor and the curation files.
+      - run: uv run python scripts/fetch_sources.py
+      - run: uv run pytest -q
