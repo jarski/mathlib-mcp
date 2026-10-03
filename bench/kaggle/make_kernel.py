@@ -1,7 +1,9 @@
 """Build a self-contained Kaggle script that runs ``bench.gpu_validate`` on a GPU.
 
-    uv run python bench/kaggle/make_kernel.py
+    uv run python bench/kaggle/make_kernel.py --user <kaggle-username>
     # -> bench/kaggle/build/gpu_validate_kernel.py (+ kernel-metadata.json)
+    uvx --from kaggle kaggle kernels push -p bench/kaggle/build
+    uvx --from kaggle kaggle kernels output <user>/mathlib-mcp-gpu-validation -p bench/results
 
 The benchmark code and the card data are embedded as a base64 zip, so the kernel
 needs no dataset: it installs the pinned CuPy / nvmath-python versions, unpacks the
@@ -10,6 +12,7 @@ bundle and writes ``gpu_validation.json`` to /kaggle/working.
 
 from __future__ import annotations
 
+import argparse
 import base64
 import io
 import json
@@ -29,6 +32,7 @@ import subprocess
 import sys
 import zipfile
 
+subprocess.run(["nvidia-smi"], check=False)
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", {packages}], check=True)
 
 BUNDLE = "{bundle}"
@@ -67,12 +71,17 @@ def commit() -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--user", default="INSERT_USERNAME", help="Kaggle username")
+    parser.add_argument("--machine", default="NvidiaTeslaT4",
+                        choices=["NvidiaTeslaT4", "NvidiaTeslaP100"])
+    args = parser.parse_args()
     BUILD.mkdir(parents=True, exist_ok=True)
     script = TEMPLATE.format(commit=commit(), bundle=bundle(),
                              packages=", ".join(repr(p) for p in packages()))
     (BUILD / "gpu_validate_kernel.py").write_text(script, encoding="utf-8")
     metadata = {
-        "id": "INSERT_USERNAME/mathlib-mcp-gpu-validation",
+        "id": f"{args.user}/mathlib-mcp-gpu-validation",
         "title": "mathlib-mcp GPU validation",
         "code_file": "gpu_validate_kernel.py",
         "language": "python",
@@ -80,6 +89,7 @@ def main() -> None:
         "is_private": True,
         "enable_gpu": True,
         "enable_internet": True,
+        "machine_shape": args.machine,
     }
     (BUILD / "kernel-metadata.json").write_text(json.dumps(metadata, indent=1))
     print(f"wrote {BUILD / 'gpu_validate_kernel.py'} ({len(script) / 1024:.0f} KiB)")
