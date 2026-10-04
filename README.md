@@ -61,6 +61,24 @@ Caveats:
 - **Wide intervals.** With 26 tasks × 3 samples, the 95% intervals are ±10–15 points. Sonnet is near the ceiling, so its differences are within noise.
 - **Pipeline controls.** Every reference solution passed (26/26), every naive trap solution failed (17/17), and every null solution failed (26/26). There were 0 infrastructure errors. Generation cost $6.58 in total.
 
+## What we learned
+
+1. **Curated, verified knowledge does most of the work; MCP is one way to deliver it.** For Haiku, putting the whole reference in the prompt already gave most of the gain (51% → 87%). The MCP tools added a little more (92–96%). The value is in the content: exact signatures, pitfalls and recipes checked on a GPU.
+2. **The benefit depends on the model.** Haiku 4.5 gained +41 to +45 points, and its hallucinated APIs almost disappeared. Sonnet 5.5 was already at 94% and gained 5 points. The help matters most for smaller models and for APIs newer than the model: on nvmath-python, Haiku went from 6% to 83%.
+3. **On-demand delivery scales; a stuffed context does not.** The same knowledge took 3.5k–15k input tokens through the tools, against 101k–134k in the prompt (38× fewer for Sonnet, at a quarter of the cost). Two libraries already take half of Haiku's 200k-token context window, so a whole CUDA-X stack would not fit. The cost is extra turns and latency (11.5 s versus 4.5 s per task for Haiku).
+4. **Verification is the most distinctive piece, but the model has to use it.** `check_snippet` catches 36 of 41 runtime API failures with no false alarms. Haiku ran it on 99% of attempts; Sonnet on 12%. Sonnet's one remaining failure was in code it never checked.
+5. **Knowing is not applying.** A warning ("the bias is per row") did not help Haiku. A concrete recipe did (0/3 → 3/3). Pitfalls work best when they show the correct code.
+6. **The knowledge layer needs its own tests.** Both regressions came from the tool, not the model: the checker accepted a missing submodule import, and a card over-generalised `errstate`. The evaluation found both. Facts checked on a GPU, plus re-running the evaluation after each change, catch errors that reading the source does not.
+
+## Future work
+
+- **Held-out tasks.** Tasks written independently of the curated pitfalls, so the results measure generalisation rather than delivery of known pitfalls.
+- **Harder tasks.** Sonnet 5.5 is near the ceiling on this set, so harder tasks are needed to measure stronger models.
+- **An Agent Skill as another delivery mechanism.** A Claude Agent Skill (`SKILL.md` with the API cards and the checker script bundled) would load a procedure only when relevant: look up the card, write the code, run the checker. That could close the gap in point 4 (strong models skipping verification). It would only work in Claude products, whereas MCP works in any client. The two also combine: a Skill can tell Claude when to use the MCP tools. Measure it as a fourth condition in the existing harness.
+- **Evaluation inside real coding tools.** Run the same tasks through Claude Code (headless) and other MCP clients, not only through the API.
+- **Re-run the docs condition** so the v1.1 tool is compared like for like (`llms-full.txt` received the same fixes).
+- **Checker coverage.** Check keys inside `options={...}` dicts against the options dataclass, the one statically detectable miss among the five.
+
 ## Example
 
 ```text
