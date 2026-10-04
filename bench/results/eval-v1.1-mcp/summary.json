@@ -1,0 +1,247 @@
+{
+ "models": {
+  "haiku": {
+   "mcp": {
+    "attempts": 78,
+    "solved": [
+     0.9615384615384616,
+     0.8974358974358974,
+     1.0
+    ],
+    "solved_traps": 0.9545454545454546,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.95,
+    "functional_pass": 0.9615384615384616,
+    "api_error_rate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "outcomes": {
+     "pass": 75,
+     "expected_error_not_raised": 2,
+     "exception:ValueError": 1
+    },
+    "cost_total_usd": 1.452,
+    "cost_per_attempt_usd": 0.018614846153846155,
+    "input_tokens_per_attempt": 16212.910256410256,
+    "output_tokens_per_attempt": 1208.5128205128206,
+    "latency_s_per_attempt": 10.9855,
+    "model_calls_per_attempt": 4.448717948717949,
+    "tool_calls_per_attempt": 4.769230769230769,
+    "tool_use_rate": {
+     "search_api": 0.9743589743589743,
+     "get_api_card": 1.0,
+     "get_example": 0.23076923076923078,
+     "check_snippet": 1.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 0.9444444444444443,
+     "cuSOLVER": 0.9166666666666666,
+     "cuSPARSE": 1.0,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "2/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "1/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "3/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   }
+  },
+  "sonnet": {
+   "mcp": {
+    "attempts": 78,
+    "solved": [
+     0.9871794871794871,
+     0.9615384615384616,
+     1.0
+    ],
+    "solved_traps": 0.9848484848484849,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.9833333333333334,
+    "functional_pass": 0.9871794871794872,
+    "api_error_rate": [
+     0.01282051282051282,
+     0.0,
+     0.038461538461538464
+    ],
+    "outcomes": {
+     "pass": 77,
+     "exception:TypeError": 1
+    },
+    "cost_total_usd": 0.6685,
+    "cost_per_attempt_usd": 0.008571076923076923,
+    "input_tokens_per_attempt": 3493.2179487179487,
+    "output_tokens_per_attempt": 334.0,
+    "latency_s_per_attempt": 3.8065897435897433,
+    "model_calls_per_attempt": 1.5128205128205128,
+    "tool_calls_per_attempt": 0.5641025641025641,
+    "tool_use_rate": {
+     "search_api": 0.05128205128205128,
+     "get_api_card": 0.21794871794871795,
+     "get_example": 0.14102564102564102,
+     "check_snippet": 0.11538461538461539
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 1.0,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   }
+  }
+ },
+ "deltas": {},
+ "controls": {
+  "oracle": {
+   "expected": "pass",
+   "as_expected": 26,
+   "total": 26
+  },
+  "naive": {
+   "expected": "fail",
+   "as_expected": 17,
+   "total": 17
+  },
+  "null": {
+   "expected": "fail",
+   "as_expected": 26,
+   "total": 26
+  }
+ },
+ "errors": 0,
+ "comparison_run": "eval-v1",
+ "comparison": {
+  "haiku: mcp (this run) - docs (baseline)": {
+   "baseline_solved": [
+    0.8717948717948718,
+    0.7564102564102563,
+    0.9615384615384616
+   ],
+   "delta": [
+    0.08974358974358974,
+    0.0,
+    0.20512820512820515
+   ]
+  },
+  "haiku: mcp (this run) - mcp (baseline)": {
+   "baseline_solved": [
+    0.9230769230769231,
+    0.8076923076923077,
+    1.0
+   ],
+   "delta": [
+    0.038461538461538464,
+    -0.06410256410256411,
+    0.16666666666666666
+   ]
+  },
+  "haiku: mcp (this run) - none (baseline)": {
+   "baseline_solved": [
+    0.5128205128205128,
+    0.34615384615384615,
+    0.6794871794871794
+   ],
+   "delta": [
+    0.4487179487179487,
+    0.2692307692307693,
+    0.6282051282051283
+   ]
+  },
+  "sonnet: mcp (this run) - docs (baseline)": {
+   "baseline_solved": [
+    0.9871794871794871,
+    0.9615384615384616,
+    1.0
+   ],
+   "delta": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "sonnet: mcp (this run) - mcp (baseline)": {
+   "baseline_solved": [
+    0.9871794871794871,
+    0.9615384615384616,
+    1.0
+   ],
+   "delta": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "sonnet: mcp (this run) - none (baseline)": {
+   "baseline_solved": [
+    0.935897435897436,
+    0.8717948717948717,
+    0.9871794871794871
+   ],
+   "delta": [
+    0.05128205128205129,
+    0.0,
+    0.1153846153846154
+   ]
+  }
+ }
+}

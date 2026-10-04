@@ -41,6 +41,20 @@ What the numbers say:
 - **The evaluation found a bug in the tool itself.** In all three failed Haiku + MCP attempts at `batched_solve_vectors`, Haiku called `cupy.cublas` after only `import cupy`. That submodule is not loaded by `import cupy`, but `check_snippet` accepted the code. The cause: the symbol index treated every submodule as an attribute of its package. **Fixed after v1.** The extractor now works out which modules `import X` actually loads, by following module-level imports through the source. Cards now say when an extra import is needed, and two new GPU-checked facts confirm the model (`import cupy` does not load `cupy.cublas`; `import cupyx.scipy.sparse` does not load `.linalg`). Re-checked against all 468 v1 attempts, the fixed checker raises **no false alarms on the 407 attempts that passed** on the GPU. It flags **36 of the 41 that failed with an API-type error**. The five it misses are beyond a static check: two implicit NumPy conversions, a key inside an options dict, a cuDSS memory-layout requirement, and a call into an internal Cython module. The solved rates above measure the tool before the fix; re-running the MCP condition would measure it, optimistically, since the task set is the same.
 - **Knowledge alone is not enough when the semantics are counter-intuitive.** Haiku read the pitfall that cuBLASLt's bias epilog is per *row*, and still added the bias per column (0/3 in every condition). Sonnet got it right every time. Since v1, the matmul card spells out the transposed recipe for a per-column bias.
 
+### Re-run after the fix (v1.1, MCP condition)
+
+After fixing the checker, the MCP condition was re-run with both models: 156 attempts, $2.12 ([report](bench/results/eval-v1.1-mcp/report.md)).
+
+| Tasks solved with the MCP tools | v1 | v1.1 |
+|---|---|---|
+| Claude Haiku 4.5 | 92% | **96%** |
+| Claude Sonnet 5.5 | 99% | 99% |
+
+- **Both targeted tasks were fixed.** Haiku went from 0/3 to 3/3 on `batched_solve_vectors` (it now imports `cupy.cublas`) and on `fused_linear_relu` (it now uses the transposed bias recipe).
+- **The overall change is within noise.** Two other tasks dropped, so Haiku's change against v1 MCP is +4 points (CI −6 to +17). Against no help it is now +45 points (CI +27 to +63).
+- **The re-run exposed a wrong claim in the curated knowledge.** The `errstate` card said failed factorizations raise under `linalg='raise'`. Haiku followed that advice with `cupyx.scipy.linalg.lu_factor`, which never raises: on a singular matrix it only issues a `RuntimeWarning`. Two of three `solve_or_raise` attempts failed that way. The cards now say so, and a new GPU-checked fact confirms the behaviour.
+- **These numbers are optimistic.** The fixes came from failures on the same tasks. The docs condition was not re-run, although `llms-full.txt` received the same fixes.
+
 Caveats:
 
 - **Same author.** The tasks and the curated pitfalls were written by the same person. The docs and MCP conditions therefore measure how well *known* pitfalls are delivered, not whether unknown ones are discovered. An independently written held-out task set is the next step.
@@ -144,7 +158,7 @@ Before any model is scored, everything is checked on a real GPU: the canonical s
 | Canonical task solutions pass | 26 / 26 |
 | Naive trap solutions fail as designed | 17 / 17 |
 | Curated card examples pass | 39 / 39 |
-| Pitfall facts hold | 25 / 25 |
+| Pitfall facts hold | 26 / 26 |
 
 The traps fail for the intended reasons. Examples: `OutOfMemoryError: ... 28,800,000,000 bytes` (svd with full matrices), `ValueError: The M dimension of the bias vector (48) must match the M dimension of A` (per-row bias epilog), and `TypeError: ... must be a matrix or vector with col-major layout` (cuDSS). The first run also found something the docstrings do not say: **nvmath-python's inverse FFTs are unnormalized** (`ifft(fft(x)) == n * x`, unlike NumPy and CuPy). That finding is now a checked fact, a pitfall on four cards, and a benchmark task.
 

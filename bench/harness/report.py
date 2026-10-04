@@ -64,6 +64,40 @@ def bootstrap_mean(per_task: dict[str, float], rng: np.random.Generator
     return float(values.mean()), *np.percentile(samples, [2.5, 97.5]).tolist()
 
 
+def per_task(rows: list[dict], key: str = "solved", tasks: set[str] | None = None
+             ) -> dict[str, float]:
+    """Mean of ``key`` per task (repetitions of a task are averaged)."""
+    by_task: dict[str, list[float]] = defaultdict(list)
+    for row in rows:
+        if tasks is None or row["task"] in tasks:
+            by_task[row["task"]].append(float(row[key]))
+    return {t: float(np.mean(v)) for t, v in by_task.items()}
+
+
+def compare(current: dict, baseline: dict, rng: np.random.Generator) -> dict:
+    """Paired (by task) solved-rate differences between this run and a baseline run."""
+    def groups(result: dict) -> dict[tuple[str, str], list[dict]]:
+        out: dict[tuple[str, str], list[dict]] = defaultdict(list)
+        for attempt in result["attempts"]:
+            out[(attempt["model"], attempt["condition"])].append(attempt)
+        return out
+
+    now, before = groups(current), groups(baseline)
+    comparison: dict = {}
+    for (model, condition), rows in sorted(now.items()):
+        mine = per_task(rows)
+        for (base_model, base_condition), base_rows in sorted(before.items()):
+            if base_model != model:
+                continue
+            theirs = per_task(base_rows)
+            common = sorted(set(mine) & set(theirs))
+            comparison[f"{model}: {condition} (this run) - {base_condition} (baseline)"] = {
+                "baseline_solved": bootstrap_mean(theirs, rng),
+                "delta": bootstrap_mean({t: mine[t] - theirs[t] for t in common}, rng),
+            }
+    return comparison
+
+
 def build(run: Path) -> dict:
     generations = load_jsonl(run / "generations.jsonl")
     errors = load_jsonl(run / "errors.jsonl")
@@ -97,14 +131,6 @@ def build(run: Path) -> dict:
     groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for attempt in attempts:
         groups[(attempt["model"], attempt["condition"])].append(attempt)
-
-    def per_task(rows: list[dict], key: str = "solved", tasks: set[str] | None = None
-                 ) -> dict[str, float]:
-        by_task: dict[str, list[float]] = defaultdict(list)
-        for row in rows:
-            if tasks is None or row["task"] in tasks:
-                by_task[row["task"]].append(float(row[key]))
-        return {t: float(np.mean(v)) for t, v in by_task.items()}
 
     summary: dict = {"models": {}, "deltas": {}, "controls": {}, "errors": len(errors)}
     for (model, condition), rows in sorted(groups.items()):
@@ -179,7 +205,7 @@ def checker_version() -> str:
         return subprocess.run(["git", *args], cwd=repo, capture_output=True,
                               text=True).stdout.strip()
     dirty = git("status", "--porcelain", "--", "src/mathlib_mcp")
-    return git("rev-parse", "--short", "HEAD") + ("-dirty" if dirty else "")
+    return git("log", "-1", "--format=%h", "--", "src/mathlib_mcp") + ("-dirty" if dirty else "")
 
 
 def render(result: dict, run: Path) -> str:
@@ -276,6 +302,15 @@ def render(result: dict, run: Path) -> str:
         cells = [conds[c]["per_task"][task.id] for conds in summary["models"].values()
                  for c in CONDITIONS if c in conds]
         lines.append(f"| `{task.id}` ({task.family}) | " + " | ".join(cells) + " |")
+    if summary.get("comparison"):
+        lines += ["", f"## Compared with `{summary['comparison_run']}`", "",
+                  "Paired by task (same tasks, same models).", "",
+                  "| Comparison | baseline solved | difference |", "|---|---|---|"]
+        for name, c in summary["comparison"].items():
+            d = c["delta"]
+            lines.append(f"| {name} | {ci(c['baseline_solved'])} | "
+                         f"{'+' if d[0] >= 0 else ''}{100 * d[0]:.0f} points "
+                         f"[{100 * d[1]:+.0f}, {100 * d[2]:+.0f}] |")
     lines += ["", "## Pipeline controls", ""]
     for control, c in summary["controls"].items():
         lines.append(f"- {control} solutions ({c['expected']} expected): "
@@ -287,8 +322,13 @@ def render(result: dict, run: Path) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("run", type=Path)
+    parser.add_argument("--compare", type=Path, help="baseline run directory")
     args = parser.parse_args()
     result = build(args.run)
+    if args.compare:
+        result["summary"]["comparison_run"] = args.compare.name
+        result["summary"]["comparison"] = compare(result, build(args.compare),
+                                                  np.random.default_rng(1))
     (args.run / "summary.json").write_text(json.dumps(result["summary"], indent=1))
     with (args.run / "attempts.csv").open("w", newline="") as handle:
         fields = [k for k in result["attempts"][0] if k not in ("tools_used",

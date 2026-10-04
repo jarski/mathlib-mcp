@@ -859,7 +859,8 @@ TODO(hvy): Write docs.
 
 **Pitfalls**
 - Only `linalg=` is implemented, with values 'ignore' (default) or 'raise'. Passing `divide=`, `over=`, `under=` or `invalid=` raises `NotImplementedError` (unlike `numpy.errstate`).
-- With `linalg='raise'`, failed cuSOLVER/cuBLAS factorizations raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.
+- With `linalg='raise'`, failed factorizations in the `cupy.linalg` routines (`solve`, `inv`, `cholesky`, ...) raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.
+- It does not affect `cupyx.scipy.linalg.lu_factor`: on an exactly singular matrix that function always issues a `RuntimeWarning` ('Diagonal number k is exactly zero. Singular matrix.') and returns, with or without `errstate`.
 
 **Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
@@ -1007,6 +1008,7 @@ unit diagonal elements, and `U` upper-triangular matrix.
 
 **Pitfalls**
 - Factor once with `lu_factor` and reuse the `(lu, piv)` tuple in `lu_solve` for many right-hand sides; this is cheaper than calling `solve` repeatedly.
+- An exactly singular matrix does not raise: `lu_factor` issues a `RuntimeWarning` ('Diagonal number k is exactly zero. Singular matrix.') and returns, even inside `cupyx.errstate(linalg='raise')`. To get an exception, turn the warning into an error (`warnings.simplefilter('error', RuntimeWarning)`) or use `cupy.linalg.solve` under `errstate`.
 - `check_finite=True` by default, which scans the input for inf/nan and forces a device sync. Pass `check_finite=False` in hot loops.
 
 **Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))

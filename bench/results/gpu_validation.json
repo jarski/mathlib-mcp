@@ -13,7 +13,7 @@
   "numpy": "2.1.3",
   "scipy": "1.16.3"
  },
- "started": "2026-10-04 08:50:21",
+ "started": "2026-10-04 11:19:41",
  "solutions": {
   "batched_matmul": {
    "task": "batched_matmul",
@@ -22,12 +22,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.8276
+     "seconds": 0.7487
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0007
+     "seconds": 0.0006
     }
    ]
   },
@@ -38,12 +38,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.3758
+     "seconds": 0.3565
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0008
+     "seconds": 0.0007
     }
    ]
   },
@@ -54,12 +54,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 1.0465
+     "seconds": 0.9608
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0009
+     "seconds": 0.0008
     }
    ]
   },
@@ -70,7 +70,7 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 1.1783
+     "seconds": 1.1494
     }
    ]
   },
@@ -81,12 +81,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.4986
+     "seconds": 0.4841
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.002
+     "seconds": 0.0018
     }
    ]
   },
@@ -97,12 +97,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.3854
+     "seconds": 0.3489
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0025
+     "seconds": 0.002
     }
    ]
   },
@@ -113,12 +113,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 1.1415
+     "seconds": 1.0418
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.2068
+     "seconds": 0.1828
     }
    ]
   },
@@ -129,7 +129,7 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.8441
+     "seconds": 0.7953
     },
     {
      "case": 1,
@@ -145,12 +145,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 2.0221
+     "seconds": 1.7419
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0016
+     "seconds": 0.0014
     }
    ]
   },
@@ -161,12 +161,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.3842
+     "seconds": 0.3701
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0404
+     "seconds": 0.0374
     }
    ]
   },
@@ -177,12 +177,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.648
+     "seconds": 0.3952
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.002
+     "seconds": 0.0016
     }
    ]
   },
@@ -193,12 +193,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 2.7543
+     "seconds": 0.6529
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.1384
+     "seconds": 0.1117
     }
    ]
   },
@@ -209,7 +209,7 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.5835
+     "seconds": 0.5439
     },
     {
      "case": 1,
@@ -225,12 +225,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 1.109
+     "seconds": 1.0271
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0036
+     "seconds": 0.0034
     }
    ]
   },
@@ -241,12 +241,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 1.9954
+     "seconds": 4.0126
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.1385
+     "seconds": 0.1306
     }
    ]
   },
@@ -257,12 +257,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.4745
+     "seconds": 0.4598
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0053
+     "seconds": 0.0057
     }
    ]
   },
@@ -273,12 +273,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.5285
+     "seconds": 0.5381
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0103
+     "seconds": 0.0127
     }
    ]
   },
@@ -289,7 +289,7 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.7224
+     "seconds": 0.7078
     }
    ]
   },
@@ -300,13 +300,13 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.6829
+     "seconds": 0.6116
     },
     {
      "case": 1,
      "status": "pass",
      "message": "raised LinAlgError",
-     "seconds": 0.0011
+     "seconds": 0.001
     }
    ]
   },
@@ -317,7 +317,7 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.3109
+     "seconds": 0.2934
     },
     {
      "case": 1,
@@ -333,12 +333,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 6.2399
+     "seconds": 5.8318
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0024
+     "seconds": 0.0025
     }
    ]
   },
@@ -349,12 +349,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 3.0326
+     "seconds": 2.7132
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.1412
+     "seconds": 0.1292
     }
    ]
   },
@@ -365,12 +365,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 7.2653
+     "seconds": 6.709
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 4.9142
+     "seconds": 4.504
     }
    ]
   },
@@ -381,12 +381,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 5.9125
+     "seconds": 5.5739
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.004
+     "seconds": 0.0037
     }
    ]
   },
@@ -397,12 +397,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.4969
+     "seconds": 0.4347
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0422
+     "seconds": 0.0327
     }
    ]
   },
@@ -413,12 +413,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.8583
+     "seconds": 0.7671
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.023
+     "seconds": 0.0215
     }
    ]
   }
@@ -431,7 +431,7 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.8937,
+     "seconds": 0.8427,
      "message": "values differ (max abs diff 36.4, rtol=1e-10, atol=1e-10)"
     },
     {
@@ -454,7 +454,7 @@
      "error_type": "OutOfMemoryError",
      "message": "OutOfMemoryError: Out of memory allocating 24,576,000,000 bytes (allocated so far: 14,336,000 bytes).",
      "where": "line 2",
-     "seconds": 0.7045
+     "seconds": 0.601
     }
    ],
    "message": "OutOfMemoryError: Out of memory allocating 24,576,000,000 bytes (allocated so far: 14,336,000 bytes).",
@@ -471,7 +471,7 @@
      "error_type": "ValueError",
      "message": "ValueError: The M dimension of the bias vector (48) must match the M dimension of A.",
      "where": "line 5",
-     "seconds": 0.4414
+     "seconds": 0.4255
     },
     {
      "case": 1,
@@ -479,7 +479,7 @@
      "error_type": "ValueError",
      "message": "ValueError: The M dimension of the bias vector (48) must match the M dimension of A.",
      "where": "line 5",
-     "seconds": 0.0016
+     "seconds": 0.0015
     }
    ],
    "message": "ValueError: The M dimension of the bias vector (48) must match the M dimension of A.",
@@ -493,13 +493,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.4591,
+     "seconds": 0.4191,
      "message": "shape (1036,) != expected (1037,)"
     },
     {
      "case": 1,
      "status": "wrong_answer",
-     "seconds": 0.0583,
+     "seconds": 0.0484,
      "message": "shape (640,) != expected (641,)"
     }
    ],
@@ -513,13 +513,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.45,
+     "seconds": 0.426,
      "message": "shape (6, 1000) != expected (6, 1001)"
     },
     {
      "case": 1,
      "status": "pass",
-     "seconds": 0.0011
+     "seconds": 0.0009
     }
    ],
    "message": "shape (6, 1000) != expected (6, 1001)",
@@ -535,7 +535,7 @@
      "error_type": "ValueError",
      "message": "ValueError: This function expects complex operand, found float32",
      "where": "line 5",
-     "seconds": 0.4046
+     "seconds": 0.3848
     },
     {
      "case": 1,
@@ -557,7 +557,7 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.4869,
+     "seconds": 0.4555,
      "message": "values differ (max abs diff 624, rtol=1e-08, atol=1e-10)"
     },
     {
@@ -580,7 +580,7 @@
      "error_type": "ValueError",
      "message": "ValueError: a must have (..., M, M) shape and b must have (..., M, K) for multidimensional b",
      "where": "line 5",
-     "seconds": 0.3494
+     "seconds": 0.3191
     },
     {
      "case": 1,
@@ -588,7 +588,7 @@
      "error_type": "ValueError",
      "message": "ValueError: a must have (..., M, M) shape and b must have (..., M, K) for multidimensional b",
      "where": "line 5",
-     "seconds": 0.0012
+     "seconds": 0.0007
     }
    ],
    "message": "ValueError: a must have (..., M, M) shape and b must have (..., M, K) for multidimensional b",
@@ -602,13 +602,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.3987,
+     "seconds": 0.4159,
      "message": "values differ (max abs diff 0.0052, rtol=1e-08, atol=1e-10)"
     },
     {
      "case": 1,
      "status": "wrong_answer",
-     "seconds": 0.0026,
+     "seconds": 0.0032,
      "message": "values differ (max abs diff 0.00385, rtol=1e-08, atol=1e-10)"
     }
    ],
@@ -622,13 +622,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.5868,
+     "seconds": 0.5741,
      "message": "values differ (max abs diff 6.81, rtol=1e-06, atol=1e-06)"
     },
     {
      "case": 1,
      "status": "wrong_answer",
-     "seconds": 0.0038,
+     "seconds": 0.0031,
      "message": "values differ (max abs diff 6.22, rtol=1e-06, atol=1e-06)"
     }
    ],
@@ -642,13 +642,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.5006,
+     "seconds": 0.4653,
      "message": "values differ (max abs diff 27.5, rtol=1e-08, atol=1e-08)"
     },
     {
      "case": 1,
      "status": "wrong_answer",
-     "seconds": 0.0119,
+     "seconds": 0.0121,
      "message": "values differ (max abs diff 27, rtol=1e-08, atol=1e-08)"
     }
    ],
@@ -665,7 +665,7 @@
      "error_type": "OutOfMemoryError",
      "message": "OutOfMemoryError: Out of memory allocating 28,800,000,000 bytes (allocated so far: 48,000,000 bytes).",
      "where": "line 5",
-     "seconds": 0.4841
+     "seconds": 0.49
     }
    ],
    "message": "OutOfMemoryError: Out of memory allocating 28,800,000,000 bytes (allocated so far: 48,000,000 bytes).",
@@ -679,12 +679,12 @@
     {
      "case": 0,
      "status": "pass",
-     "seconds": 0.4528
+     "seconds": 0.4124
     },
     {
      "case": 1,
      "status": "expected_error_not_raised",
-     "seconds": 0.0009,
+     "seconds": 0.0008,
      "message": "expected numpy.linalg.LinAlgError to be raised"
     }
    ],
@@ -698,13 +698,13 @@
     {
      "case": 0,
      "status": "wrong_answer",
-     "seconds": 0.4513,
+     "seconds": 0.4382,
      "message": "values differ (max abs diff 5.29, rtol=1e-08, atol=1e-10)"
     },
     {
      "case": 1,
      "status": "wrong_answer",
-     "seconds": 0.0012,
+     "seconds": 0.0011,
      "message": "values differ (max abs diff 3.08, rtol=1e-08, atol=1e-10)"
     }
    ],
@@ -721,7 +721,7 @@
      "error_type": "TypeError",
      "message": "TypeError: cg() got an unexpected keyword argument 'tol'. Did you mean 'rtol'?",
      "where": "line 8",
-     "seconds": 0.4941
+     "seconds": 0.458
     },
     {
      "case": 1,
@@ -729,7 +729,7 @@
      "error_type": "TypeError",
      "message": "TypeError: cg() got an unexpected keyword argument 'tol'. Did you mean 'rtol'?",
      "where": "line 8",
-     "seconds": 0.003
+     "seconds": 0.0027
     }
    ],
    "message": "TypeError: cg() got an unexpected keyword argument 'tol'. Did you mean 'rtol'?",
@@ -746,7 +746,7 @@
      "error_type": "ValueError",
      "message": "ValueError: which must be 'LM','LA'or'SA' (actual: SM)",
      "where": "line 12",
-     "seconds": 0.5105
+     "seconds": 0.4818
     },
     {
      "case": 1,
@@ -754,7 +754,7 @@
      "error_type": "ValueError",
      "message": "ValueError: which must be 'LM','LA'or'SA' (actual: SM)",
      "where": "line 12",
-     "seconds": 0.0285
+     "seconds": 0.025
     }
    ],
    "message": "ValueError: which must be 'LM','LA'or'SA' (actual: SM)",
@@ -771,7 +771,7 @@
      "error_type": "TypeError",
      "message": "TypeError: The RHS of type <class 'cupy.ndarray'> with shape (500, 6) must be a matrix or vector with col-major layout, and for implicitly-batched RHS (N-D >= 3), each matrix sample must have col-major layout (the second dimension from the end must have unit stride.",
      "where": "line 5",
-     "seconds": 0.411
+     "seconds": 0.4127
     },
     {
      "case": 1,
@@ -779,7 +779,7 @@
      "error_type": "TypeError",
      "message": "TypeError: The RHS of type <class 'cupy.ndarray'> with shape (500, 6) must be a matrix or vector with col-major layout, and for implicitly-batched RHS (N-D >= 3), each matrix sample must have col-major layout (the second dimension from the end must have unit stride.",
      "where": "line 5",
-     "seconds": 0.0018
+     "seconds": 0.0016
     }
    ],
    "message": "TypeError: The RHS of type <class 'cupy.ndarray'> with shape (500, 6) must be a matrix or vector with col-major layout, and for implicitly-batched RHS (N-D >= 3), each matrix sample must have col-major layout (the second dimension from the end must have unit stride.",
@@ -791,235 +791,235 @@
   "cupy.asarray": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.346,
+   "seconds": 1.249,
    "code": "import numpy as np\nimport cupy as cp\n\nx_host = np.arange(6, dtype=np.float32).reshape(2, 3)\nx = cp.asarray(x_host)             # host -> device copy\ny = (x * 2).sum(axis=1)            # computed on the GPU\ny_host = cp.asnumpy(y)             # device -> host copy (waits for the GPU)\nassert isinstance(y, cp.ndarray) and isinstance(y_host, np.ndarray)\nassert np.allclose(y_host, (x_host * 2).sum(axis=1))"
   },
   "cupy.asnumpy": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.21,
+   "seconds": 1.113,
    "code": "import numpy as np\nimport cupy as cp\n\nx = cp.linspace(0.0, 1.0, 5, dtype=cp.float32)\nhost = cp.asnumpy(x)               # same as x.get()\nassert isinstance(host, np.ndarray)\nassert np.allclose(host, np.linspace(0.0, 1.0, 5))"
   },
   "cupy.cublas.batched_gesv": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.566,
+   "seconds": 1.425,
    "code": "import numpy as np\nimport cupy as cp\nfrom cupy import cublas                           # `import cupy` alone does not load it\n\nA = cp.random.rand(64, 12, 12) + 12 * cp.eye(12)\ny = cp.random.rand(64, 12)                        # one right-hand side per system\nx = cublas.batched_gesv(A, y)                     # stacked vectors are accepted here\nassert x.shape == (64, 12)\nassert np.allclose(cp.einsum('bij,bj->bi', A, x).get(), y.get())"
   },
   "cupy.cublas.gemm": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.988,
+   "seconds": 0.948,
    "code": "import numpy as np\nimport cupy as cp\nfrom cupy import cublas\n\na = cp.random.rand(64, 32)\nb = cp.random.rand(64, 16)\nc = cublas.gemm('T', 'N', a, b)                   # a.T @ b without a transposed copy\nassert np.allclose(c.get(), a.get().T @ b.get())"
   },
   "cupy.einsum": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.995,
+   "seconds": 0.938,
    "code": "import numpy as np\nimport cupy as cp\n\nA = cp.random.rand(32, 8, 8)\nx = cp.random.rand(32, 8)\ny = cp.einsum('bij,bj->bi', A, x)                 # batched matrix-vector product\nassert np.allclose(y.get(), np.einsum('bij,bj->bi', A.get(), x.get()))"
   },
   "cupy.fft.fft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.155,
+   "seconds": 1.109,
    "code": "import numpy as np\nimport cupy as cp\n\nx = cp.random.rand(1024, dtype=cp.float32)\nX = cp.fft.fft(x)\nassert X.dtype == cp.complex64                    # precision is kept\nassert np.allclose(X.get(), np.fft.fft(x.get()), rtol=1e-3, atol=1e-3)"
   },
   "cupy.fft.fftn": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.133,
+   "seconds": 1.05,
    "code": "import numpy as np\nimport cupy as cp\n\nimgs = cp.random.rand(16, 64, 64).astype(cp.complex64)   # batch of 16 images\nF = cp.fft.fftn(imgs, axes=(-2, -1))              # 2-D FFT of each image\nassert F.shape == imgs.shape\nassert np.allclose(F.get(), np.fft.fftn(imgs.get(), axes=(-2, -1)), rtol=1e-3, atol=1e-2)"
   },
   "cupy.fft.rfft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.953,
+   "seconds": 0.889,
    "code": "import numpy as np\nimport cupy as cp\n\nx = cp.random.rand(4, 1001)                       # odd length, batched along axis 0\nX = cp.fft.rfft(x, axis=-1)\nassert X.shape == (4, 1001 // 2 + 1)\nx_back = cp.fft.irfft(X, n=1001, axis=-1)         # pass n for odd lengths\nassert np.allclose(x_back.get(), x.get())"
   },
   "cupy.linalg.cholesky": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.394,
+   "seconds": 1.317,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.linalg\n\nn = 64\nX = cp.random.rand(n, n)\nA = X @ X.T + n * cp.eye(n)                       # symmetric positive definite\nL = cp.linalg.cholesky(A)\nassert np.allclose((L @ L.T).get(), A.get())\n\nb = cp.random.rand(n)\ny = cupyx.scipy.linalg.solve_triangular(L, b, lower=True)\nx = cupyx.scipy.linalg.solve_triangular(L, y, lower=True, trans='C')\nassert np.allclose((A @ x).get(), b.get())"
   },
   "cupy.linalg.eig": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.835,
+   "seconds": 1.69,
    "code": "import numpy as np\nimport cupy as cp\n\nA = cp.asarray([[2.0, 1.0], [0.0, 3.0]])\nw, v = cp.linalg.eig(A)\nassert w.dtype.kind == 'c'                        # complex even for real eigenvalues\nassert np.allclose(np.sort(w.get().real), [2.0, 3.0])\nassert np.allclose((A @ v).get(), (v * w).get())"
   },
   "cupy.linalg.eigh": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.337,
+   "seconds": 1.226,
    "code": "import numpy as np\nimport cupy as cp\n\nX = cp.random.rand(50, 50)\nA = (X + X.T) / 2\nw, v = cp.linalg.eigh(A)\nassert np.all(np.diff(w.get()) >= 0)              # ascending\nassert np.allclose((A @ v).get(), (v * w).get(), atol=1e-8)"
   },
   "cupy.linalg.inv": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.284,
+   "seconds": 1.203,
    "code": "import numpy as np\nimport cupy as cp\n\nA = cp.random.rand(16, 4, 4) + 4 * cp.eye(4)     # batch of 16 matrices\nAinv = cp.linalg.inv(A)\nassert np.allclose((A @ Ainv).get(), np.broadcast_to(np.eye(4), (16, 4, 4)), atol=1e-10)"
   },
   "cupy.linalg.lstsq": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.467,
+   "seconds": 1.308,
    "code": "import numpy as np\nimport cupy as cp\n\nm, n = 500, 20\nA = cp.random.rand(m, n)\nx_true = cp.arange(n, dtype=A.dtype)\nb = A @ x_true\nx, residuals, rank, s = cp.linalg.lstsq(A, b, rcond=None)\nassert int(rank) == n\nassert np.allclose(x.get(), x_true.get(), atol=1e-6)"
   },
   "cupy.linalg.norm": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.973,
+   "seconds": 0.92,
    "code": "import numpy as np\nimport cupy as cp\n\nx = cp.asarray([3.0, 4.0])\nn = cp.linalg.norm(x)\nassert isinstance(n, cp.ndarray) and n.ndim == 0\nassert float(n) == 5.0"
   },
   "cupy.linalg.qr": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.445,
+   "seconds": 1.329,
    "code": "import numpy as np\nimport cupy as cp\n\nA = cp.random.rand(100, 10)\nQ, R = cp.linalg.qr(A)                            # reduced: Q (100, 10), R (10, 10)\nassert Q.shape == (100, 10) and R.shape == (10, 10)\nassert np.allclose((Q @ R).get(), A.get())\nassert np.allclose((Q.T @ Q).get(), np.eye(10), atol=1e-10)"
   },
   "cupy.linalg.solve": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.344,
+   "seconds": 1.24,
    "code": "import numpy as np\nimport cupy as cp\n\nn = 256\na = cp.random.rand(n, n) + n * cp.eye(n)          # well-conditioned\nb = cp.random.rand(n)\nx = cp.linalg.solve(a, b)\nassert np.allclose((a @ x).get(), b.get())\n\n# 32 independent 8x8 systems, each with its own right-hand side vector\nA = cp.random.rand(32, 8, 8) + 8 * cp.eye(8)\nB = cp.random.rand(32, 8)\nX = cp.linalg.solve(A, B[..., None])[..., 0]      # b must be (..., M, K)\nassert np.allclose(cp.einsum('bij,bj->bi', A, X).get(), B.get())"
   },
   "cupy.linalg.svd": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.346,
+   "seconds": 1.261,
    "code": "import numpy as np\nimport cupy as cp\n\nA = cp.random.rand(1000, 50)\nu, s, vh = cp.linalg.svd(A, full_matrices=False)  # u: (1000, 50), not (1000, 1000)\nassert u.shape == (1000, 50) and s.shape == (50,) and vh.shape == (50, 50)\nassert np.allclose(((u * s) @ vh).get(), A.get())"
   },
   "cupy.matmul": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.985,
+   "seconds": 0.923,
    "code": "import numpy as np\nimport cupy as cp\n\na = cp.random.rand(8, 64, 32, dtype=cp.float32)   # batch of 8 matrices\nb = cp.random.rand(8, 32, 16, dtype=cp.float32)\nc = cp.matmul(a, b)                               # one batched GEMM; same as a @ b\nassert c.shape == (8, 64, 16) and c.dtype == cp.float32\nassert np.allclose(c.get(), a.get() @ b.get(), rtol=1e-4, atol=1e-4)"
   },
   "cupyx.errstate": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.273,
+   "seconds": 1.227,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx\n\nsingular = cp.zeros((3, 3))\ntry:\n    with cupyx.errstate(linalg='raise'):\n        cp.linalg.cholesky(singular)\n    raised = False\nexcept np.linalg.LinAlgError:\n    raised = True\nassert raised"
   },
   "cupyx.scipy.fft.get_fft_plan": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.613,
+   "seconds": 1.383,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.fft as cufft\n\nx = cp.random.rand(64, 128).astype(cp.complex64)\nplan = cufft.get_fft_plan(x, axes=(-1,))         # plan a 1-D C2C FFT along the last axis\ny = cufft.fft(x, axis=-1, plan=plan)\nwith plan:                                        # plan also works as a context manager\n    y2 = cp.fft.fft(x, axis=-1)\nassert np.allclose(y.get(), y2.get())\nassert np.allclose(y.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)"
   },
   "cupyx.scipy.fft.next_fast_len": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.368,
+   "seconds": 1.283,
    "code": "import cupy as cp\nfrom cupyx.scipy.fft import next_fast_len\n\nn = next_fast_len(1009)                           # 1009 is prime\nassert n >= 1009\nx = cp.random.rand(1009)\nX = cp.fft.rfft(x, n=n)                           # zero-padded transform\nassert X.shape == (n // 2 + 1,)"
   },
   "cupyx.scipy.linalg.lu_factor": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.89,
+   "seconds": 1.742,
    "code": "import numpy as np\nimport cupy as cp\nfrom cupyx.scipy.linalg import lu_factor, lu_solve\n\nA = cp.random.rand(100, 100) + 100 * cp.eye(100)\nlu_piv = lu_factor(A, check_finite=False)\nfor _ in range(3):                                # reuse the factorization\n    b = cp.random.rand(100)\n    x = lu_solve(lu_piv, b, check_finite=False)\n    assert np.allclose((A @ x).get(), b.get())"
   },
   "cupyx.scipy.linalg.solve_triangular": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.627,
+   "seconds": 1.496,
    "code": "import numpy as np\nimport cupy as cp\nfrom cupyx.scipy.linalg import solve_triangular\n\nL = cp.tril(cp.random.rand(20, 20)) + 20 * cp.eye(20)\nb = cp.random.rand(20)\nx = solve_triangular(L, b, lower=True)\nassert np.allclose((L @ x).get(), b.get())"
   },
   "cupyx.scipy.sparse.csr_matrix": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.586,
+   "seconds": 1.522,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\n\ndata = cp.asarray([1.0, 2.0, 3.0, 4.0])\nindices = cp.asarray([0, 2, 1, 2], dtype=cp.int32)\nindptr = cp.asarray([0, 2, 3, 4], dtype=cp.int32)\nA = sp.csr_matrix((data, indices, indptr), shape=(3, 3))\nx = cp.asarray([1.0, 1.0, 1.0])\ny = A @ x                                         # cuSPARSE SpMV\nassert np.allclose(y.get(), [3.0, 3.0, 4.0])\nassert np.allclose(A.toarray().get(), [[1, 0, 2], [0, 3, 0], [0, 0, 4]])"
   },
   "cupyx.scipy.sparse.diags": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.348,
+   "seconds": 1.23,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\n\nn = 5\nlap = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')   # 1-D Laplacian\nassert lap.format == 'csr'\nassert np.allclose(lap.toarray().get()[1, :3], [-1.0, 2.0, -1.0])"
   },
   "cupyx.scipy.sparse.linalg.cg": {
    "status": "ok",
    "stdout": "",
-   "seconds": 6.648,
+   "seconds": 6.161,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\nfrom cupyx.scipy.sparse.linalg import cg\n\nn = 200\nA = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')\nb = cp.ones(n)\nx, info = cg(A, b, rtol=1e-10, maxiter=1000)\nassert info == 0                                  # converged\nassert np.allclose((A @ x).get(), b.get(), atol=1e-6)"
   },
   "cupyx.scipy.sparse.linalg.eigsh": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.692,
+   "seconds": 1.603,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\nfrom cupyx.scipy.sparse.linalg import eigsh\n\nn = 100\nA = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')\nw = eigsh(A, k=3, which='LA', return_eigenvectors=False)\nexpected = 2 - 2 * np.cos(np.pi * np.arange(n - 2, n + 1) / (n + 1))   # analytic spectrum\nassert np.allclose(np.sort(w.get()), np.sort(expected), atol=1e-6)"
   },
   "cupyx.scipy.sparse.linalg.gmres": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.554,
+   "seconds": 1.483,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\nfrom cupyx.scipy.sparse.linalg import gmres\n\nn = 100\nA = sp.diags([-1.0, 3.0, -0.5], [-1, 0, 1], shape=(n, n), format='csr')   # non-symmetric\nb = cp.ones(n)\nx, info = gmres(A, b, rtol=1e-10, restart=50, maxiter=1000)\nassert info == 0\nassert np.allclose((A @ x).get(), b.get(), atol=1e-6)"
   },
   "cupyx.scipy.sparse.linalg.spsolve": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.575,
+   "seconds": 1.48,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\nfrom cupyx.scipy.sparse.linalg import spsolve\n\nn = 50\nA = sp.diags([1.0, 4.0, 1.0], [-1, 0, 1], shape=(n, n), format='csr')\nb = cp.arange(n, dtype=cp.float64)\nx = spsolve(A, b)\nassert np.allclose((A @ x).get(), b.get())"
   },
   "nvmath.fft.FFT": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.33,
+   "seconds": 1.216,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(32, 128).astype(cp.complex64)\nwith nvmath.fft.FFT(x, axes=[-1]) as f:\n    f.plan()\n    X = f.execute(direction=\"forward\")\n    x2 = cp.random.rand(32, 128).astype(cp.complex64)\n    f.reset_operand(x2)                           # reuse the plan\n    X2 = f.execute(direction=\"forward\")\nassert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)\nassert np.allclose(X2.get(), np.fft.fft(x2.get(), axis=-1), rtol=1e-3, atol=1e-3)"
   },
   "nvmath.fft.fft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.427,
+   "seconds": 1.264,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(16, 256).astype(cp.complex64)  # complex input required\nX = nvmath.fft.fft(x, axes=[-1])                  # batched 1-D FFT along the last axis\nassert isinstance(X, cp.ndarray) and X.dtype == cp.complex64\nassert np.allclose(X.get(), np.fft.fft(x.get(), axis=-1), rtol=1e-3, atol=1e-3)"
   },
   "nvmath.fft.ifft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.735,
+   "seconds": 1.654,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(8, 64).astype(cp.complex128)\nX = nvmath.fft.fft(x, axes=[-1])\ny = nvmath.fft.ifft(X, axes=[-1])                 # unnormalized inverse\nassert np.allclose(y.get(), 64 * x.get())         # NumPy's ifft would return x\nx_back = y / 64                                   # normalize explicitly\nassert np.allclose(x_back.get(), x.get())"
   },
   "nvmath.fft.irfft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.949,
+   "seconds": 1.793,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(4, 999)                        # odd length\nX = nvmath.fft.rfft(x, axes=[-1])                 # 500 complex values\ny_even = nvmath.fft.irfft(X, axes=[-1])\ny_odd = nvmath.fft.irfft(X, axes=[-1], options={\"last_axis_parity\": \"odd\"})\nassert y_even.shape == (4, 998)\nassert y_odd.shape == (4, 999)\nassert np.allclose((y_odd / 999).get(), x.get())  # unnormalized: divide by n"
   },
   "nvmath.fft.rfft": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.375,
+   "seconds": 1.315,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nx = cp.random.rand(8, 1000, dtype=cp.float32)\nX = nvmath.fft.rfft(x, axes=[-1])\nassert X.shape == (8, 501) and X.dtype == cp.complex64\nassert np.allclose(X.get(), np.fft.rfft(x.get(), axis=-1), rtol=1e-3, atol=1e-2)"
   },
   "nvmath.linalg.advanced.Matmul": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.364,
+   "seconds": 1.311,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\na = cp.random.rand(64, 32, dtype=cp.float32)\nb = cp.random.rand(32, 16, dtype=cp.float32)\nwith nvmath.linalg.advanced.Matmul(a, b) as mm:\n    mm.plan()\n    r1 = mm.execute()\n    a2 = cp.random.rand(64, 32, dtype=cp.float32)\n    mm.reset_operands(a=a2)                       # same shape/dtype: no re-planning\n    r2 = mm.execute()\nassert np.allclose(r1.get(), a.get() @ b.get(), rtol=1e-4, atol=1e-4)\nassert np.allclose(r2.get(), a2.get() @ b.get(), rtol=1e-4, atol=1e-4)"
   },
   "nvmath.linalg.advanced.MatmulOptions": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.486,
+   "seconds": 1.363,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\na = cp.random.rand(256, 256, dtype=cp.float32)\nb = cp.random.rand(256, 256, dtype=cp.float32)\nct = nvmath.linalg.advanced.MatmulComputeType.COMPUTE_32F_FAST_TF32\nopts = nvmath.linalg.advanced.MatmulOptions(compute_type=ct)\nr = nvmath.linalg.advanced.matmul(a, b, options=opts)\nassert np.allclose(r.get(), a.get() @ b.get(), rtol=1e-2, atol=1e-1)   # TF32 tolerance"
   },
   "nvmath.linalg.advanced.matmul": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.934,
+   "seconds": 1.81,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\nM, N, K = 128, 64, 256\na = cp.random.rand(M, K, dtype=cp.float32)\nb = cp.random.rand(K, N, dtype=cp.float32)\nbias = cp.random.rand(M, dtype=cp.float32) - 0.5  # one value per output ROW\n\nr = nvmath.linalg.advanced.matmul(\n    a, b,\n    epilog=nvmath.linalg.advanced.MatmulEpilog.RELU_BIAS,\n    epilog_inputs={\"bias\": bias},\n)\nexpected = np.maximum(a.get() @ b.get() + bias.get()[:, None], 0)\nassert isinstance(r, cp.ndarray) and r.shape == (M, N)\nassert np.allclose(r.get(), expected, rtol=1e-3, atol=1e-3)"
   },
   "nvmath.sparse.advanced.direct_solver": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.958,
+   "seconds": 1.856,
    "code": "import numpy as np\nimport cupy as cp\nimport cupyx.scipy.sparse as sp\nimport nvmath\n\nn = 200\nA = sp.diags([-1.0, 4.0, -1.0], [-1, 0, 1], shape=(n, n), format='csr')\nb = cp.asfortranarray(cp.random.rand(n, 3))       # 3 right-hand sides, column-major\nx = nvmath.sparse.advanced.direct_solver(A, b)\nassert x.shape == (n, 3)\nassert np.allclose((A @ x).get(), b.get())"
   },
   "nvmath.tensor.binary_contraction": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.752,
+   "seconds": 1.662,
    "code": "import numpy as np\nimport cupy as cp\nimport nvmath\n\na = cp.random.rand(8, 16, 32, dtype=cp.float32)\nb = cp.random.rand(32, 24, dtype=cp.float32)\nc = nvmath.tensor.binary_contraction(\"bij,jk->bik\", a, b)\nassert c.shape == (8, 16, 24)\nassert np.allclose(c.get(), np.einsum(\"bij,jk->bik\", a.get(), b.get()), rtol=1e-4, atol=1e-4)"
   }
  },
@@ -1029,7 +1029,7 @@
    "error_type": "TypeError",
    "message": "TypeError: Implicit conversion to a NumPy array is not allowed. Please use `.get()` to construct a NumPy array explicitly.",
    "stdout": "",
-   "seconds": 0.905,
+   "seconds": 0.872,
    "claim": "numpy.asarray(cupy_array) raises TypeError",
    "expect": "raises:TypeError",
    "cards": [
@@ -1042,7 +1042,7 @@
    "error_type": "LinAlgError",
    "message": "numpy.linalg.LinAlgError: cupy.linalg only supports cupy.ndarray",
    "stdout": "",
-   "seconds": 0.755,
+   "seconds": 0.682,
    "claim": "cupy.linalg.solve with NumPy inputs raises LinAlgError",
    "expect": "raises:LinAlgError",
    "cards": [
@@ -1053,7 +1053,7 @@
   "singular_solve_is_silent": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.433,
+   "seconds": 1.381,
    "claim": "cupy.linalg.solve on a singular matrix returns non-finite values without raising",
    "expect": "ok",
    "cards": [
@@ -1067,11 +1067,23 @@
    "error_type": "LinAlgError",
    "message": "numpy.linalg.LinAlgError: Error reported by dgetrf in cuSOLVER. devInfo = [4]. Please refer to the cuSOLVER documentation.",
    "stdout": "",
-   "seconds": 1.404,
+   "seconds": 1.18,
    "claim": "cupyx.errstate(linalg='raise') turns a singular solve into LinAlgError",
    "expect": "raises:LinAlgError",
    "cards": [
     "cupy.linalg.solve",
+    "cupyx.errstate"
+   ],
+   "holds": true
+  },
+  "lu_factor_warns_instead_of_raising": {
+   "status": "ok",
+   "stdout": "",
+   "seconds": 1.311,
+   "claim": "cupyx.scipy.linalg.lu_factor warns (RuntimeWarning) on a singular matrix and does not raise, even under cupyx.errstate(linalg='raise')",
+   "expect": "ok",
+   "cards": [
+    "cupyx.scipy.linalg.lu_factor",
     "cupyx.errstate"
    ],
    "holds": true
@@ -1081,7 +1093,7 @@
    "error_type": "NotImplementedError",
    "message": "NotImplementedError",
    "stdout": "",
-   "seconds": 0.741,
+   "seconds": 0.641,
    "claim": "cupyx.errstate(divide=...) raises NotImplementedError",
    "expect": "raises:NotImplementedError",
    "cards": [
@@ -1094,7 +1106,7 @@
    "error_type": "ValueError",
    "message": "ValueError: a must have (..., M, M) shape and b must have (..., M, K) for multidimensional b",
    "stdout": "",
-   "seconds": 1.212,
+   "seconds": 1.165,
    "claim": "cupy.linalg.solve rejects a (B, M) right-hand side for (B, M, M) matrices",
    "expect": "raises:ValueError",
    "cards": [
@@ -1107,7 +1119,7 @@
    "error_type": "TypeError",
    "message": "TypeError: cholesky() got an unexpected keyword argument 'upper'",
    "stdout": "",
-   "seconds": 0.909,
+   "seconds": 0.864,
    "claim": "cupy.linalg.cholesky has no `upper=` keyword",
    "expect": "raises:TypeError",
    "cards": [
@@ -1120,7 +1132,7 @@
    "error_type": "TypeError",
    "message": "TypeError: cg() got an unexpected keyword argument 'tol'. Did you mean 'rtol'?",
    "stdout": "",
-   "seconds": 1.365,
+   "seconds": 1.238,
    "claim": "cupyx.scipy.sparse.linalg.cg does not accept `tol=`",
    "expect": "raises:TypeError",
    "cards": [
@@ -1133,7 +1145,7 @@
    "error_type": "TypeError",
    "message": "TypeError: eigsh() takes from 1 to 2 positional arguments but 3 were given",
    "stdout": "",
-   "seconds": 1.449,
+   "seconds": 1.347,
    "claim": "cupyx.scipy.sparse.linalg.eigsh takes `which` as keyword only",
    "expect": "raises:TypeError",
    "cards": [
@@ -1146,7 +1158,7 @@
    "error_type": "ValueError",
    "message": "ValueError: which must be 'LM','LA'or'SA' (actual: SM)",
    "stdout": "",
-   "seconds": 1.519,
+   "seconds": 1.448,
    "claim": "cupyx.scipy.sparse.linalg.eigsh rejects which='SM'",
    "expect": "raises:ValueError",
    "cards": [
@@ -1159,7 +1171,7 @@
    "error_type": "ValueError",
    "message": "ValueError: Only bool, float32, float64, complex64 and complex128 are supported",
    "stdout": "",
-   "seconds": 1.612,
+   "seconds": 1.524,
    "claim": "cupyx.scipy.sparse.csr_matrix rejects integer data",
    "expect": "raises:ValueError",
    "cards": [
@@ -1170,7 +1182,7 @@
   "spmatrix_star_is_matmul": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.927,
+   "seconds": 1.747,
    "claim": "csr_matrix * x is a matrix product, csr_array * x is elementwise",
    "expect": "ok",
    "cards": [
@@ -1183,7 +1195,7 @@
    "error_type": "AttributeError",
    "message": "AttributeError: module 'cupy' has no attribute 'cublas'",
    "stdout": "",
-   "seconds": 0.481,
+   "seconds": 0.422,
    "claim": "`import cupy` does not load the cupy.cublas submodule",
    "expect": "raises:AttributeError",
    "cards": [
@@ -1197,7 +1209,7 @@
    "error_type": "AttributeError",
    "message": "AttributeError: module 'cupyx.scipy.sparse' has no attribute 'linalg'",
    "stdout": "",
-   "seconds": 0.772,
+   "seconds": 0.657,
    "claim": "`import cupyx.scipy.sparse` does not load cupyx.scipy.sparse.linalg",
    "expect": "raises:AttributeError",
    "cards": [
@@ -1208,7 +1220,7 @@
   "fft_keeps_single_precision": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.13,
+   "seconds": 1.081,
    "claim": "cupy.fft.fft keeps float32 -> complex64 and float64 -> complex128",
    "expect": "ok",
    "cards": [
@@ -1219,7 +1231,7 @@
   "norm_returns_0d_array": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.967,
+   "seconds": 0.902,
    "claim": "cupy.linalg.norm returns a 0-d cupy.ndarray",
    "expect": "ok",
    "cards": [
@@ -1230,7 +1242,7 @@
   "eig_available": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.33,
+   "seconds": 1.232,
    "claim": "cupy.linalg.eig works (needs cuSOLVER >= 11.7)",
    "expect": "ok",
    "cards": [
@@ -1243,7 +1255,7 @@
    "error_type": "ValueError",
    "message": "ValueError: This function expects complex operand, found float32",
    "stdout": "",
-   "seconds": 1.273,
+   "seconds": 1.174,
    "claim": "nvmath.fft.fft raises ValueError for real input",
    "expect": "raises:ValueError",
    "cards": [
@@ -1254,7 +1266,7 @@
   "nvmath_fft_default_axes_all": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.583,
+   "seconds": 1.489,
    "claim": "nvmath.fft.fft without axes transforms all axes (like numpy.fft.fftn)",
    "expect": "ok",
    "cards": [
@@ -1265,7 +1277,7 @@
   "nvmath_ifft_unnormalized": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.645,
+   "seconds": 1.502,
    "claim": "nvmath.fft.ifft is unnormalized: ifft(fft(x)) == n * x (first GPU run measured 64x for n=64)",
    "expect": "ok",
    "cards": [
@@ -1278,7 +1290,7 @@
   "nvmath_irfft_unnormalized": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.411,
+   "seconds": 1.356,
    "claim": "nvmath.fft.irfft is unnormalized: irfft(rfft(x)) == n * x",
    "expect": "ok",
    "cards": [
@@ -1289,7 +1301,7 @@
   "nvmath_numpy_fft_runs_on_cpu": {
    "status": "ok",
    "stdout": "",
-   "seconds": 0.887,
+   "seconds": 0.843,
    "claim": "nvmath.fft with a NumPy operand executes on the CPU and returns NumPy",
    "expect": "ok",
    "cards": [
@@ -1300,7 +1312,7 @@
   "nvmath_bias_is_per_row": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.681,
+   "seconds": 1.601,
    "claim": "RELU_BIAS adds a length-M bias per result row",
    "expect": "ok",
    "cards": [
@@ -1311,7 +1323,7 @@
   "nvmath_aux_epilog_returns_tuple": {
    "status": "ok",
    "stdout": "",
-   "seconds": 1.356,
+   "seconds": 1.304,
    "claim": "RELU_AUX returns (result, aux_dict)",
    "expect": "ok",
    "cards": [
@@ -1324,7 +1336,7 @@
    "error_type": "TypeError",
    "message": "TypeError: The RHS of type <class 'cupy.ndarray'> with shape (20, 3) must be a matrix or vector with col-major layout, and for implicitly-batched RHS (N-D >= 3), each matrix sample must have col-major layout (the second dimension from the end must have unit stride.",
    "stdout": "",
-   "seconds": 1.699,
+   "seconds": 1.543,
    "claim": "nvmath.sparse.advanced.direct_solver rejects a C-ordered 2-D right-hand side",
    "expect": "raises:TypeError|ValueError",
    "cards": [
@@ -1340,8 +1352,8 @@
   "traps_total": 17,
   "examples_pass": 39,
   "examples_total": 39,
-  "facts_hold": 25,
-  "facts_checked": 25
+  "facts_hold": 26,
+  "facts_checked": 26
  },
- "finished": "2026-10-04 08:53:41"
+ "finished": "2026-10-04 11:22:47"
 }

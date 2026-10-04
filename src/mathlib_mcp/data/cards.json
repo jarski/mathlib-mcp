@@ -4067,7 +4067,8 @@
    ],
    "pitfalls": [
     "Only `linalg=` is implemented, with values 'ignore' (default) or 'raise'. Passing `divide=`, `over=`, `under=` or `invalid=` raises `NotImplementedError` (unlike `numpy.errstate`).",
-    "With `linalg='raise'`, failed cuSOLVER/cuBLAS factorizations raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization."
+    "With `linalg='raise'`, failed factorizations in the `cupy.linalg` routines (`solve`, `inv`, `cholesky`, ...) raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.",
+    "It does not affect `cupyx.scipy.linalg.lu_factor`: on an exactly singular matrix that function always issues a `RuntimeWarning` ('Diagonal number k is exactly zero. Singular matrix.') and returns, with or without `errstate`."
    ],
    "example": "import numpy as np\nimport cupy as cp\nimport cupyx\n\nsingular = cp.zeros((3, 3))\ntry:\n    with cupyx.errstate(linalg='raise'):\n        cp.linalg.cholesky(singular)\n    raised = False\nexcept np.linalg.LinAlgError:\n    raised = True\nassert raised",
    "example_verified_on": "Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04)"
@@ -7069,6 +7070,7 @@
    ],
    "pitfalls": [
     "Factor once with `lu_factor` and reuse the `(lu, piv)` tuple in `lu_solve` for many right-hand sides; this is cheaper than calling `solve` repeatedly.",
+    "An exactly singular matrix does not raise: `lu_factor` issues a `RuntimeWarning` ('Diagonal number k is exactly zero. Singular matrix.') and returns, even inside `cupyx.errstate(linalg='raise')`. To get an exception, turn the warning into an error (`warnings.simplefilter('error', RuntimeWarning)`) or use `cupy.linalg.solve` under `errstate`.",
     "`check_finite=True` by default, which scans the input for inf/nan and forces a device sync. Pass `check_finite=False` in hot loops."
    ],
    "example": "import numpy as np\nimport cupy as cp\nfrom cupyx.scipy.linalg import lu_factor, lu_solve\n\nA = cp.random.rand(100, 100) + 100 * cp.eye(100)\nlu_piv = lu_factor(A, check_finite=False)\nfor _ in range(3):                                # reuse the factorization\n    b = cp.random.rand(100)\n    x = lu_solve(lu_piv, b, check_finite=False)\n    assert np.allclose((A @ x).get(), b.get())",

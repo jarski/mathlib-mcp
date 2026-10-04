@@ -52,6 +52,20 @@ FACTS = [
         cards=("cupy.linalg.solve", "cupyx.errstate"),
     ),
     Fact(
+        "lu_factor_warns_instead_of_raising",
+        "cupyx.scipy.linalg.lu_factor warns (RuntimeWarning) on a singular matrix and does "
+        "not raise, even under cupyx.errstate(linalg='raise')",
+        "import warnings, cupy as cp, cupyx\nfrom cupyx.scipy.linalg import lu_factor\n"
+        "A = cp.random.rand(6, 6)\nA[:, 2] = 0\n"
+        "with warnings.catch_warnings(record=True) as caught:\n"
+        "    warnings.simplefilter('always')\n"
+        "    with cupyx.errstate(linalg='raise'):\n"
+        "        lu_factor(A, check_finite=False)\n"
+        "assert any(issubclass(w.category, RuntimeWarning) and 'Singular' in str(w.message)\n"
+        "           for w in caught), [str(w.message) for w in caught]",
+        cards=("cupyx.scipy.linalg.lu_factor", "cupyx.errstate"),
+    ),
+    Fact(
         "errstate_divide_not_implemented",
         "cupyx.errstate(divide=...) raises NotImplementedError",
         "import cupyx\nwith cupyx.errstate(divide='ignore'):\n    pass",
