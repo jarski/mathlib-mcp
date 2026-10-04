@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import subprocess
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -171,6 +172,16 @@ def ci(triple) -> str:
     return f"{pct(mean)} [{pct(low)}, {pct(high)}]"
 
 
+def checker_version() -> str:
+    """Commit of the check_snippet used for the static columns (+dirty if modified)."""
+    repo = Path(__file__).resolve().parents[2]
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], cwd=repo, capture_output=True,
+                              text=True).stdout.strip()
+    dirty = git("status", "--porcelain", "--", "src/mathlib_mcp")
+    return git("rev-parse", "--short", "HEAD") + ("-dirty" if dirty else "")
+
+
 def render(result: dict, run: Path) -> str:
     summary = result["summary"]
     config = json.loads((run / "run.json").read_text()) if (run / "run.json").is_file() else {}
@@ -181,7 +192,9 @@ def render(result: dict, run: Path) -> str:
               f"{config.get('reps', '?')} samples per model and condition; code generated "
               f"at commit `{config.get('git_commit', '?')}`, executed on "
               f"{env.get('gpu', '?')} (CUDA {env.get('cuda_runtime', '?')}, CuPy "
-              f"{env.get('cupy', '?')}, nvmath-python {env.get('nvmath', '?')}).", ""]
+              f"{env.get('cupy', '?')}, nvmath-python {env.get('nvmath', '?')}). Static "
+              f"checks (API errors, required API) use `check_snippet` at commit "
+              f"`{checker_version()}`.", ""]
     lines += ["Conditions: " + "; ".join(f"**{c}** = {CONDITION_LABELS[c]}"
                                          for c in CONDITIONS) + ".", ""]
     lines += ["## Solved rate", "",

@@ -109,6 +109,21 @@ def test_star_import_alias_and_stub_enum_members(tmp_path):
     assert [p.name for p in options.params] == ["inplace", "compute_type"]
 
 
+def test_import_closure_and_attribute_names(tmp_path):
+    write(tmp_path, {
+        "lib/__init__.py": "from lib import core\n",
+        "lib/core.py": "import lib.helpers\n\ndef f():\n    import lib.lazy\n",
+        "lib/helpers.py": "",
+        "lib/lazy.py": "",
+        "lib/extra.py": "",
+    })
+    tree = SourceTree({"lib": tmp_path / "lib"})
+    assert tree.import_closure("lib") == {"lib", "lib.core", "lib.helpers"}
+    assert "core" in tree.attribute_names("lib")
+    assert "extra" not in tree.attribute_names("lib")  # importable, not an attribute
+    assert "extra" in tree.names("lib")
+
+
 def test_namespace_names_and_exactness(tmp_path):
     tree = make_tree(tmp_path)
     assert {"linalg", "ndarray", "pi", "lazy"} <= tree.names("pkg")

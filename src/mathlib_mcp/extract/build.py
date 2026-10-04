@@ -82,10 +82,14 @@ def index_symbols(lib: Library, tree: SourceTree) -> tuple[dict, dict]:
         modname = queue.pop(0)
         if modname in modules or lib.excluded(modname) or tree.module(modname) is None:
             continue
-        names = sorted(n for n in tree.names(modname)
-                       if not n.startswith("_") or n in (tree.module(modname).all or []))
-        modules[modname] = {"exact": tree.is_exact(modname), "names": names}
-        for name in names:
+        exported = tree.module(modname).all or []
+        names = sorted(n for n in tree.attribute_names(modname)
+                       if not n.startswith("_") or n in exported)
+        submodules = sorted(sub.rsplit(".", 1)[1] for sub in tree.submodules(modname)
+                            if sub.rsplit(".", 1)[1] not in names)
+        modules[modname] = {"exact": tree.is_exact(modname), "names": names,
+                            "submodules": submodules}
+        for name in names + submodules:
             info = describe(tree, modname, name)
             if info is None:
                 continue
@@ -94,6 +98,10 @@ def index_symbols(lib: Library, tree: SourceTree) -> tuple[dict, dict]:
                     and not any(p.startswith("_") for p in info.target.split(".")):
                 queue.append(info.target)
         queue += [sub for sub in tree.submodules(modname) if sub not in modules]
+    # which indexed modules become importable attributes after `import <module>`
+    for modname, entry in modules.items():
+        entry["loads"] = sorted(m for m in tree.import_closure(modname)
+                                if m in modules and m != modname)
     return modules, symbols
 
 
@@ -337,6 +345,11 @@ def main(argv: list[str] | None = None) -> None:
         print(f"{lib.name} {lib.version}: {len(modules)} modules, {len(symbols)} symbols, "
               f"{len(cards)} cards")
 
+    from mathlib_mcp.checker import SymbolIndex
+
+    index = SymbolIndex({"modules": all_modules, "symbols": all_symbols})
+    for card in all_cards.values():
+        card.import_hint = index.import_hint(card.id)
     curated = apply_curation(all_cards, args.curation / "cards")
     verified = apply_verification(all_cards, args.curation / "verified.json")
     print(f"curated: {curated} cards, GPU-verified examples: {verified}")

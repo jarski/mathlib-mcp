@@ -21,7 +21,7 @@
 
 - [cupy.cublas.asum](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.asum.html): Computes the sum of the absolute of x.
 - [cupy.cublas.axpy](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.axpy.html): Computes y += a * x.
-- [cupy.cublas.batched_gesv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.batched_gesv.html): Solves multiple linear matrix equations using cublas<t>getr[fs]Batched().
+- [cupy.cublas.batched_gesv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.batched_gesv.html) (curated): Solves multiple linear matrix equations using cublas<t>getr[fs]Batched().
 - [cupy.cublas.dgmm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dgmm.html): Computes diag(x) @ a or a @ diag(x)
 - [cupy.cublas.dot](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dot.html): Computes the dot product of x and y.
 - [cupy.cublas.dotc](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dotc.html): Computes the dot product of x.conj() and y.

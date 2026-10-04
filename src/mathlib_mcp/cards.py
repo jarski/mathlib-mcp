@@ -51,6 +51,7 @@ class ApiCard:
     source: str = ""
     doc_url: str = ""
     aliases: list[str] = field(default_factory=list)
+    import_hint: str | None = None  # e.g. "import cupy.cublas" when `import cupy` is not enough
     # curated
     curated: bool = False
     backend: list[str] = field(default_factory=list)
@@ -89,6 +90,10 @@ class ApiCard:
         if self.numpy_equivalent:
             meta.append(f"NumPy/SciPy equivalent: `{self.numpy_equivalent}`")
         lines += ["*" + " · ".join(meta) + "*", ""]
+        if self.import_hint:
+            module = self.import_hint.split()[1]
+            lines += [f"**Import:** `{self.import_hint}` (`import {module.split('.')[0]}` alone "
+                      f"does not load `{module}`)", ""]
         if self.summary:
             lines += [self.summary, ""]
         if full and self.description:

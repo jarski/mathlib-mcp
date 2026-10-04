@@ -7,7 +7,10 @@ into the indexed libraries against the symbol index built from the library sourc
   suggests the closest real name, also across modules: ``cupy.linalg.lu_factor`` ->
   ``cupyx.scipy.linalg.lu_factor``);
 * calls use parameters that exist, respect positional-only / keyword-only rules and
-  provide required arguments (catches ``cg(A, b, tol=...)`` -> ``rtol``).
+  provide required arguments (catches ``cg(A, b, tol=...)`` -> ``rtol``);
+* submodules are only used when something imports them: ``import cupy`` does not load
+  ``cupy.cublas``, so ``cupy.cublas.gemm(...)`` after only ``import cupy`` raises
+  ``AttributeError`` at runtime.
 
 Names inside namespaces the index cannot enumerate completely (Cython modules,
 excluded packages) are reported as *unverified* instead of as errors.
@@ -17,6 +20,7 @@ from __future__ import annotations
 
 import ast
 import difflib
+from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import cache
 from typing import Any
@@ -28,8 +32,8 @@ from mathlib_mcp.cards import load_symbols
 class Issue:
     severity: str  # error | info
     code: str  # syntax-error | unknown-module | unknown-symbol | unknown-attribute |
-    #            unknown-keyword | positional-only | too-many-positional | missing-argument |
-    #            unverified
+    #            submodule-not-imported | not-callable | unknown-keyword |
+    #            positional-only | too-many-positional | missing-argument | unverified
     line: int
     symbol: str
     message: str
@@ -88,6 +92,39 @@ class SymbolIndex:
             if entry["kind"] in ("function", "class"):
                 self._by_name.setdefault(qualname.rsplit(".", 1)[1], []).append(qualname)
 
+    def loaded_by(self, modname: str) -> set[str]:
+        """Indexed modules that ``import modname`` loads (including its parents)."""
+        parts = modname.split(".")
+        loaded: set[str] = set()
+        for end in range(1, len(parts) + 1):
+            prefix = ".".join(parts[:end])
+            if prefix in self.modules:
+                loaded.add(prefix)
+                loaded.update(self.modules[prefix].get("loads", []))
+        return loaded
+
+    def import_hint(self, qualname: str) -> str | None:
+        """The extra import needed to reach ``qualname`` after ``import <root>``, if any."""
+        parts = qualname.split(".")
+        module, loaded = parts[0], self.loaded_by(parts[0])
+        for part in parts[1:]:
+            info = self.modules.get(module)
+            if info is None:
+                return None
+            child = f"{module}.{part}"
+            if part in info["names"]:
+                entry = self.symbols.get(child)
+                if not entry or entry["kind"] != "module":
+                    return None  # a function/class/value: reachable
+                module = entry.get("target") or child
+            elif part in info.get("submodules", []):
+                if child not in loaded:
+                    return f"import {child}"
+                module = child
+            else:
+                return None
+        return None
+
     def elsewhere(self, name: str, limit: int = 3) -> list[str]:
         """Public paths where a symbol with this exact name exists."""
         candidates = self._by_name.get(name, [])
@@ -115,18 +152,33 @@ class _Resolved:
     issue: Issue | None = None
 
 
-def _resolve(index: SymbolIndex, parts: list[str], line: int) -> _Resolved:
-    """Walk a dotted path such as ``['cupy', 'linalg', 'solve']`` through the index."""
+def _resolve(index: SymbolIndex, parts: list[str], line: int, loaded: set[str] | None = None
+             ) -> _Resolved:
+    """Walk a dotted path such as ``['cupy', 'linalg', 'solve']`` through the index.
+
+    ``loaded`` holds the modules the snippet's imports load; a submodule that the package
+    does not bind itself is only reachable when it is in that set.
+    """
     module = parts[0]
     if module not in index.modules:
         return _Resolved("unverified", module)
+    loaded = index.loaded_by(module) if loaded is None else loaded
     qualname = module
     entry: dict | None = None
     for position, part in enumerate(parts[1:], start=1):
         info = index.modules.get(module)
         if info is None:
             return _Resolved("unverified", ".".join(parts), entry)
-        if part not in info["names"]:
+        if part in info.get("submodules", []) and part not in info["names"]:
+            submodule = f"{module}.{part}"
+            if submodule not in loaded:
+                return _Resolved("missing", submodule, None, Issue(
+                    "error", "submodule-not-imported", line, submodule,
+                    f"`{submodule}` is a submodule that the imports in this code do not "
+                    f"load (`import {module}` does not import it), so accessing it raises "
+                    f"AttributeError. Add `import {submodule}` or "
+                    f"`from {module} import {part}`."))
+        elif part not in info["names"]:
             wanted = ".".join(parts[: position + 1])
             if not info["exact"]:
                 return _Resolved("unverified", wanted)
@@ -191,13 +243,70 @@ def _attr_chain(node: ast.expr) -> list[str] | None:
     return parts[::-1]
 
 
+# the exception each problem raises at runtime
+_RAISES = {"unknown-symbol": "AttributeError", "unknown-attribute": "AttributeError",
+           "submodule-not-imported": "AttributeError", "unknown-module": "ImportError",
+           "not-callable": "TypeError", "unknown-keyword": "TypeError",
+           "positional-only": "TypeError", "too-many-positional": "TypeError",
+           "missing-argument": "TypeError"}
+_CATCH_ALL = {"Exception", "BaseException", "*"}
+_SUBCLASSES = {"ImportError": {"ImportError", "ModuleNotFoundError"}}
+
+
+def _handler_names(handler: ast.ExceptHandler) -> set[str]:
+    if handler.type is None:
+        return {"*"}
+    nodes = handler.type.elts if isinstance(handler.type, ast.Tuple) else [handler.type]
+    names = set()
+    for node in nodes:
+        chain = _attr_chain(node)
+        if chain:
+            names.add(chain[-1])
+    return names
+
+
 class _Checker(ast.NodeVisitor):
-    def __init__(self, index: SymbolIndex):
+    def __init__(self, index: SymbolIndex, loaded: set[str], assignments: Counter):
         self.index = index
+        self.loaded = loaded  # modules the snippet's imports load
+        self.assignments = assignments  # how often each local name is assigned
         self.aliases: dict[str, str] = {}  # local name -> fully qualified name
         self.issues: list[Issue] = []
         self.checked: list[str] = []
         self._seen_attrs: set[int] = set()
+        self._guards: list[set[str]] = []  # exception names caught around the current node
+
+    def _add(self, issue: Issue, raises: str | None = None) -> None:
+        """Record an error; a matching ``except`` around it makes it a note.
+
+        Version fallbacks such as ``try: cg(..., rtol=...) except TypeError: cg(..., tol=...)``
+        are common in generated code and harmless when one branch is right.
+        """
+        raises = raises or _RAISES.get(issue.code)
+        caught = _SUBCLASSES.get(raises, {raises}) | _CATCH_ALL if raises else set()
+        if any(guard & caught for guard in self._guards):
+            issue.severity = "info"
+            issue.message = ("Guarded by try/except, so harmless only if the other branch "
+                             f"is right: {issue.message}")
+        if not any((i.symbol, i.code, i.message) == (issue.symbol, issue.code, issue.message)
+                   for i in self.issues):
+            self.issues.append(issue)
+
+    def visit_Try(self, node: ast.Try) -> None:
+        for handler in node.handlers:
+            if handler.type is not None:
+                self.visit(handler.type)
+        self._guards.append({n for h in node.handlers for n in _handler_names(h)})
+        for stmt in node.body:
+            self.visit(stmt)
+        for handler in node.handlers:  # fallback branches run only after a caught error
+            for stmt in handler.body:
+                self.visit(stmt)
+        self._guards.pop()
+        for stmt in node.orelse + node.finalbody:
+            self.visit(stmt)
+
+    visit_TryStar = visit_Try
 
     # --------------------------------------------------------------- imports
 
@@ -206,7 +315,8 @@ class _Checker(ast.NodeVisitor):
             root = alias.name.split(".")[0]
             if root not in self.index.roots:
                 continue
-            self._check_path(alias.name.split("."), node.lineno, is_module=True)
+            self._check_path(alias.name.split("."), node.lineno, is_module=True,
+                             in_import=True)
             if alias.asname:
                 self.aliases[alias.asname] = alias.name
             else:
@@ -215,13 +325,14 @@ class _Checker(ast.NodeVisitor):
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.level or not node.module or node.module.split(".")[0] not in self.index.roots:
             return
-        if self._check_path(node.module.split("."), node.lineno, is_module=True) is None:
+        if self._check_path(node.module.split("."), node.lineno, is_module=True,
+                            in_import=True) is None:
             return
         for alias in node.names:
             if alias.name == "*":
                 continue
             qualname = f"{node.module}.{alias.name}"
-            if self._check_path(qualname.split("."), node.lineno) is not None:
+            if self._check_path(qualname.split("."), node.lineno, in_import=True) is not None:
                 self.aliases[alias.asname or alias.name] = qualname
 
     def visit_Assign(self, node: ast.Assign) -> None:
@@ -229,7 +340,8 @@ class _Checker(ast.NodeVisitor):
         self.generic_visit(node)
         if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
             qualname = self._qualify(node.value)
-            if qualname is not None:
+            # only a name bound exactly once is a reliable alias (no control-flow analysis)
+            if qualname is not None and self.assignments[node.targets[0].id] == 1:
                 self.aliases[node.targets[0].id] = qualname
             elif node.targets[0].id in self.aliases:
                 del self.aliases[node.targets[0].id]  # rebound to something else
@@ -251,7 +363,10 @@ class _Checker(ast.NodeVisitor):
                 self._mark_chain(node.func)
             resolved = self._check_path(qualname.split("."), node.lineno)
             if resolved is not None and resolved.status == "ok" and resolved.entry:
-                self._check_call(node, resolved.qualname, resolved.entry)
+                if resolved.entry["kind"] == "module":
+                    self._module_called(node, resolved.qualname, resolved.entry)
+                else:
+                    self._check_call(node, resolved.qualname, resolved.entry)
         self.generic_visit(node)
 
     def _mark_chain(self, node: ast.expr) -> None:
@@ -265,15 +380,14 @@ class _Checker(ast.NodeVisitor):
             return None
         return ".".join([self.aliases[chain[0]]] + chain[1:])
 
-    def _check_path(self, parts: list[str], line: int, is_module: bool = False
-                    ) -> _Resolved | None:
-        resolved = _resolve(self.index, parts, line)
+    def _check_path(self, parts: list[str], line: int, is_module: bool = False,
+                    in_import: bool = False) -> _Resolved | None:
+        resolved = _resolve(self.index, parts, line, self.loaded)
         if resolved.status == "missing" and resolved.issue is not None:
             issue = resolved.issue
             if is_module:
                 issue.code = "unknown-module"
-            if not any(i.symbol == issue.symbol and i.code == issue.code for i in self.issues):
-                self.issues.append(issue)
+            self._add(issue, raises="ImportError" if in_import else None)
             return None
         if resolved.status == "unverified":
             if not any(i.symbol == resolved.qualname for i in self.issues):
@@ -287,6 +401,19 @@ class _Checker(ast.NodeVisitor):
         return resolved
 
     # ----------------------------------------------------------------- calls
+
+    def _module_called(self, node: ast.Call, qualname: str, entry: dict) -> None:
+        target = entry.get("target") or qualname
+        names = self.index.modules.get(target, {}).get("names", [])
+        callables = [n for n in names if self.index.symbols.get(f"{target}.{n}", {}).get(
+            "kind") in ("function", "class") and not n.startswith("_")]
+        name = qualname.rsplit(".", 1)[1]
+        close = difflib.get_close_matches(name, callables, 3, 0.3) or callables[:3]
+        parent = qualname.rsplit(".", 1)[0]
+        self._add(Issue("error", "not-callable", node.lineno, qualname,
+                        f"`{qualname}` is a module, not a function; calling it raises "
+                        "TypeError.", [f"{parent}.{n}" if f"{parent}.{n}" in self.index.symbols
+                                       else f"{target}.{n}" for n in close]))
 
     def _check_call(self, node: ast.Call, qualname: str, entry: dict) -> None:
         params = entry.get("params")
@@ -302,7 +429,7 @@ class _Checker(ast.NodeVisitor):
         line = node.lineno
 
         if not has_star_args and not accepts_var_pos and len(node.args) > len(positional):
-            self.issues.append(Issue(
+            self._add(Issue(
                 "error", "too-many-positional", line, qualname,
                 f"`{qualname}` takes at most {len(positional)} positional argument(s) but "
                 f"{len(node.args)} were given. Signature: `{signature}`."))
@@ -312,7 +439,7 @@ class _Checker(ast.NodeVisitor):
                 continue
             kind = kinds.get(keyword.arg)
             if kind == "positional_only":
-                self.issues.append(Issue(
+                self._add(Issue(
                     "error", "positional-only", line, qualname,
                     f"`{keyword.arg}` is positional-only in `{qualname}`; pass it without "
                     f"the keyword. Signature: `{signature}`."))
@@ -321,7 +448,7 @@ class _Checker(ast.NodeVisitor):
                 names = [p[0] for p in params if p[1] in ("positional_or_keyword",
                                                           "keyword_only")]
                 close = difflib.get_close_matches(keyword.arg, names, 3, 0.5)
-                self.issues.append(Issue(
+                self._add(Issue(
                     "error", "unknown-keyword", line, qualname,
                     f"`{qualname}` has no parameter `{keyword.arg}`. "
                     f"Signature: `{signature}`.", close))
@@ -332,7 +459,7 @@ class _Checker(ast.NodeVisitor):
                    if default is None and kind in ("positional_only", "positional_or_keyword",
                                                    "keyword_only") and name not in given]
         if missing:
-            self.issues.append(Issue(
+            self._add(Issue(
                 "error", "missing-argument", line, qualname,
                 f"`{qualname}` is missing required argument(s) "
                 + ", ".join(f"`{m}`" for m in missing) + f". Signature: `{signature}`."))
@@ -358,6 +485,38 @@ def _format_signature(name: str, params: list[list]) -> str:
     return f"{name}({', '.join(parts)})"
 
 
+def _loaded_modules(tree: ast.Module, index: SymbolIndex) -> set[str]:
+    """Indexed modules loaded by the snippet's imports (wherever they appear)."""
+    loaded: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                loaded |= index.loaded_by(alias.name)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            loaded |= index.loaded_by(node.module)
+            for alias in node.names:
+                submodule = f"{node.module}.{alias.name}"
+                if submodule in index.modules:
+                    loaded |= index.loaded_by(submodule)
+    return loaded
+
+
+def _assignment_counts(tree: ast.Module) -> Counter:
+    counts: Counter = Counter()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            targets = node.targets
+        elif isinstance(node, (ast.AnnAssign, ast.AugAssign, ast.NamedExpr, ast.For)):
+            targets = [node.target]
+        else:
+            continue
+        for target in targets:
+            for name in ast.walk(target):
+                if isinstance(name, ast.Name):
+                    counts[name.id] += 1
+    return counts
+
+
 def check_snippet(code: str, index: SymbolIndex | None = None) -> CheckResult:
     """Statically check a code snippet against the indexed library APIs."""
     index = index or default_index()
@@ -366,7 +525,7 @@ def check_snippet(code: str, index: SymbolIndex | None = None) -> CheckResult:
     except SyntaxError as error:
         return CheckResult([Issue("error", "syntax-error", error.lineno or 0, "",
                                   f"Syntax error: {error.msg}")], [])
-    checker = _Checker(index)
+    checker = _Checker(index, _loaded_modules(tree, index), _assignment_counts(tree))
     checker.visit(tree)
     issues = sorted(checker.issues, key=lambda i: (i.line, i.severity != "error"))
     return CheckResult(issues, checker.checked)

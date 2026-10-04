@@ -49,6 +49,41 @@ def test_suggestions_point_to_real_apis():
     assert issue.suggestions[0] == "rtol"
 
 
+def test_submodules_must_be_imported():
+    # found by evaluation v1: `import cupy` does not load cupy.cublas (AttributeError on GPU)
+    issue = check_snippet("import cupy as cp\ncp.cublas.gemm('N', 'N', a, b)").errors[0]
+    assert issue.code == "submodule-not-imported" and issue.symbol == "cupy.cublas"
+    assert "import cupy.cublas" in issue.message
+    for code in ("import cupy\nimport cupy.cublas\ncupy.cublas.gemm('N', 'N', a, b)",
+                 "from cupy import cublas\ncublas.gemm('N', 'N', a, b)",
+                 "import cupy as cp\nimport cupy.cublas\ncp.cublas.gemm('N', 'N', a, b)",
+                 "import cupy as cp\ncp.lib.stride_tricks.as_strided(x, (2,), (8,))",
+                 "import cupyx\ncupyx.scipy.sparse.csr_matrix(x)"):
+        assert check_snippet(code).ok, code
+    assert "submodule-not-imported" in codes(
+        "import cupyx.scipy.sparse as sp\nsp.linalg.cg(A, b)")
+
+
+def test_guarded_version_fallbacks_are_notes():
+    code = ("from cupyx.scipy.sparse.linalg import cg\n"
+            "try:\n    x, i = cg(A, b, rtol=1e-8)\nexcept TypeError:\n"
+            "    x, i = cg(A, b, tol=1e-8)\n")
+    result = check_snippet(code)
+    assert result.ok and result.issues[0].severity == "info"
+    wrong_guard = code.replace("TypeError", "ValueError")
+    assert "unknown-keyword" in codes(wrong_guard)
+
+
+def test_calling_a_module_is_an_error():
+    issue = check_snippet("import nvmath\nnvmath.tensor.contract('ij,jk->ik', a, b)").errors[0]
+    assert issue.code == "not-callable"
+    assert "nvmath.tensor.binary_contraction" in issue.suggestions
+    # a name bound more than once is not treated as an alias (seen in evaluation v1)
+    fallback = ("import nvmath\nfn = getattr(nvmath.tensor, 'binary_contraction', None)\n"
+                "if fn is None:\n    fn = nvmath.tensor.contract\nfn('ij,jk->ik', a, b)\n")
+    assert check_snippet(fallback).ok
+
+
 def test_unindexed_namespaces_are_not_errors():
     result = check_snippet("import nvmath\nnvmath.bindings.cublas.foo()")
     assert result.ok

@@ -12,6 +12,7 @@ tags = ["gemm", "matrix-multiply", "epilog", "fusion", "bias", "relu", "gelu"]
 pitfalls = [
     "`a` and `b` are positional-only; everything after `c` is keyword-only. If `c` is given, `beta` must be given too.",
     "Epilogs fuse post-processing into the GEMM: `epilog=MatmulEpilog.RELU_BIAS, epilog_inputs={'bias': bias}`. The bias has length M (one value per row of the result) and is broadcast across the N columns, not across rows as in `x @ W + b`.",
+    "For a linear layer `relu(x @ w + b)` with one bias value per output column (length N), multiply the transposes so that the features become rows, then transpose back: `matmul(w.T, x.T, epilog=MatmulEpilog.RELU_BIAS, epilog_inputs={'bias': b}).T`.",
     "Epilogs with `AUX` in the name (e.g. `RELU_AUX`) return a tuple `(result, aux_dict)` instead of an array.",
     "The result uses the same package and memory space as the inputs: CuPy in, CuPy out.",
     "Every call plans from scratch. For repeated products with the same shapes, use the stateful `Matmul` object and `reset_operands` to amortize planning.",
@@ -66,6 +67,7 @@ assert np.allclose(r2.get(), a2.get() @ b.get(), rtol=1e-4, atol=1e-4)
 backend = ["cuBLASLt epilogues (cublasLtEpilogue_t)"]
 tags = ["epilog", "bias", "relu", "gelu", "fusion", "backward"]
 pitfalls = [
+    "BIAS epilogs add one bias value per row of the result (length M). For the `x @ w + b` layout of a linear layer, see the transposed recipe on `nvmath.linalg.advanced.matmul`.",
     "Epilogs with BIAS in the name need `epilog_inputs={'bias': ...}`. DRELU epilogs need 'relu_aux' and DGELU epilogs need 'gelu_aux'; those come from the aux output of the matching forward epilog (`RELU_AUX`, `GELU_AUX`, ...).",
     "It is an alias of `nvmath.bindings.cublasLt.Epilogue` (an `IntEnum`), so members are accessed as `MatmulEpilog.RELU_BIAS`.",
 ]

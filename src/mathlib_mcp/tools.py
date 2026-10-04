@@ -112,6 +112,11 @@ def _light_card(name: str, entry: dict) -> str:
         signature = f"{short}(...)"
     lines = [f"### `{name}`", "", f"```python\n{signature}\n```", "",
              f"*{entry['kind']} · extracted from source, no curated card*", ""]
+    hint = default_index().import_hint(name)
+    if hint:
+        module = hint.split()[1]
+        lines += [f"**Import:** `{hint}` (`import {module.split('.')[0]}` alone does not "
+                  f"load `{module}`)", ""]
     if entry.get("summary"):
         lines += [entry["summary"], ""]
     if entry.get("members"):

@@ -32,7 +32,7 @@ This is equivalent to `array(a, dtype, copy=False, order=order)`.
 this function automatically swaps its byte order to little-endian,
 which is the NVIDIA and AMD GPU architecture's native use.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -72,7 +72,7 @@ Returns an array on the host memory from an arbitrary source array.
 - Blocks until the GPU work that produces the array has finished (`blocking=True` by default). It is the usual implicit synchronization point; GPU timings taken without a sync measure only kernel launches.
 - `x.get()` does the same for a `cupy.ndarray`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -85,6 +85,46 @@ assert np.allclose(host, np.linspace(0.0, 1.0, 5))
 
 Docs: https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.asnumpy.html
 
+### `cupy.cublas.batched_gesv`
+
+```python
+batched_gesv(a, b)
+```
+
+*cupy 14.2.0 · function · backend: cuBLAS (getrfBatched/getrsBatched) · NumPy/SciPy equivalent: `numpy.linalg.solve (stacked)`*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
+Solves multiple linear matrix equations using cublas<t>getr[fs]Batched().
+
+Computes the solution to system of linear equation `ax = b`.
+
+**Parameters**
+- `a`: (cupy.ndarray) The matrix with dimension `(..., M, M)`.
+- `b`: (cupy.ndarray) The matrix with dimension `(..., M)` or `(..., M, K)`.
+
+**Returns:** cupy.ndarray: The matrix with dimension `(..., M)` or `(..., M, K)`.
+
+**Pitfalls**
+- `import cupy` does not load `cupy.cublas`: use `from cupy import cublas` or `import cupy.cublas`, otherwise `cupy.cublas.batched_gesv` raises `AttributeError`.
+- Unlike `cupy.linalg.solve`, it accepts one right-hand-side vector per system, shape `(..., M)`, as well as `(..., M, K)`.
+- `cupy.linalg.solve` already calls it for stacked matrices up to `cupy.cublas.get_batched_gesv_limit()`; above that size batched LU is slow, so prefer `cupy.linalg.solve` for large matrices.
+
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
+```python
+import numpy as np
+import cupy as cp
+from cupy import cublas                           # `import cupy` alone does not load it
+
+A = cp.random.rand(64, 12, 12) + 12 * cp.eye(12)
+y = cp.random.rand(64, 12)                        # one right-hand side per system
+x = cublas.batched_gesv(A, y)                     # stacked vectors are accepted here
+assert x.shape == (64, 12)
+assert np.allclose(cp.einsum('bij,bj->bi', A, x).get(), y.get())
+```
+
+Docs: https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.batched_gesv.html
+
 ### `cupy.cublas.gemm`
 
 ```python
@@ -92,6 +132,8 @@ gemm(transa, transb, a, b, out=None, alpha=1.0, beta=0.0)
 ```
 
 *cupy 14.2.0 · function · backend: cuBLAS (gemm) · NumPy/SciPy equivalent: `alpha * (op(a) @ op(b)) + beta * out`*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes out = alpha * op(a) @ op(b) + beta * out
 
@@ -110,11 +152,12 @@ op(b) = b.T.conj() if transb is 'H'.
 - `beta` = `0.0`
 
 **Pitfalls**
+- `import cupy` does not load `cupy.cublas`: `cupy.cublas.gemm(...)` after only `import cupy` raises `AttributeError`. Use `from cupy import cublas` (as in the example) or `import cupy.cublas`.
 - `transa`/`transb` take 'N', 'T' or 'H' and apply op() to the inputs without materializing a transposed copy.
 - Only 2-D operands. Use `cupy.matmul` for batched products.
 - With `out` given, the result is accumulated in place: `out = alpha * op(a) @ op(b) + beta * out`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -197,7 +240,7 @@ Using the Einstein summation convention, many common multi-dimensional array ope
 - If `CUPY_ACCELERATORS` includes `cutensor`, `einsum` will be
   accelerated by the cuTENSOR backend whenever possible.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -235,7 +278,7 @@ Compute the one-dimensional FFT.
 - cuFFT plans are cached per device (`cupy.fft.config.get_plan_cache()`). The first call for a new shape/dtype pays the planning cost, so warm up before timing.
 - Lengths with only small prime factors (2, 3, 5, 7) are fastest; `cupyx.scipy.fft.next_fast_len(n)` gives a good padded length.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -272,7 +315,7 @@ Compute the N-dimensional FFT.
 - Transforms all axes by default. For a batch of images shaped (B, H, W), pass `axes=(-2, -1)` or use `fft2`, otherwise the batch axis is transformed too.
 - One cuFFT N-D plan covers up to 3 adjacent axes that include the first or last axis. Other axis combinations fall back to successive 1-D transforms.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -335,7 +378,7 @@ Compute the one-dimensional FFT for real input.
 - For real input, `rfft` does about half the work and memory of `fft`. The output has `n//2 + 1` points along the transformed axis.
 - To invert, call `irfft` with `n=` set to the original length, otherwise odd lengths are not recovered.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -377,7 +420,7 @@ transpose operator.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -428,7 +471,7 @@ corresponding eigenvectors (in columns).
 **Notes:** There is no guarantee of the order of the eigenvalues:
 it can even be different from `numpy.linalg.eig`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -471,7 +514,7 @@ corresponding eigenvectors (in columns).
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -512,7 +555,7 @@ This function computes matrix `a_inv` from n-dimensional regular matrix
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -558,7 +601,7 @@ the "exact" solution of the equation.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -599,7 +642,7 @@ See numpy.linalg.norm for more detail.
 **Pitfalls**
 - Returns a 0-d CuPy array, not a Python float. Use `float(...)` or `.item()` to get a host scalar (this synchronizes).
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -637,7 +680,7 @@ is an orthonormal and `R` is an upper-triangular matrix.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -680,7 +723,7 @@ where `a` is a square and full rank matrix.
 
 **Warning:** This function calls one or more cuSOLVER routine(s) which may yield invalid results if input conditions are not met. To detect these invalid results, you can set the `linalg` configuration to a value that is not `ignore` in `cupyx.errstate` or `cupyx.seterr`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -737,7 +780,7 @@ a QR method (`gesvd`) is used.
 On ROCm, there is no such a fast code path that switches the underlying
 algorithm.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -781,7 +824,7 @@ than 2 dimensions. For more information see `numpy.matmul`.
 - float32 GEMM uses full FP32 by default. Setting the environment variable `CUPY_TF32=1` lets cuBLAS use TF32 tensor cores (faster, ~10-bit mantissa). It is read once, at the first float32 matmul, so set it at process start.
 - Mixed dtypes promote like NumPy (float32 @ float64 -> float64), which can be much slower on GPUs with low FP64 throughput.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -818,7 +861,7 @@ TODO(hvy): Write docs.
 - Only `linalg=` is implemented, with values 'ignore' (default) or 'raise'. Passing `divide=`, `over=`, `under=` or `invalid=` raises `NotImplementedError` (unlike `numpy.errstate`).
 - With `linalg='raise'`, failed cuSOLVER/cuBLAS factorizations raise `numpy.linalg.LinAlgError`. Each check copies the device info flag to the host, which costs a synchronization.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -882,7 +925,7 @@ If this function is called under the context of
 `cupy.fft.config.set_cufft_callbacks`, the generated plan will
 have callbacks enabled.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -925,7 +968,7 @@ Find the next fast size to `fft`.
 as pocketfft's prime factors are different from cuFFT's factors.
 For details, see the `cuFFT documentation`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import cupy as cp
 from cupyx.scipy.fft import next_fast_len
@@ -966,7 +1009,7 @@ unit diagonal elements, and `U` upper-triangular matrix.
 - Factor once with `lu_factor` and reuse the `(lu, piv)` tuple in `lu_solve` for many right-hand sides; this is cheaper than calling `solve` repeatedly.
 - `check_finite=True` by default, which scans the input for inf/nan and forces a device sync. Pass `check_finite=False` in hot loops.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1039,7 +1082,7 @@ Solve the equation a x = b for x, assuming a is a triangular matrix.
 **Notes:** Unlike the SciPy counterpart, the CuPy implementation supports batches
 of matrices.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1094,7 +1137,7 @@ This can be instantiated in several ways.
 - `csr_matrix * x` is a matrix product (SciPy spmatrix semantics), but `csr_array * x` is elementwise. Use `A @ x` to be unambiguous.
 - Index arrays are int32 by default, and some cuSPARSE/cuSOLVER paths (e.g. `spsolve`) require int32 indices.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1147,7 +1190,7 @@ The result from `diags` is the sparse equivalent of::
 
 Repeated diagonal offsets are disallowed.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1171,6 +1214,8 @@ cg(A, b, x0=None, *, rtol=1e-05, atol=0.0, maxiter=None, M=None, callback=None)
 
 *cupy 14.2.0 · function · backend: cuSPARSE (SpMV), cuBLAS (vector ops) · NumPy/SciPy equivalent: `scipy.sparse.linalg.cg`*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Uses Conjugate Gradient iteration to solve `Ax = b`.
 
 **Parameters**
@@ -1190,7 +1235,7 @@ Uses Conjugate Gradient iteration to solve `Ax = b`.
 - Returns `(x, info)`. `info == 0` means converged and `info > 0` is the iteration count reached without converging. Always check `info`.
 - `A` must be symmetric (Hermitian) positive definite; for general matrices use `gmres` or `bicgstab`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1217,6 +1262,8 @@ eigsh(a, k=6, *, which='LM', v0=None, ncv=None, maxiter=None, tol=0, return_eige
 
 *cupy 14.2.0 · function · backend: cuSPARSE (SpMV), cuBLAS, Lanczos (thick restart) · NumPy/SciPy equivalent: `scipy.sparse.linalg.eigsh`*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Find `k` eigenvalues and eigenvectors of the real symmetric square matrix or complex Hermitian matrix `A`.
 
 Solves `Ax = wx`, the standard eigenvalue problem for `w` eigenvalues
@@ -1242,7 +1289,7 @@ with corresponding eigenvectors `x`.
 **Notes:** This function uses the thick-restart Lanczos methods
 (https://sdm.lbl.gov/~kewu/ps/trlan.html).
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1267,6 +1314,8 @@ gmres(A, b, x0=None, *, rtol=1e-05, atol=0.0, restart=None, maxiter=None, M=None
 ```
 
 *cupy 14.2.0 · function · backend: cuSPARSE (SpMV), cuBLAS · NumPy/SciPy equivalent: `scipy.sparse.linalg.gmres`*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Uses Generalized Minimal RESidual iteration to solve `Ax = b`.
 
@@ -1293,7 +1342,7 @@ Reference:
 - Returns `(x, info)` with `info == 0` on convergence.
 - Increase `restart` if convergence stalls on hard problems (more memory per restart cycle).
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1320,6 +1369,8 @@ spsolve(A, b)
 
 *cupy 14.2.0 · function · backend: cuSOLVER (csrlsvqr, sparse QR) · NumPy/SciPy equivalent: `scipy.sparse.linalg.spsolve`*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Solves a sparse linear system `A x = b`
 
 **Parameters**
@@ -1333,7 +1384,7 @@ Solves a sparse linear system `A x = b`
 - A 2-D `b` is solved one column at a time (slow for many right-hand sides). For large systems or many right-hand sides consider `nvmath.sparse.advanced.direct_solver` (cuDSS).
 - `b` is cast to `A.dtype`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1414,7 +1465,7 @@ Detailed information on each step described above can be obtained by passing in 
   `FFTOptions.last_axis_parity` must be set to `odd` to recover the original
   signal.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1472,7 +1523,7 @@ Further examples can be found in the nvmath/examples/fft (https://github.com/NVI
   meant for *single* use. The same computation can be performed with the stateful
   API using the default `direction` argument in `FFT.execute`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1523,7 +1574,7 @@ The direction is implicitly inverse.
   API by passing the argument `direction='inverse'` when calling
   `FFT.execute`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1581,7 +1632,7 @@ The direction is implicitly inverse.
   additional constraints (https://docs.nvidia.com/cuda/cufft/#fourier-transform-types). As a specific
   example, 1-D transfor…
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1625,7 +1676,7 @@ Perform an N-D *real-to-complex* (R2C) FFT on the provided real operand.
 - Real input only. The last transformed axis has `n//2 + 1` complex outputs.
 - Without `axes`, all axes are transformed (N-D). Pass `axes=[-1]` for a batched 1-D transform.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1710,7 +1761,7 @@ obtained by passing in a `logging.Logger` object to `MatmulOp…
     * If argument `a` is 1-D, it is promoted to a matrix by prefixing `1` to its dimensions. After matrix
       multiplication, the prefixed `1` is removed from the result's dimensions if the operation is not i…
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1745,6 +1796,7 @@ See `cublasLtEpilogue_t`.
 **Members:** `BGRADA`, `BGRADB`, `BIAS`, `DEFAULT`, `DGELU`, `DGELU_BGRAD`, `DRELU`, `DRELU_BGRAD`, `GELU`, `GELU_AUX`, `GELU_AUX_BIAS`, `GELU_BIAS`, `RELU`, `RELU_AUX`, `RELU_AUX_BIAS`, `RELU_BIAS`
 
 **Pitfalls**
+- BIAS epilogs add one bias value per row of the result (length M). For the `x @ w + b` layout of a linear layer, see the transposed recipe on `nvmath.linalg.advanced.matmul`.
 - Epilogs with BIAS in the name need `epilog_inputs={'bias': ...}`. DRELU epilogs need 'relu_aux' and DGELU epilogs need 'gelu_aux'; those come from the aux output of the matching forward epilog (`RELU_AUX`, `GELU_AUX`, ...).
 - It is an alias of `nvmath.bindings.cublasLt.Epilogue` (an `IntEnum`), so members are accessed as `MatmulEpilog.RELU_BIAS`.
 
@@ -1782,7 +1834,7 @@ A data class for providing options to the `Matmul` object and the wrapper functi
 - Choose the GEMM precision with `compute_type`, e.g. `MatmulOptions(compute_type=nvmath.linalg.advanced.MatmulComputeType.COMPUTE_32F_FAST_TF32)` to allow TF32 tensor cores for float32.
 - A plain dict also works: `options={'compute_type': ...}`.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1842,6 +1894,7 @@ directory.
 **Pitfalls**
 - `a` and `b` are positional-only; everything after `c` is keyword-only. If `c` is given, `beta` must be given too.
 - Epilogs fuse post-processing into the GEMM: `epilog=MatmulEpilog.RELU_BIAS, epilog_inputs={'bias': bias}`. The bias has length M (one value per row of the result) and is broadcast across the N columns, not across rows as in `x @ W + b`.
+- For a linear layer `relu(x @ w + b)` with one bias value per output column (length N), multiply the transposes so that the features become rows, then transpose back: `matmul(w.T, x.T, epilog=MatmulEpilog.RELU_BIAS, epilog_inputs={'bias': b}).T`.
 - Epilogs with `AUX` in the name (e.g. `RELU_AUX`) return a tuple `(result, aux_dict)` instead of an array.
 - The result uses the same package and memory space as the inputs: CuPy in, CuPy out.
 - Every call plans from scratch. For repeated products with the same shapes, use the stateful `Matmul` object and `reset_operands` to amortize planning.
@@ -1858,7 +1911,7 @@ directory.
     * If argument `a` is 1-D, it is promoted to a matrix by prefixing `1` to its dimensions. After matrix
       multiplication, the prefixed `1` is removed from the result's dimensions if the operation is not i…
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -1937,7 +1990,7 @@ directory.
       * An **explicitly-batched** LHS is provided as a Python sequence of sparse CSR matrices `[a_0, a_1, ..., a_n]`.
         Likewise an explicitly-batched RHS is provided as a sequence of vectors or matrices `[b_0, b_1, ..., b_n]`.…
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -2008,7 +2061,7 @@ directory.
 **Notes:** - This function is a convenience wrapper around `BinaryContraction` and is
   specifically meant for *single* use.
 
-**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03))
+**Example** (verified on Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04))
 ```python
 import numpy as np
 import cupy as cp
@@ -2073,6 +2126,8 @@ asum(x, out=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes the sum of the absolute of x.
 
 **Parameters**
@@ -2089,6 +2144,8 @@ axpy(a, x, y)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes y += a * x.
 
 **Parameters**
@@ -2098,24 +2155,6 @@ Computes y += a * x.
 
 Docs: https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.axpy.html
 
-### `cupy.cublas.batched_gesv`
-
-```python
-batched_gesv(a, b)
-```
-
-*cupy 14.2.0 · function*
-
-Solves multiple linear matrix equations using cublas<t>getr[fs]Batched().
-
-**Parameters**
-- `a`: (cupy.ndarray) The matrix with dimension `(..., M, M)`.
-- `b`: (cupy.ndarray) The matrix with dimension `(..., M)` or `(..., M, K)`.
-
-**Returns:** cupy.ndarray: The matrix with dimension `(..., M)` or `(..., M, K)`.
-
-Docs: https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.batched_gesv.html
-
 ### `cupy.cublas.dgmm`
 
 ```python
@@ -2123,6 +2162,8 @@ dgmm(side, a, x, out=None, incx=1)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes diag(x) @ a or a @ diag(x)
 
@@ -2143,6 +2184,8 @@ dot(x, y, out=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes the dot product of x and y.
 
 **Parameters**
@@ -2159,6 +2202,8 @@ dotc(x, y, out=None)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes the dot product of x.conj() and y.
 
@@ -2177,6 +2222,8 @@ dotu(x, y, out=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes the dot product of x and y.
 
 **Parameters**
@@ -2193,6 +2240,8 @@ geam(transa, transb, alpha, a, beta, b, out=None)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes alpha * op(a) + beta * op(b)
 
@@ -2215,6 +2264,8 @@ gemv(transa, alpha, a, x, beta, y)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes y = alpha * op(a) @ x + beta * y
 
 **Parameters**
@@ -2235,6 +2286,8 @@ ger(alpha, x, y, a)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes a += alpha * x @ y.T
 
 **Parameters**
@@ -2252,6 +2305,8 @@ gerc(alpha, x, y, a)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes a += alpha * x @ y.T.conj()
 
@@ -2271,6 +2326,8 @@ geru(alpha, x, y, a)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes a += alpha * x @ y.T
 
 **Parameters**
@@ -2289,6 +2346,8 @@ get_batched_gesv_limit()
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Docs: https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.get_batched_gesv_limit.html
 
 ### `cupy.cublas.iamax`
@@ -2298,6 +2357,8 @@ iamax(x, out=None)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Finds the (smallest) index of the element with the maximum magnitude.
 
@@ -2315,6 +2376,8 @@ iamin(x, out=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Finds the (smallest) index of the element with the minimum magnitude.
 
 **Parameters**
@@ -2331,6 +2394,8 @@ nrm2(x, out=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes the Euclidean norm of vector x.
 
 **Parameters**
@@ -2346,6 +2411,8 @@ sbmv(k, alpha, a, x, beta, y, lower=False)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes y = alpha*A @ x + beta * y
 
@@ -2368,6 +2435,8 @@ scal(a, x)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 Computes x *= a.
 
 **Parameters**
@@ -2384,6 +2453,8 @@ set_batched_gesv_limit(limit)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
+
 **Parameters**
 - `limit`
 
@@ -2396,6 +2467,8 @@ syrk(trans, a, out=None, alpha=1.0, beta=0.0, lower=False)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupy.cublas` (`import cupy` alone does not load `cupy.cublas`)
 
 Computes out := alpha*op1(a)*op2(a) + beta*out
 
@@ -4605,6 +4678,8 @@ LinearOperator(dtype, shape)
 
 *cupy 14.2.0 · class*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Common interface for performing matrix vector products
 
 **Parameters**
@@ -4632,6 +4707,8 @@ SuperLU(obj)
 
 *cupy 14.2.0 · class*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 **Parameters**
 - `obj`
 
@@ -4647,6 +4724,8 @@ aslinearoperator(A)
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Return `A` as a LinearOperator.
 
@@ -4666,6 +4745,8 @@ bicgstab(A, b, x0=None, *, rtol=1e-05, atol=0.0, maxiter=None, M=None, callback=
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Uses BIConjugate Gradient STABilized iteration to solve `Ax = b`.
 
@@ -4693,6 +4774,8 @@ cgs(A, b, x0=None, *, rtol=1e-05, atol=0.0, maxiter=None, M=None, callback=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Use Conjugate Gradient Squared iteration to solve `Ax = b`.
 
 **Parameters**
@@ -4719,6 +4802,8 @@ factorized(A)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Return a function for solving a sparse linear system, with A pre-factorized.
 
 **Parameters**
@@ -4737,6 +4822,8 @@ lobpcg(A, X, B=None, M=None, Y=None, tol=None, maxiter=None, largest=True, verbo
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Locally Optimal Block Preconditioned Conjugate Gradient Method (LOBPCG)
 
@@ -4767,6 +4854,8 @@ lsmr(A, b, x0=None, damp=0.0, atol=1e-06, btol=1e-06, conlim=100000000.0, maxite
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Iterative solver for least-squares problems.
 
 **Parameters**
@@ -4793,6 +4882,8 @@ lsqr(A, b)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Solves linear system with QR decomposition.
 
 **Parameters**
@@ -4813,6 +4904,8 @@ matrix_power(A, power)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Raise a square matrix to the integer power `power`.
 
 **Parameters**
@@ -4832,6 +4925,8 @@ minres(A, b, x0=None, shift=0.0, tol=1e-05, maxiter=None, M=None, callback=None,
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Uses MINimum RESidual iteration to solve `Ax = b`.
 
@@ -4860,6 +4955,8 @@ norm(x, ord=None, axis=None)
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Norm of a cupy.scipy.spmatrix
 
 **Parameters**
@@ -4880,6 +4977,8 @@ spilu(A, drop_tol=None, fill_factor=None, drop_rule=None, permc_spec=None, diag_
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Computes the incomplete LU decomposition of a sparse square matrix.
 
@@ -4908,6 +5007,8 @@ splu(A, permc_spec=None, diag_pivot_thresh=None, relax=None, panel_size=None, op
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Computes the LU decomposition of a sparse square matrix.
 
 **Parameters**
@@ -4932,6 +5033,8 @@ spsolve_triangular(A, b, lower=True, overwrite_A=False, overwrite_b=False, unit_
 
 *cupy 14.2.0 · function*
 
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
+
 Solves a sparse triangular system `A x = b`.
 
 **Parameters**
@@ -4953,6 +5056,8 @@ svds(a, k=6, *, ncv=None, tol=0, which='LM', maxiter=None, return_singular_vecto
 ```
 
 *cupy 14.2.0 · function*
+
+**Import:** `import cupyx.scipy.sparse.linalg` (`import cupyx` alone does not load `cupyx.scipy.sparse.linalg`)
 
 Finds the largest `k` singular values/vectors for a sparse matrix.
 

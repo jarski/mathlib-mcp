@@ -1,5 +1,5 @@
 {
- "environment": "Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-03)",
+ "environment": "Tesla T4, CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0 (2026-10-04)",
  "report": "bench/results/gpu_validation.json",
  "examples": {
   "cupy.asarray": {
@@ -7,6 +7,9 @@
   },
   "cupy.asnumpy": {
    "code": "import numpy as np\nimport cupy as cp\n\nx = cp.linspace(0.0, 1.0, 5, dtype=cp.float32)\nhost = cp.asnumpy(x)               # same as x.get()\nassert isinstance(host, np.ndarray)\nassert np.allclose(host, np.linspace(0.0, 1.0, 5))"
+  },
+  "cupy.cublas.batched_gesv": {
+   "code": "import numpy as np\nimport cupy as cp\nfrom cupy import cublas                           # `import cupy` alone does not load it\n\nA = cp.random.rand(64, 12, 12) + 12 * cp.eye(12)\ny = cp.random.rand(64, 12)                        # one right-hand side per system\nx = cublas.batched_gesv(A, y)                     # stacked vectors are accepted here\nassert x.shape == (64, 12)\nassert np.allclose(cp.einsum('bij,bj->bi', A, x).get(), y.get())"
   },
   "cupy.cublas.gemm": {
    "code": "import numpy as np\nimport cupy as cp\nfrom cupy import cublas\n\na = cp.random.rand(64, 32)\nb = cp.random.rand(64, 16)\nc = cublas.gemm('T', 'N', a, b)                   # a.T @ b without a transposed copy\nassert np.allclose(c.get(), a.get().T @ b.get())"

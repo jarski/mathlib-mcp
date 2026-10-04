@@ -53,6 +53,9 @@ class ModuleInfo:
     lazy_names: set[str] = field(default_factory=set)
     exact: bool = True
     tree: ast.Module | None = None
+    # module-level runtime imports: (module, name) for `from module import name`,
+    # (module, None) for `import module` and star imports
+    imports: list[tuple[str, str | None]] = field(default_factory=list)
 
 
 class SourceTree:
@@ -174,6 +177,45 @@ class SourceTree:
                 return None
             resolved = self.resolve(binding.target, part, seen)
         return resolved
+
+    def attribute_names(self, modname: str) -> set[str]:
+        """Names that exist as attributes right after ``import modname``.
+
+        Unlike :meth:`names`, submodules count only when the package binds them (``from
+        pkg import sub``) or serves them lazily: ``import cupy`` does not load
+        ``cupy.cublas``, so ``cupy.cublas`` is not an attribute until something imports it.
+        """
+        info = self.module(modname)
+        if info is None:
+            return set()
+        result = set(info.bindings) | info.lazy_names
+        for star in info.star_imports:
+            result |= set(self.public_names(star))
+        return result
+
+    def import_closure(self, modname: str) -> set[str]:
+        """Modules (in this tree) that ``import modname`` loads, transitively.
+
+        Importing ``a.b.c`` first imports ``a`` and ``a.b``; each loaded module runs its
+        module-level imports. Imports inside functions do not count.
+        """
+        loaded: set[str] = set()
+        stack = [modname]
+        while stack:
+            parts = stack.pop().split(".")
+            for end in range(1, len(parts) + 1):
+                prefix = ".".join(parts[:end])
+                if prefix in loaded:
+                    continue
+                info = self.module(prefix)
+                if info is None:  # outside the tree, e.g. numpy
+                    break
+                loaded.add(prefix)
+                for module, name in info.imports:
+                    stack.append(module)
+                    if name and self.is_module(f"{module}.{name}"):
+                        stack.append(f"{module}.{name}")
+        return loaded
 
     def names(self, modname: str) -> set[str]:
         """Every name that attribute access on the module can reach (public or not)."""
@@ -324,6 +366,7 @@ def _scan_statements(info: ModuleInfo, body: list[ast.stmt]) -> None:
             info.bindings[stmt.name] = Binding("class", info.name, stmt, lineno=stmt.lineno)
         elif isinstance(stmt, ast.Import):
             for alias in stmt.names:
+                info.imports.append((alias.name, None))
                 if alias.asname:
                     info.bindings[alias.asname] = Binding("import", info.name, target=alias.name,
                                                           lineno=stmt.lineno)
@@ -334,6 +377,7 @@ def _scan_statements(info: ModuleInfo, body: list[ast.stmt]) -> None:
         elif isinstance(stmt, ast.ImportFrom):
             source = _absolute_module(info, stmt.module, stmt.level)
             for alias in stmt.names:
+                info.imports.append((source, None if alias.name == "*" else alias.name))
                 if alias.name == "*":
                     info.star_imports.append(source)
                 else:
@@ -377,7 +421,7 @@ def _scan_statements(info: ModuleInfo, body: list[ast.stmt]) -> None:
 _PYX_DEF = re.compile(r"^(?:cpdef|def)\s+(?:[\w.\[\]]+\s+)*?(\w+)\s*\(", re.M)
 _PYX_CLASS = re.compile(r"^(?:cdef\s+)?class\s+(\w+)\s*(?:\(|:)", re.M)
 _PYX_ASSIGN = re.compile(r"^(\w+)\s*=", re.M)
-_PYX_FROM = re.compile(r"^from\s+([\w.]+)\s+(?:c)?import\s+(.+)$", re.M)
+_PYX_FROM = re.compile(r"^from\s+([\w.]+)\s+(c?import)\s+(.+)$", re.M)
 _PYX_IMPORT = re.compile(r"^import\s+([\w.]+)(?:\s+as\s+(\w+))?\s*$", re.M)
 _PYX_MEMBER = re.compile(r"^    (\w+)\s*=", re.M)
 
@@ -387,14 +431,18 @@ def _scan_pyx(info: ModuleInfo, text: str) -> None:
     for match in _PYX_FROM.finditer(text):
         source = _absolute_module(info, match.group(1).lstrip("."),
                                   len(match.group(1)) - len(match.group(1).lstrip(".")))
-        for part in match.group(2).strip("()").split(","):
+        runtime = match.group(2) == "import"  # `cimport` is resolved at compile time
+        for part in match.group(3).strip("()").split(","):
             pieces = part.split()
             if not pieces or pieces[0] == "*":
                 continue
+            if runtime:
+                info.imports.append((source, pieces[0]))
             name = pieces[-1] if len(pieces) == 3 and pieces[1] == "as" else pieces[0]
             info.bindings.setdefault(name, Binding("import", info.name,
                                                    target=f"{source}:{pieces[0]}"))
     for match in _PYX_IMPORT.finditer(text):
+        info.imports.append((match.group(1), None))
         name = match.group(2) or match.group(1).split(".")[0]
         info.bindings.setdefault(name, Binding("import", info.name,
                                                target=match.group(2) and match.group(1) or name))

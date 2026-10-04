@@ -117,6 +117,20 @@ FACTS = [
         cards=("cupyx.scipy.sparse.csr_matrix",),
     ),
     Fact(
+        "cupy_cublas_not_loaded_by_import_cupy",
+        "`import cupy` does not load the cupy.cublas submodule",
+        "import cupy\ncupy.cublas",
+        "raises:AttributeError",
+        cards=("cupy.cublas.gemm", "cupy.cublas.batched_gesv"),
+    ),
+    Fact(
+        "sparse_linalg_not_loaded_by_import_sparse",
+        "`import cupyx.scipy.sparse` does not load cupyx.scipy.sparse.linalg",
+        "import cupyx.scipy.sparse as sp\nsp.linalg",
+        "raises:AttributeError",
+        cards=("cupyx.scipy.sparse.linalg.cg",),
+    ),
+    Fact(
         "fft_keeps_single_precision",
         "cupy.fft.fft keeps float32 -> complex64 and float64 -> complex128",
         "import cupy as cp\nassert cp.fft.fft(cp.ones(8, cp.float32)).dtype == cp.complex64\n"

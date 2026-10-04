@@ -34,6 +34,8 @@ def test_get_api_card_variants():
     assert "`cupy.matmul`" in tools.get_api_card("cupy.linalg.matmul")  # alias
     assert "no curated card" in tools.get_api_card("cupy.zeros")  # symbol-only
     assert "cupyx.scipy.linalg.lu_factor" in tools.get_api_card("cupy.linalg.lu_factor")
+    assert "**Import:** `import cupy.cublas`" in tools.get_api_card("cupy.cublas.gemm")
+    assert "**Import:**" not in tools.get_api_card("cupy.linalg.solve")
 
 
 def test_get_example_returns_code_and_pitfalls():

@@ -100,6 +100,7 @@ backend = ["cuBLAS (gemm)"]
 numpy_equivalent = "alpha * (op(a) @ op(b)) + beta * out"
 tags = ["gemm", "blas3", "low-level"]
 pitfalls = [
+    "`import cupy` does not load `cupy.cublas`: `cupy.cublas.gemm(...)` after only `import cupy` raises `AttributeError`. Use `from cupy import cublas` (as in the example) or `import cupy.cublas`.",
     "`transa`/`transb` take 'N', 'T' or 'H' and apply op() to the inputs without materializing a transposed copy.",
     "Only 2-D operands. Use `cupy.matmul` for batched products.",
     "With `out` given, the result is accumulated in place: `out = alpha * op(a) @ op(b) + beta * out`.",
@@ -113,6 +114,27 @@ a = cp.random.rand(64, 32)
 b = cp.random.rand(64, 16)
 c = cublas.gemm('T', 'N', a, b)                   # a.T @ b without a transposed copy
 assert np.allclose(c.get(), a.get().T @ b.get())
+'''
+
+[cards."cupy.cublas.batched_gesv"]
+backend = ["cuBLAS (getrfBatched/getrsBatched)"]
+numpy_equivalent = "numpy.linalg.solve (stacked)"
+tags = ["batched", "linear-system", "lu", "low-level"]
+pitfalls = [
+    "`import cupy` does not load `cupy.cublas`: use `from cupy import cublas` or `import cupy.cublas`, otherwise `cupy.cublas.batched_gesv` raises `AttributeError`.",
+    "Unlike `cupy.linalg.solve`, it accepts one right-hand-side vector per system, shape `(..., M)`, as well as `(..., M, K)`.",
+    "`cupy.linalg.solve` already calls it for stacked matrices up to `cupy.cublas.get_batched_gesv_limit()`; above that size batched LU is slow, so prefer `cupy.linalg.solve` for large matrices.",
+]
+example = '''
+import numpy as np
+import cupy as cp
+from cupy import cublas                           # `import cupy` alone does not load it
+
+A = cp.random.rand(64, 12, 12) + 12 * cp.eye(12)
+y = cp.random.rand(64, 12)                        # one right-hand side per system
+x = cublas.batched_gesv(A, y)                     # stacked vectors are accepted here
+assert x.shape == (64, 12)
+assert np.allclose(cp.einsum('bij,bj->bi', A, x).get(), y.get())
 '''
 
 # ------------------------------------------------------------------ dense LAPACK
