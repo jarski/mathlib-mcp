@@ -74,9 +74,9 @@ haiku/none/laplacian_2d_smallest_eigs/r1,haiku,none,laplacian_2d_smallest_eigs,c
 haiku/none/sparse_row_normalize/r1,haiku,none,sparse_row_normalize,cuSPARSE,1,ok,pass,True,True,0,0.002468,3.913,1,0,333,0,0,427,False
 haiku/none/sparse_row_normalize/r2,haiku,none,sparse_row_normalize,cuSPARSE,2,ok,pass,True,True,0,0.002738,3.87,1,0,333,0,0,481,False
 haiku/none/laplacian_2d_smallest_eigs/r2,haiku,none,laplacian_2d_smallest_eigs,cuSPARSE,2,ok,exception:ValueError,False,False,0,0.005358,6.065,1,0,413,0,0,989,False
-haiku/none/cutensor_contraction/r1,haiku,none,cutensor_contraction,cuTENSOR,1,ok,exception:ModuleNotFoundError,False,False,1,0.00145,2.092,1,0,345,0,0,221,False
+haiku/none/cutensor_contraction/r1,haiku,none,cutensor_contraction,cuTENSOR,1,ok,exception:ModuleNotFoundError,False,False,2,0.00145,2.092,1,0,345,0,0,221,False
 haiku/none/cutensor_contraction/r0,haiku,none,cutensor_contraction,cuTENSOR,0,ok,exception:ImportError,False,False,1,0.00139,2.188,1,0,345,0,0,209,False
-haiku/none/cutensor_contraction/r2,haiku,none,cutensor_contraction,cuTENSOR,2,ok,exception:ImportError,False,False,1,0.001415,2.241,1,0,345,0,0,214,False
+haiku/none/cutensor_contraction/r2,haiku,none,cutensor_contraction,cuTENSOR,2,ok,exception:ImportError,False,False,2,0.001415,2.241,1,0,345,0,0,214,False
 haiku/docs/batched_matmul/r0,haiku,docs,batched_matmul,cuBLAS,0,ok,pass,True,True,0,0.128127,2.571,1,0,109,0,101470,236,False
 haiku/docs/batched_matmul/r1,haiku,docs,batched_matmul,cuBLAS,1,ok,pass,True,True,0,0.011811,3.065,1,0,109,101470,0,311,False
 haiku/docs/batched_matmul/r2,haiku,docs,batched_matmul,cuBLAS,2,ok,pass,True,True,0,0.011686,3.113,1,0,109,101470,0,286,False
@@ -101,7 +101,7 @@ haiku/docs/power_spectrum/r1,haiku,docs,power_spectrum,cuFFT,1,ok,pass,True,True
 haiku/docs/power_spectrum/r2,haiku,docs,power_spectrum,cuFFT,2,ok,pass,True,True,0,0.012224,4.169,1,0,82,101470,0,399,False
 haiku/docs/fft_convolve/r0,haiku,docs,fft_convolve,cuFFT,0,ok,pass,True,True,0,0.013642,6.491,1,0,100,101470,0,679,False
 haiku/docs/lowpass_images/r1,haiku,docs,lowpass_images,cuFFT,1,ok,pass,True,True,0,0.012909,3.76,1,0,177,101470,0,517,False
-haiku/docs/lowpass_images/r0,haiku,docs,lowpass_images,cuFFT,0,ok,exception:TypeError,False,False,2,0.013349,4.905,1,0,177,101470,0,605,False
+haiku/docs/lowpass_images/r0,haiku,docs,lowpass_images,cuFFT,0,ok,exception:TypeError,False,False,1,0.013349,4.905,1,0,177,101470,0,605,False
 haiku/docs/fft_convolve/r2,haiku,docs,fft_convolve,cuFFT,2,ok,exception:NameError,False,False,0,0.013737,6.584,1,0,100,101470,0,698,False
 haiku/docs/lowpass_images/r2,haiku,docs,lowpass_images,cuFFT,2,ok,pass,True,True,0,0.013029,4.35,1,0,177,101470,0,541,False
 haiku/docs/irfft_reconstruct/r2,haiku,docs,irfft_reconstruct,cuFFT,2,ok,pass,True,True,0,0.011836,3.532,1,0,99,101470,0,318,False
@@ -188,12 +188,12 @@ haiku/mcp/lowpass_images/r1,haiku,mcp,lowpass_images,cuFFT,1,ok,pass,True,True,0
 haiku/mcp/lowpass_images/r0,haiku,mcp,lowpass_images,cuFFT,0,ok,pass,True,True,0,0.025838,18.88,6,8,7634,8938,5468,2095,False
 haiku/mcp/lowpass_images/r2,haiku,mcp,lowpass_images,cuFFT,2,ok,pass,True,True,0,0.024563,17.777,5,6,8630,4642,5051,1831,False
 haiku/mcp/nvmath_full_spectrum/r2,haiku,mcp,nvmath_full_spectrum,cuFFT,2,ok,pass,True,True,0,0.016477,9.549,4,4,4112,5117,5519,991,False
-haiku/mcp/batched_solve_vectors/r0,haiku,mcp,batched_solve_vectors,cuSOLVER,0,ok,exception:AttributeError,False,False,0,0.013143,8.385,4,3,9353,0,0,758,False
+haiku/mcp/batched_solve_vectors/r0,haiku,mcp,batched_solve_vectors,cuSOLVER,0,ok,exception:AttributeError,False,False,1,0.013143,8.385,4,3,9353,0,0,758,False
 haiku/mcp/nvmath_spectral_gain/r0,haiku,mcp,nvmath_spectral_gain,cuFFT,0,ok,pass,True,True,0,0.018697,8.993,4,5,4919,5870,6269,1071,False
 haiku/mcp/nvmath_spectral_gain/r2,haiku,mcp,nvmath_spectral_gain,cuFFT,2,ok,pass,True,True,0,0.019254,9.683,4,5,5012,5959,6421,1124,False
 haiku/mcp/nvmath_spectral_gain/r1,haiku,mcp,nvmath_spectral_gain,cuFFT,1,ok,pass,True,True,0,0.023745,11.145,5,7,5738,13959,7761,1382,False
-haiku/mcp/batched_solve_vectors/r1,haiku,mcp,batched_solve_vectors,cuSOLVER,1,ok,exception:AttributeError,False,False,0,0.017307,9.037,5,4,13512,0,0,759,False
-haiku/mcp/batched_solve_vectors/r2,haiku,mcp,batched_solve_vectors,cuSOLVER,2,ok,exception:AttributeError,False,False,0,0.012773,7.895,4,3,9318,0,0,691,False
+haiku/mcp/batched_solve_vectors/r1,haiku,mcp,batched_solve_vectors,cuSOLVER,1,ok,exception:AttributeError,False,False,1,0.017307,9.037,5,4,13512,0,0,759,False
+haiku/mcp/batched_solve_vectors/r2,haiku,mcp,batched_solve_vectors,cuSOLVER,2,ok,exception:AttributeError,False,False,1,0.012773,7.895,4,3,9318,0,0,691,False
 haiku/mcp/lstsq_with_rank/r0,haiku,mcp,lstsq_with_rank,cuSOLVER,0,ok,pass,True,True,0,0.017944,8.186,4,4,8332,0,4170,880,False
 haiku/mcp/lstsq_with_rank/r1,haiku,mcp,lstsq_with_rank,cuSOLVER,1,ok,pass,True,True,0,0.015925,8.219,4,5,4440,4733,5073,934,False
 haiku/mcp/cholesky_solve_logdet/r2,haiku,mcp,cholesky_solve_logdet,cuSOLVER,2,ok,pass,True,True,0,0.017191,10.28,4,5,4309,4283,4867,1274,False
@@ -296,9 +296,9 @@ sonnet/none/spmv_from_triplets/r0,sonnet,none,spmv_from_triplets,cuSPARSE,0,ok,p
 sonnet/none/spmv_from_triplets/r1,sonnet,none,spmv_from_triplets,cuSPARSE,1,ok,pass,True,True,0,0.005336,3.759,1,0,518,0,0,430,False
 sonnet/none/triangular_transposed_solve/r2,sonnet,none,triangular_transposed_solve,cuSOLVER,2,ok,pass,True,True,0,0.005482,4.287,1,0,471,0,0,454,False
 sonnet/none/spmv_from_triplets/r2,sonnet,none,spmv_from_triplets,cuSPARSE,2,ok,pass,True,True,0,0.004106,3.081,1,0,518,0,0,307,False
-sonnet/none/cg_poisson_1d/r0,sonnet,none,cg_poisson_1d,cuSPARSE,0,ok,pass,True,True,1,0.008884,5.819,1,0,537,0,0,781,False
+sonnet/none/cg_poisson_1d/r0,sonnet,none,cg_poisson_1d,cuSPARSE,0,ok,pass,True,True,0,0.008884,5.819,1,0,537,0,0,781,False
 sonnet/none/cg_poisson_1d/r1,sonnet,none,cg_poisson_1d,cuSPARSE,1,ok,pass,True,True,0,0.008314,5.512,1,0,537,0,0,724,False
-sonnet/none/cg_poisson_1d/r2,sonnet,none,cg_poisson_1d,cuSPARSE,2,ok,pass,True,True,1,0.008854,5.705,1,0,537,0,0,778,False
+sonnet/none/cg_poisson_1d/r2,sonnet,none,cg_poisson_1d,cuSPARSE,2,ok,pass,True,True,0,0.008854,5.705,1,0,537,0,0,778,False
 sonnet/none/sparse_row_normalize/r0,sonnet,none,sparse_row_normalize,cuSPARSE,0,ok,pass,True,True,0,0.007088,4.978,1,0,469,0,0,615,False
 sonnet/none/sparse_row_normalize/r1,sonnet,none,sparse_row_normalize,cuSPARSE,1,ok,exception:TypeError,False,False,1,0.007958,5.818,1,0,469,0,0,702,False
 sonnet/none/laplacian_2d_smallest_eigs/r1,sonnet,none,laplacian_2d_smallest_eigs,cuSPARSE,1,ok,pass,True,True,0,0.01151,7.847,1,0,580,0,0,1035,False
@@ -309,7 +309,7 @@ sonnet/none/sparse_row_normalize/r2,sonnet,none,sparse_row_normalize,cuSPARSE,2,
 sonnet/none/cudss_multiple_rhs/r1,sonnet,none,cudss_multiple_rhs,cuDSS,1,ok,pass,True,True,0,0.006644,4.99,1,0,512,0,0,562,False
 sonnet/none/cudss_multiple_rhs/r2,sonnet,none,cudss_multiple_rhs,cuDSS,2,ok,pass,True,True,0,0.006184,4.68,1,0,512,0,0,516,False
 sonnet/none/cutensor_contraction/r0,sonnet,none,cutensor_contraction,cuTENSOR,0,ok,pass,True,True,0,0.004894,3.916,1,0,457,0,0,398,False
-sonnet/none/cutensor_contraction/r2,sonnet,none,cutensor_contraction,cuTENSOR,2,ok,exception:TypeError,False,False,0,0.002944,2.825,1,0,457,0,0,203,False
+sonnet/none/cutensor_contraction/r2,sonnet,none,cutensor_contraction,cuTENSOR,2,ok,exception:TypeError,False,False,1,0.002944,2.825,1,0,457,0,0,203,False
 sonnet/none/cutensor_contraction/r1,sonnet,none,cutensor_contraction,cuTENSOR,1,ok,pass,True,True,0,0.005244,4.048,1,0,457,0,0,433,False
 sonnet/docs/batched_matmul/r0,sonnet,docs,batched_matmul,cuBLAS,0,ok,pass,True,True,0,0.33706,2.646,1,0,129,0,134241,120,False
 sonnet/docs/batched_matmul/r2,sonnet,docs,batched_matmul,cuBLAS,2,ok,pass,True,True,0,0.028306,2.034,1,0,129,134241,0,120,False

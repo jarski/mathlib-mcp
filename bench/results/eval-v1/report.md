@@ -1,6 +1,6 @@
 # mathlib-mcp evaluation
 
-Run `eval-v1`: 26 tasks × 3 samples per model and condition; code generated at commit `3184562`, executed on Tesla T4 (CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0).
+Run `eval-v1`: 26 tasks × 3 samples per model and condition; code generated at commit `3184562`, executed on Tesla T4 (CUDA 12.9, CuPy 14.2.0, nvmath-python 1.0.0). Static checks (API errors, required API) use `check_snippet` at commit `c951554`.
 
 Conditions: **none** = no help; **docs** = llms-full.txt in the system prompt; **mcp** = mathlib-mcp tools.
 
@@ -28,8 +28,8 @@ Share of attempts whose final code has at least one `check_snippet` error (hallu
 
 | Model | none | docs | mcp |
 |---|---|---|---|
-| claude-haiku-4-5 | 36% [22%, 51%] | 1% [0%, 4%] | 0% [0%, 0%] |
-| claude-sonnet-5-5 | 4% [0%, 10%] | 1% [0%, 4%] | 1% [0%, 4%] |
+| claude-haiku-4-5 | 36% [22%, 51%] | 1% [0%, 4%] | 4% [0%, 12%] |
+| claude-sonnet-5-5 | 3% [0%, 6%] | 1% [0%, 4%] | 1% [0%, 4%] |
 
 ## Breakdown
 

@@ -6,7 +6,7 @@ LLMs write plausible but wrong code for GPU math libraries. They call functions 
 
 | Part | What it is |
 |---|---|
-| **API cards** | 2,741 public symbols and 275 API cards extracted from the library *sources* (no GPU or import needed). 42 cards are curated with the CUDA-X backend, pitfalls checked against the source and on a GPU, and an example verified on a GPU. |
+| **API cards** | 2,741 public symbols and 275 API cards extracted from the library *sources* (no GPU or import needed). 43 cards are curated with the CUDA-X backend, pitfalls checked against the source and on a GPU, and an example verified on a GPU. |
 | **MCP server** | `search_api`, `get_api_card`, `get_example`, `check_snippet`, plus an `llms.txt` resource. |
 | **`check_snippet`** | Static checker that finds hallucinated APIs, wrong or positional-only keywords, too many positional arguments and missing arguments, and suggests the real name. |
 | **Benchmark** | 26 GPU tasks across six CUDA-X libraries with NumPy/SciPy references; 17 have a "naive" solution that falls into a documented trap. |
@@ -23,21 +23,23 @@ Two Claude models wrote solutions to the 26 benchmark tasks, 3 samples per task,
 | | No help | Docs in prompt | MCP tools |
 |---|---|---|---|
 | **Claude Haiku 4.5**: tasks solved | 51% | 87% | **92%** |
-| final code with a hallucinated API or wrong arguments | 36% | 1% | **0%** |
+| final code with a hallucinated API or wrong arguments¹ | 36% | 1% | 4% |
 | input tokens per task | 0.4k | 101.6k | 15.3k |
 | cost per task | $0.003 | $0.014 | $0.018 |
 | **Claude Sonnet 5.5**: tasks solved | 94% | 99% | 99% |
-| final code with a hallucinated API or wrong arguments | 4% | 1% | 1% |
+| final code with a hallucinated API or wrong arguments¹ | 3% | 1% | 1% |
 | input tokens per task | 0.5k | 134.4k | **3.5k** |
 | cost per task | $0.006 | $0.035 | **$0.008** |
 
+¹ Scored with the fixed `check_snippet` (see the bug note below). The run itself used the version before the fix, which accepted the three `cupy.cublas` attempts.
+
 What the numbers say:
 
-- **Haiku 4.5 goes from coin-flip to reliable.** Tasks solved rise by **+41 points** (95% CI +26 to +58), and hallucinated APIs fall from 36% of attempts to 0%. The biggest gain is on nvmath-python (6% → 83% solved), a library newer than the model.
+- **Haiku 4.5 goes from coin-flip to reliable.** Tasks solved rise by **+41 points** (95% CI +26 to +58), and hallucinated APIs fall from 36% of attempts to 4%. The remaining 4% are the three `cupy.cublas` attempts described below. The biggest gain is on nvmath-python (6% → 83% solved), a library newer than the model.
 - **On-demand knowledge beats putting it all in the prompt.** Both conditions contain the same curated knowledge. MCP solved slightly more for Haiku (+5 points, CI +1 to +10). Sonnet matched the docs prompt with **38× fewer input tokens, at a quarter of the cost**.
 - **Sonnet 5.5 already knows most of these APIs** (94% without help), so it calls the tools only when unsure (0.6 calls per task). Its one remaining MCP failure is a JAX keyword (`cupy.repeat(..., total_repeat_length=)`) in code it did not run through `check_snippet`.
-- **The evaluation found a bug in the tool itself.** In all three failed Haiku + MCP attempts at `batched_solve_vectors`, Haiku called `cupy.cublas` after only `import cupy`. That submodule is not loaded by `import cupy`, but `check_snippet` accepted the code. This is a known open bug: the checker treats every submodule as an attribute of its package. The planned fix models Python's import closure.
-- **Knowledge alone is not enough when the semantics are counter-intuitive.** Haiku read the pitfall that cuBLASLt's bias epilog is per *row*, and still added the bias per column (0/3 in every condition). Sonnet got it right every time.
+- **The evaluation found a bug in the tool itself.** In all three failed Haiku + MCP attempts at `batched_solve_vectors`, Haiku called `cupy.cublas` after only `import cupy`. That submodule is not loaded by `import cupy`, but `check_snippet` accepted the code. The cause: the symbol index treated every submodule as an attribute of its package. **Fixed after v1.** The extractor now works out which modules `import X` actually loads, by following module-level imports through the source. Cards now say when an extra import is needed, and two new GPU-checked facts confirm the model (`import cupy` does not load `cupy.cublas`; `import cupyx.scipy.sparse` does not load `.linalg`). Re-checked against all 468 v1 attempts, the fixed checker raises **no false alarms on the 407 attempts that passed** on the GPU. It flags **36 of the 41 that failed with an API-type error**. The five it misses are beyond a static check: two implicit NumPy conversions, a key inside an options dict, a cuDSS memory-layout requirement, and a call into an internal Cython module. The solved rates above measure the tool before the fix; re-running the MCP condition would measure it, optimistically, since the task set is the same.
+- **Knowledge alone is not enough when the semantics are counter-intuitive.** Haiku read the pitfall that cuBLASLt's bias epilog is per *row*, and still added the bias per column (0/3 in every condition). Sonnet got it right every time. Since v1, the matmul card spells out the transposed recipe for a per-column bias.
 
 Caveats:
 
@@ -141,8 +143,8 @@ Before any model is scored, everything is checked on a real GPU: the canonical s
 |---|---|
 | Canonical task solutions pass | 26 / 26 |
 | Naive trap solutions fail as designed | 17 / 17 |
-| Curated card examples pass | 38 / 38 |
-| Pitfall facts hold | 23 / 23 |
+| Curated card examples pass | 39 / 39 |
+| Pitfall facts hold | 25 / 25 |
 
 The traps fail for the intended reasons. Examples: `OutOfMemoryError: ... 28,800,000,000 bytes` (svd with full matrices), `ValueError: The M dimension of the bias vector (48) must match the M dimension of A` (per-row bias epilog), and `TypeError: ... must be a matrix or vector with col-major layout` (cuDSS). The first run also found something the docstrings do not say: **nvmath-python's inverse FFTs are unnormalized** (`ifft(fft(x)) == n * x`, unlike NumPy and CuPy). That finding is now a checked fact, a pitfall on four cards, and a benchmark task.
 
