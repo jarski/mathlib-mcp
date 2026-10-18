@@ -1,0 +1,323 @@
+# GPU math libraries for LLMs: cupy 14.2.0, nvmath-python 1.0.0
+
+> API reference for GPU-accelerated linear algebra, FFT and sparse computations (cuBLAS, cuFFT, cuSOLVER, cuSPARSE) through CuPy and nvmath-python. Curated cards add the CUDA-X backend, common pitfalls and an example verified on a GPU.
+
+## cupy
+
+- [cupy.asarray](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.asarray.html) (curated): Converts an object to array.
+- [cupy.ascontiguousarray](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.ascontiguousarray.html): Returns a C-contiguous array.
+- [cupy.asfortranarray](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.asfortranarray.html): Return an array laid out in Fortran order in memory.
+- [cupy.asnumpy](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.asnumpy.html) (curated): Returns an array on the host memory from an arbitrary source array.
+- [cupy.dot](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.dot.html) (curated): Returns a dot product of two arrays.
+- [cupy.einsum](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.einsum.html) (curated): Evaluates the Einstein summation convention on the operands.
+- [cupy.inner](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.inner.html): Returns the inner product of two arrays.
+- [cupy.kron](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.kron.html): Returns the kronecker product of two arrays.
+- [cupy.matmul](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.matmul.html) (curated): Matrix product of two arrays.
+- [cupy.outer](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.outer.html): Returns the outer product of two vectors.
+- [cupy.tensordot](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.tensordot.html): Returns the tensor dot product of two arrays along specified axes.
+- [cupy.vdot](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.vdot.html): Returns the dot product of two vectors.
+
+## cupy.cublas
+
+- [cupy.cublas.asum](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.asum.html): Computes the sum of the absolute of x.
+- [cupy.cublas.axpy](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.axpy.html): Computes y += a * x.
+- [cupy.cublas.batched_gesv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.batched_gesv.html) (curated): Solves multiple linear matrix equations using cublas<t>getr[fs]Batched().
+- [cupy.cublas.dgmm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dgmm.html): Computes diag(x) @ a or a @ diag(x)
+- [cupy.cublas.dot](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dot.html): Computes the dot product of x and y.
+- [cupy.cublas.dotc](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dotc.html): Computes the dot product of x.conj() and y.
+- [cupy.cublas.dotu](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.dotu.html): Computes the dot product of x and y.
+- [cupy.cublas.geam](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.geam.html): Computes alpha * op(a) + beta * op(b)
+- [cupy.cublas.gemm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.gemm.html) (curated): Computes out = alpha * op(a) @ op(b) + beta * out
+- [cupy.cublas.gemv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.gemv.html): Computes y = alpha * op(a) @ x + beta * y
+- [cupy.cublas.ger](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.ger.html): Computes a += alpha * x @ y.T
+- [cupy.cublas.gerc](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.gerc.html): Computes a += alpha * x @ y.T.conj()
+- [cupy.cublas.geru](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.geru.html): Computes a += alpha * x @ y.T
+- [cupy.cublas.get_batched_gesv_limit](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.get_batched_gesv_limit.html): 
+- [cupy.cublas.iamax](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.iamax.html): Finds the (smallest) index of the element with the maximum magnitude.
+- [cupy.cublas.iamin](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.iamin.html): Finds the (smallest) index of the element with the minimum magnitude.
+- [cupy.cublas.nrm2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.nrm2.html): Computes the Euclidean norm of vector x.
+- [cupy.cublas.sbmv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.sbmv.html): Computes y = alpha*A @ x + beta * y
+- [cupy.cublas.scal](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.scal.html): Computes x *= a.
+- [cupy.cublas.set_batched_gesv_limit](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.set_batched_gesv_limit.html): 
+- [cupy.cublas.syrk](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.cublas.syrk.html): Computes out := alpha*op1(a)*op2(a) + beta*out
+
+## cupy.fft
+
+- [cupy.fft.fft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.fft.html) (curated): Compute the one-dimensional FFT.
+- [cupy.fft.fft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.fft2.html): Compute the two-dimensional FFT.
+- [cupy.fft.fftfreq](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.fftfreq.html): Return the FFT sample frequencies.
+- [cupy.fft.fftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.fftn.html) (curated): Compute the N-dimensional FFT.
+- [cupy.fft.fftshift](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.fftshift.html): Shift the zero-frequency component to the center of the spectrum.
+- [cupy.fft.hfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.hfft.html): Compute the FFT of a signal that has Hermitian symmetry.
+- [cupy.fft.ifft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.ifft.html): Compute the one-dimensional inverse FFT.
+- [cupy.fft.ifft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.ifft2.html): Compute the two-dimensional inverse FFT.
+- [cupy.fft.ifftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.ifftn.html): Compute the N-dimensional inverse FFT.
+- [cupy.fft.ifftshift](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.ifftshift.html): The inverse of `fftshift`.
+- [cupy.fft.ihfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.ihfft.html): Compute the FFT of a signal that has Hermitian symmetry.
+- [cupy.fft.irfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.irfft.html) (curated): Compute the one-dimensional inverse FFT for real input.
+- [cupy.fft.irfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.irfft2.html): Compute the two-dimensional inverse FFT for real input.
+- [cupy.fft.irfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.irfftn.html): Compute the N-dimensional inverse FFT for real input.
+- [cupy.fft.rfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.rfft.html) (curated): Compute the one-dimensional FFT for real input.
+- [cupy.fft.rfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.rfft2.html): Compute the two-dimensional FFT for real input.
+- [cupy.fft.rfftfreq](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.rfftfreq.html): Return the FFT sample frequencies for real input.
+- [cupy.fft.rfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.fft.rfftn.html): Compute the N-dimensional FFT for real input.
+
+## cupy.linalg
+
+- [cupy.linalg.cholesky](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.cholesky.html) (curated): Cholesky decomposition.
+- [cupy.linalg.cond](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.cond.html): Returns the condition number of a matrix.
+- [cupy.linalg.cross](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.cross.html): Returns the cross product of 3-element vectors.
+- [cupy.linalg.det](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.det.html): Returns the determinant of an array.
+- [cupy.linalg.eig](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.eig.html) (curated): Return the eigenvalues and eigenvectors of a matrix.
+- [cupy.linalg.eigh](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.eigh.html) (curated): Return the eigenvalues and eigenvectors of a complex Hermitian (conjugate symmetric) or a real symmetric matrix.
+- [cupy.linalg.eigvals](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.eigvals.html): Compute the eigenvalues of a matrix.
+- [cupy.linalg.eigvalsh](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.eigvalsh.html): Compute the eigenvalues of a complex Hermitian or real symmetric matrix.
+- [cupy.linalg.inv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.inv.html) (curated): Computes the inverse of a matrix.
+- [cupy.linalg.lstsq](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.lstsq.html) (curated): Return the least-squares solution to a linear matrix equation.
+- [cupy.linalg.matrix_power](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.matrix_power.html): Raise a square matrix to the (integer) power `n`.
+- [cupy.linalg.matrix_rank](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.matrix_rank.html): Return matrix rank of array using SVD method
+- [cupy.linalg.matrix_transpose](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.matrix_transpose.html): Transposes the innermost 2 dimensions of ndarray
+- [cupy.linalg.norm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.norm.html) (curated): Returns one of matrix norms specified by `ord` parameter.
+- [cupy.linalg.pinv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.pinv.html): Compute the Moore-Penrose pseudoinverse of a matrix.
+- [cupy.linalg.qr](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.qr.html) (curated): QR decomposition.
+- [cupy.linalg.slogdet](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.slogdet.html): Returns sign and logarithm of the determinant of an array.
+- [cupy.linalg.solve](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.solve.html) (curated): Solves a linear matrix equation.
+- [cupy.linalg.svd](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.svd.html) (curated): Singular Value Decomposition.
+- [cupy.linalg.tensorinv](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.tensorinv.html): Computes the inverse of a tensor.
+- [cupy.linalg.tensorsolve](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupy.linalg.tensorsolve.html): Solves tensor equations denoted by `ax = b`.
+
+## cupyx
+
+- [cupyx.errstate](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.errstate.html) (curated): TODO(hvy): Write docs.
+- [cupyx.seterr](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.seterr.html): TODO(hvy): Write docs.
+
+## cupyx.scipy.fft
+
+- [cupyx.scipy.fft.dct](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.dct.html): Return the Discrete Cosine Transform of an array, x.
+- [cupyx.scipy.fft.dctn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.dctn.html): Compute a multidimensional Discrete Cosine Transform.
+- [cupyx.scipy.fft.dst](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.dst.html): Return the Discrete Sine Transform of an array, x.
+- [cupyx.scipy.fft.dstn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.dstn.html): Compute a multidimensional Discrete Sine Transform.
+- [cupyx.scipy.fft.fft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.fft.html): Compute the one-dimensional FFT.
+- [cupyx.scipy.fft.fft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.fft2.html): Compute the two-dimensional FFT.
+- [cupyx.scipy.fft.fftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.fftn.html): Compute the N-dimensional FFT.
+- [cupyx.scipy.fft.fht](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.fht.html): Compute the fast Hankel transform.
+- [cupyx.scipy.fft.get_fft_plan](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.get_fft_plan.html) (curated): Generate a CUDA FFT plan for transforming up to three axes.
+- [cupyx.scipy.fft.hfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.hfft.html): Compute the FFT of a signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.hfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.hfft2.html): Compute the FFT of a two-dimensional signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.hfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.hfftn.html): Compute the FFT of a N-dimensional signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.idct](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.idct.html): Return the Inverse Discrete Cosine Transform of an array, x.
+- [cupyx.scipy.fft.idctn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.idctn.html): Compute a multidimensional Discrete Cosine Transform.
+- [cupyx.scipy.fft.idst](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.idst.html): Return the Inverse Discrete Sine Transform of an array, x.
+- [cupyx.scipy.fft.idstn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.idstn.html): Compute a multidimensional Discrete Sine Transform.
+- [cupyx.scipy.fft.ifft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ifft.html): Compute the one-dimensional inverse FFT.
+- [cupyx.scipy.fft.ifft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ifft2.html): Compute the two-dimensional inverse FFT.
+- [cupyx.scipy.fft.ifftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ifftn.html): Compute the N-dimensional inverse FFT.
+- [cupyx.scipy.fft.ifht](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ifht.html): Compute the inverse fast Hankel transform.
+- [cupyx.scipy.fft.ihfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ihfft.html): Compute the FFT of a signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.ihfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ihfft2.html): Compute the Inverse FFT of a two-dimensional signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.ihfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.ihfftn.html): Compute the Inverse FFT of a N-dimensional signal that has Hermitian symmetry.
+- [cupyx.scipy.fft.irfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.irfft.html): Compute the one-dimensional inverse FFT for real input.
+- [cupyx.scipy.fft.irfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.irfft2.html): Compute the two-dimensional inverse FFT for real input.
+- [cupyx.scipy.fft.irfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.irfftn.html): Compute the N-dimensional inverse FFT for real input.
+- [cupyx.scipy.fft.next_fast_len](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.next_fast_len.html) (curated): Find the next fast size to `fft`.
+- [cupyx.scipy.fft.rfft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.rfft.html): Compute the one-dimensional FFT for real input.
+- [cupyx.scipy.fft.rfft2](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.rfft2.html): Compute the two-dimensional FFT for real input.
+- [cupyx.scipy.fft.rfftn](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.fft.rfftn.html): Compute the N-dimensional FFT for real input.
+
+## cupyx.scipy.linalg
+
+- [cupyx.scipy.linalg.bandwidth](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.bandwidth.html): Return the lower and upper bandwidth of a 2D numeric array.
+- [cupyx.scipy.linalg.block_diag](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.block_diag.html): Create a block diagonal matrix from provided arrays.
+- [cupyx.scipy.linalg.circulant](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.circulant.html): Construct a circulant matrix.
+- [cupyx.scipy.linalg.companion](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.companion.html): Create a companion matrix.
+- [cupyx.scipy.linalg.convolution_matrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.convolution_matrix.html): Construct a convolution matrix.
+- [cupyx.scipy.linalg.dft](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.dft.html): Discrete Fourier transform matrix.
+- [cupyx.scipy.linalg.expm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.expm.html): Compute the matrix exponential.
+- [cupyx.scipy.linalg.fiedler](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.fiedler.html): Returns a symmetric Fiedler matrix
+- [cupyx.scipy.linalg.fiedler_companion](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.fiedler_companion.html): Returns a Fiedler companion matrix
+- [cupyx.scipy.linalg.hadamard](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.hadamard.html): Construct an Hadamard matrix.
+- [cupyx.scipy.linalg.hankel](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.hankel.html): Construct a Hankel matrix.
+- [cupyx.scipy.linalg.helmert](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.helmert.html): Create an Helmert matrix of order `n`.
+- [cupyx.scipy.linalg.hilbert](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.hilbert.html): Create a Hilbert matrix of order `n`.
+- [cupyx.scipy.linalg.khatri_rao](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.khatri_rao.html): Khatri-rao product
+- [cupyx.scipy.linalg.kron](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.kron.html): Kronecker product.
+- [cupyx.scipy.linalg.leslie](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.leslie.html): Create a Leslie matrix.
+- [cupyx.scipy.linalg.lu](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.lu.html): LU decomposition.
+- [cupyx.scipy.linalg.lu_factor](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.lu_factor.html) (curated): LU decomposition.
+- [cupyx.scipy.linalg.lu_solve](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.lu_solve.html) (curated): Solve an equation system, `a * x = b`, given the LU factorization of `a`
+- [cupyx.scipy.linalg.solve_triangular](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.solve_triangular.html) (curated): Solve the equation a x = b for x, assuming a is a triangular matrix.
+- [cupyx.scipy.linalg.toeplitz](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.linalg.toeplitz.html): Construct a Toeplitz matrix.
+
+## cupyx.scipy.sparse
+
+- [cupyx.scipy.sparse.SparseEfficiencyWarning](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.SparseEfficiencyWarning.html): 
+- [cupyx.scipy.sparse.SparseWarning](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.SparseWarning.html): 
+- [cupyx.scipy.sparse.block_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.block_array.html): Build a sparse array from sparse sub-blocks.
+- [cupyx.scipy.sparse.block_diag](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.block_diag.html): Build a block-diagonal sparse object from a sequence of blocks.
+- [cupyx.scipy.sparse.bmat](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.bmat.html): Builds a sparse array/matrix from sparse sub-blocks
+- [cupyx.scipy.sparse.coo_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.coo_array.html): COOrdinate format sparse array.
+- [cupyx.scipy.sparse.coo_matrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.coo_matrix.html): COOrdinate format sparse matrix.
+- [cupyx.scipy.sparse.csc_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.csc_array.html): Compressed Sparse Column array.
+- [cupyx.scipy.sparse.csc_matrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.csc_matrix.html): Compressed Sparse Column matrix.
+- [cupyx.scipy.sparse.csr_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.csr_array.html): Compressed Sparse Row array.
+- [cupyx.scipy.sparse.csr_matrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.csr_matrix.html) (curated): Compressed Sparse Row matrix.
+- [cupyx.scipy.sparse.dia_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.dia_array.html): Sparse array with DIAgonal storage.
+- [cupyx.scipy.sparse.dia_matrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.dia_matrix.html): Sparse matrix with DIAgonal storage.
+- [cupyx.scipy.sparse.diags](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.diags.html) (curated): Construct a sparse matrix from diagonals.
+- [cupyx.scipy.sparse.diags_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.diags_array.html): Construct a sparse array from diagonals.
+- [cupyx.scipy.sparse.eye](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.eye.html): Creates a sparse matrix with ones on diagonal.
+- [cupyx.scipy.sparse.eye_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.eye_array.html): Creates a sparse array with ones on diagonal.
+- [cupyx.scipy.sparse.find](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.find.html): Return the indices and values of nonzero elements of a sparse object.
+- [cupyx.scipy.sparse.get_index_dtype](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.get_index_dtype.html): Based on input (integer) arrays `a`, determines a suitable index data type that can hold the data in the arrays.
+- [cupyx.scipy.sparse.hstack](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.hstack.html): Stacks sparse arrays/matrices horizontally (column wise).
+- [cupyx.scipy.sparse.identity](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.identity.html): Creates an identity matrix in sparse format.
+- [cupyx.scipy.sparse.issparse](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.issparse.html): Checks if a given matrix is a sparse matrix or array.
+- [cupyx.scipy.sparse.isspmatrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.isspmatrix.html): Checks if a given matrix is a sparse matrix (not array).
+- [cupyx.scipy.sparse.isspmatrix_coo](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.isspmatrix_coo.html): Checks if a given matrix is of COO format.
+- [cupyx.scipy.sparse.isspmatrix_csc](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.isspmatrix_csc.html): Checks if a given matrix is of CSC format.
+- [cupyx.scipy.sparse.isspmatrix_csr](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.isspmatrix_csr.html): Checks if a given matrix is of CSR format.
+- [cupyx.scipy.sparse.isspmatrix_dia](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.isspmatrix_dia.html): Checks if a given matrix is of DIA format.
+- [cupyx.scipy.sparse.kron](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.kron.html): Kronecker product of sparse arrays/matrices A and B.
+- [cupyx.scipy.sparse.kronsum](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.kronsum.html): Kronecker sum of sparse arrays/matrices A and B.
+- [cupyx.scipy.sparse.matrix_transpose](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.matrix_transpose.html): Transpose the last two axes of a sparse object.
+- [cupyx.scipy.sparse.permute_dims](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.permute_dims.html): Permute the axes of a sparse object.
+- [cupyx.scipy.sparse.rand](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.rand.html): Generates a random sparse matrix.
+- [cupyx.scipy.sparse.random](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.random.html): Generates a random sparse matrix.
+- [cupyx.scipy.sparse.random_array](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.random_array.html): Generate a sparse random array.
+- [cupyx.scipy.sparse.safely_cast_index_arrays](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.safely_cast_index_arrays.html): Safely cast sparse array indices to `idx_dtype`.
+- [cupyx.scipy.sparse.sparray](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.sparray.html): Base class shared by all sparse array classes.
+- [cupyx.scipy.sparse.spdiags](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.spdiags.html): Creates a sparse matrix from diagonals.
+- [cupyx.scipy.sparse.spmatrix](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.spmatrix.html): Base class shared by all sparse matrix classes.
+- [cupyx.scipy.sparse.swapaxes](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.swapaxes.html): Interchange two axes of a sparse object.
+- [cupyx.scipy.sparse.tril](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.tril.html): Return the lower triangular portion of a sparse object.
+- [cupyx.scipy.sparse.triu](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.triu.html): Return the upper triangular portion of a sparse object.
+- [cupyx.scipy.sparse.vstack](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.vstack.html): Stacks sparse arrays/matrices vertically (row wise).
+
+## cupyx.scipy.sparse.linalg
+
+- [cupyx.scipy.sparse.linalg.LinearOperator](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.LinearOperator.html): Common interface for performing matrix vector products
+- [cupyx.scipy.sparse.linalg.SuperLU](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.SuperLU.html): 
+- [cupyx.scipy.sparse.linalg.aslinearoperator](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.aslinearoperator.html): Return `A` as a LinearOperator.
+- [cupyx.scipy.sparse.linalg.bicgstab](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.bicgstab.html): Uses BIConjugate Gradient STABilized iteration to solve `Ax = b`.
+- [cupyx.scipy.sparse.linalg.cg](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.cg.html) (curated): Uses Conjugate Gradient iteration to solve `Ax = b`.
+- [cupyx.scipy.sparse.linalg.cgs](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.cgs.html): Use Conjugate Gradient Squared iteration to solve `Ax = b`.
+- [cupyx.scipy.sparse.linalg.eigsh](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.eigsh.html) (curated): Find `k` eigenvalues and eigenvectors of the real symmetric square matrix or complex Hermitian matrix `A`.
+- [cupyx.scipy.sparse.linalg.factorized](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.factorized.html): Return a function for solving a sparse linear system, with A pre-factorized.
+- [cupyx.scipy.sparse.linalg.gmres](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.gmres.html) (curated): Uses Generalized Minimal RESidual iteration to solve `Ax = b`.
+- [cupyx.scipy.sparse.linalg.lobpcg](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.lobpcg.html): Locally Optimal Block Preconditioned Conjugate Gradient Method (LOBPCG)
+- [cupyx.scipy.sparse.linalg.lsmr](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.lsmr.html): Iterative solver for least-squares problems.
+- [cupyx.scipy.sparse.linalg.lsqr](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.lsqr.html): Solves linear system with QR decomposition.
+- [cupyx.scipy.sparse.linalg.matrix_power](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.matrix_power.html): Raise a square matrix to the integer power `power`.
+- [cupyx.scipy.sparse.linalg.minres](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.minres.html): Uses MINimum RESidual iteration to solve `Ax = b`.
+- [cupyx.scipy.sparse.linalg.norm](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.norm.html): Norm of a cupy.scipy.spmatrix
+- [cupyx.scipy.sparse.linalg.spilu](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.spilu.html): Computes the incomplete LU decomposition of a sparse square matrix.
+- [cupyx.scipy.sparse.linalg.splu](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.splu.html): Computes the LU decomposition of a sparse square matrix.
+- [cupyx.scipy.sparse.linalg.spsolve](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.spsolve.html) (curated): Solves a sparse linear system `A x = b`
+- [cupyx.scipy.sparse.linalg.spsolve_triangular](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.spsolve_triangular.html): Solves a sparse triangular system `A x = b`.
+- [cupyx.scipy.sparse.linalg.svds](https://docs.cupy.dev/en/v14.2.0/reference/generated/cupyx.scipy.sparse.linalg.svds.html): Finds the largest `k` singular values/vectors for a sparse matrix.
+
+## nvmath.fft
+
+- [nvmath.fft.DeviceCallable](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.DeviceCallable.html): A data class capturing LTO-IR callables.
+- [nvmath.fft.ExecutionCPU](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ExecutionCPU.html): A data class for providing CPU execution options to the `FFT` object and the family of wrapper functions `fft`, `ifft`, `rfft`, and `irfft`.
+- [nvmath.fft.ExecutionCUDA](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ExecutionCUDA.html): A data class for providing GPU execution options to the `FFT` object and the family of wrapper functions `fft`, `ifft`, `rfft`, and `irfft`.
+- [nvmath.fft.FFT](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.FFT.html) (curated): Create a stateful object that encapsulates the specified FFT computations and required resources.
+- [nvmath.fft.FFTDirection](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.FFTDirection.html): An IntEnum class specifying the direction of the transform.
+- [nvmath.fft.FFTOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.FFTOptions.html): A data class for providing options to the `FFT` object and the family of wrapper functions `fft`, `ifft`, `rfft`, and `irfft`.
+- [nvmath.fft.UnsupportedLayoutError](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.UnsupportedLayoutError.html): Error type for layouts not supported by the library.
+- [nvmath.fft.compile_epilog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.compile_epilog.html): Compile a Python function to LTO-IR to provide as an epilog function for `nvmath.fft.fft` and `nvmath.fft.FFT.plan`.
+- [nvmath.fft.compile_prolog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.compile_prolog.html): Compile a Python function to LTO-IR to provide as a prolog function for `nvmath.fft.fft` and `nvmath.fft.FFT.plan`.
+- [nvmath.fft.estimate_workspace_size](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.estimate_workspace_size.html): Estimate the workspace size in bytes for the given FFT key.
+- [nvmath.fft.fft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.fft.html) (curated): Perform an N-D *complex-to-complex* (C2C) FFT on the provided complex operand.
+- [nvmath.fft.ifft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.ifft.html) (curated): Perform an N-D *complex-to-complex* (C2C) inverse FFT on the provided complex operand.
+- [nvmath.fft.irfft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.irfft.html) (curated): Perform an N-D *complex-to-real* (C2R) FFT on the provided complex operand.
+- [nvmath.fft.rfft](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/fft/generated/nvmath.fft.rfft.html) (curated): Perform an N-D *real-to-complex* (R2C) FFT on the provided real operand.
+
+## nvmath.linalg
+
+- [nvmath.linalg.ComputeType](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.ComputeType.html): See `cublasComputeType_t`.
+- [nvmath.linalg.DiagType](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.DiagType.html): See `cublasDiagType_t`.
+- [nvmath.linalg.DiagonalMatrixQualifier](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.DiagonalMatrixQualifier.html): A class which constructs and validates `matrix_qualifiers_dtype` for a diagonal matrix.
+- [nvmath.linalg.DirectSolver](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.DirectSolver.html): Create a stateful object that encapsulates the specified dense direct linear solver computations and required resources.
+- [nvmath.linalg.DirectSolverOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.DirectSolverOptions.html): A data class for providing options to `nvmath.linalg.direct_solver` and `DirectSolver`.
+- [nvmath.linalg.ExecutionCPU](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.ExecutionCPU.html): A data class for providing CPU execution options.
+- [nvmath.linalg.ExecutionCUDA](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.ExecutionCUDA.html): A data class for providing GPU execution options.
+- [nvmath.linalg.FillMode](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.FillMode.html): See `cublasFillMode_t`.
+- [nvmath.linalg.GeneralMatrixQualifier](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.GeneralMatrixQualifier.html): A class which constructs and validates `matrix_qualifiers_dtype` for a general rectangular matrix.
+- [nvmath.linalg.HermitianMatrixQualifier](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.HermitianMatrixQualifier.html): A class which constructs and validates `matrix_qualifiers_dtype` for a hermitian matrix.
+- [nvmath.linalg.InvalidDirectSolverState](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.InvalidDirectSolverState.html): Raised when a `DirectSolver` instance (or a method on it) is used after `DirectSolver.free` has run and resources are invalid.
+- [nvmath.linalg.InvalidMatmulState](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.InvalidMatmulState.html): 
+- [nvmath.linalg.Matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.Matmul.html): Create a stateful object encapsulating the specified matrix multiplication computation `\alpha a @ b + \beta c` and the required resources to perform the operation.
+- [nvmath.linalg.MatmulOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.MatmulOptions.html): A dataclass for providing options to a `Matmul` object.
+- [nvmath.linalg.SideMode](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.SideMode.html): See `cublasSideMode_t`.
+- [nvmath.linalg.SymmetricMatrixQualifier](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.SymmetricMatrixQualifier.html): A class which constructs and validates `matrix_qualifiers_dtype` for a symmetric matrix.
+- [nvmath.linalg.TriangularMatrixQualifier](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.TriangularMatrixQualifier.html): A class which constructs and validates `matrix_qualifiers_dtype` for a triangular matrix.
+- [nvmath.linalg.direct_solver](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.direct_solver.html): Solve `a @ x = b` for `x`.
+- [nvmath.linalg.matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.matmul.html): Perform the specified matrix multiplication computation `\alpha a @ b + \beta c`.
+
+## nvmath.linalg.advanced
+
+- [nvmath.linalg.advanced.Algorithm](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.Algorithm.html): An interface class to query algorithm capabilities and configure the algorithm.
+- [nvmath.linalg.advanced.Matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.Matmul.html) (curated): Create a stateful object encapsulating the specified matrix multiplication computation `\alpha a @ b + \beta c` and the required resources to perform the operation.
+- [nvmath.linalg.advanced.MatmulEpilog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulEpilog.html) (curated): See `cublasLtEpilogue_t`.
+- [nvmath.linalg.advanced.MatmulEpilogPreferences](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulEpilogPreferences.html): A data class for providing epilog options as part of `preferences` to the `Matmul.plan` method and the wrapper function `matmul`.
+- [nvmath.linalg.advanced.MatmulInnerShape](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulInnerShape.html): See `cublasLtMatmulInnerShape_t`.
+- [nvmath.linalg.advanced.MatmulNumericalImplFlags](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulNumericalImplFlags.html): These flags can be combined with the | operator: OP_TYPE_FMA | OP_TYPE_TENSOR_HMMA ...
+- [nvmath.linalg.advanced.MatmulOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulOptions.html) (curated): A data class for providing options to the `Matmul` object and the wrapper function `matmul`.
+- [nvmath.linalg.advanced.MatmulPlanPreferences](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulPlanPreferences.html): A data class for providing options to the `Matmul.plan` method and the wrapper function `matmul`.
+- [nvmath.linalg.advanced.MatmulQuantizationScales](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulQuantizationScales.html): A data class for providing quantization_scales to `Matmul` constructor and the wrapper function `matmul`.
+- [nvmath.linalg.advanced.MatmulReductionScheme](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.MatmulReductionScheme.html): See `cublasLtReductionScheme_t`.
+- [nvmath.linalg.advanced.matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/linalg/generated/nvmath.linalg.advanced.matmul.html) (curated): Perform the specified matrix multiplication computation `\mathcal{F}(\alpha a @ b + \beta c)`, where `\mathcal{F}` is the epilog.
+
+## nvmath.sparse
+
+- [nvmath.sparse.ComputeType](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.ComputeType.html): The subset of `cudaDataType_t` that is supported by the generic sparse APIs.
+- [nvmath.sparse.ExecutionCUDA](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.ExecutionCUDA.html): A data class for providing GPU execution options.
+- [nvmath.sparse.Matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.Matmul.html): Create a stateful object encapsulating the specified matrix multiplication computation, which is one of `\alpha \, \operatorname{op}_h(a) \, @ \, \operatorname{op}_h(b) + \beta \, c` or `\operatorname{prolog}_a(\operatorname{op}_t(a)) \, @ \, \operatorname{prolog}_b(\operatorname{op}_t(b)) + c`, along with the required resources to perform the operation.
+- [nvmath.sparse.MatmulOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.MatmulOptions.html): A data class for providing options to the `Matmul` object and the wrapper function `matmul`.
+- [nvmath.sparse.compile_matmul_add](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.compile_matmul_add.html): Compile a binary Python function with arguments of type `dtype` returning a value of type `dtype` to device code.
+- [nvmath.sparse.compile_matmul_atomic_add](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.compile_matmul_atomic_add.html): Compile a binary Python function with arguments of type `dtype` returning a value of type `dtype` to device code.
+- [nvmath.sparse.compile_matmul_epilog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.compile_matmul_epilog.html): Compile a unary Python function with argument type `dtype` returning a value of type `dtype` to device code.
+- [nvmath.sparse.compile_matmul_mul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.compile_matmul_mul.html): Compile a binary Python function with arguments of type `dtype` returning a value of type `dtype` to device code.
+- [nvmath.sparse.compile_matmul_prolog](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.compile_matmul_prolog.html): Compile a unary Python function with argument type `dtype` returning a value of type `dtype` to device code.
+- [nvmath.sparse.matmul](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.matmul.html): Perform the specified sparse matrix multiplication computation, which is one of `\alpha \, \operatorname{op}_h(a) \, @ \, \operatorname{op}_h(b) + \beta \, c` or `\operatorname{prolog}_a(\operatorname{op}_t(a)) \, @ \, \operatorname{prolog}_b(\operatorname{op}_t(b)) + c`.
+
+## nvmath.sparse.advanced
+
+- [nvmath.sparse.advanced.DirectSolver](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolver.html): Create a stateful object that encapsulates the specified sparse direct solver computations and required resources.
+- [nvmath.sparse.advanced.DirectSolverFactorizationAlg](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverFactorizationAlg.html): See `cudssFactorizationAlg_t`.
+- [nvmath.sparse.advanced.DirectSolverFactorizationConfig](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverFactorizationConfig.html): An interface to configure `nvmath.sparse.advanced.DirectSolver.factorize`.
+- [nvmath.sparse.advanced.DirectSolverFactorizationInfo](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverFactorizationInfo.html): An interface to query information returned by `nvmath.sparse.advanced.DirectSolver.factorize`.
+- [nvmath.sparse.advanced.DirectSolverFactorizationPreferences](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverFactorizationPreferences.html): A data class for providing factorization preferences to the `direct_solver` function.
+- [nvmath.sparse.advanced.DirectSolverMatchingAlg](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverMatchingAlg.html): See `cudssMatchingAlg_t`.
+- [nvmath.sparse.advanced.DirectSolverMatrixType](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverMatrixType.html): See `cudssMatrixType_t`.
+- [nvmath.sparse.advanced.DirectSolverMatrixViewType](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverMatrixViewType.html): See `cudssMatrixViewType_t`.
+- [nvmath.sparse.advanced.DirectSolverOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverOptions.html): A data class for providing options to the `DirectSolver` object and the wrapper function `direct_solver`.
+- [nvmath.sparse.advanced.DirectSolverPivotEpsilonAlg](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverPivotEpsilonAlg.html): See `cudssPivotEpsilonAlg_t`.
+- [nvmath.sparse.advanced.DirectSolverPlanConfig](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverPlanConfig.html): An interface to configure `nvmath.sparse.advanced.DirectSolver.plan`.
+- [nvmath.sparse.advanced.DirectSolverPlanInfo](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverPlanInfo.html): An interface to query information returned by `nvmath.sparse.advanced.DirectSolver.plan`.
+- [nvmath.sparse.advanced.DirectSolverPlanPreferences](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverPlanPreferences.html): A data class for providing plan preferences to the `direct_solver` function.
+- [nvmath.sparse.advanced.DirectSolverReorderingAlg](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverReorderingAlg.html): See `cudssReorderingAlg_t`.
+- [nvmath.sparse.advanced.DirectSolverSolutionConfig](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverSolutionConfig.html): An interface to configure `nvmath.sparse.advanced.DirectSolver.solve`.
+- [nvmath.sparse.advanced.DirectSolverSolutionPreferences](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverSolutionPreferences.html): A data class for providing solution preferences to the `direct_solver` function.
+- [nvmath.sparse.advanced.DirectSolverSolveAlg](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.DirectSolverSolveAlg.html): See `cudssSolveAlg_t`.
+- [nvmath.sparse.advanced.ExecutionCUDA](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.ExecutionCUDA.html): A data class for providing GPU execution options to the `DirectSolver` object and the wrapper function `direct_solver`.
+- [nvmath.sparse.advanced.ExecutionHybrid](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.ExecutionHybrid.html): A data class for providing hybrid (CPU-GPU) execution options to the `DirectSolver` object and the wrapper function `direct_solver`.
+- [nvmath.sparse.advanced.HybridMemoryModeOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.HybridMemoryModeOptions.html): A data class for providing options related to the use of hybrid (CPU-GPU) memory to those execution spaces that support it.
+- [nvmath.sparse.advanced.direct_solver](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/sparse/generated/nvmath.sparse.advanced.direct_solver.html) (curated): Solve `a @ x = b` for `x`.
+
+## nvmath.tensor
+
+- [nvmath.tensor.BinaryContraction](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.BinaryContraction.html): Create a stateful object encapsulating the specified binary tensor contraction `\alpha a @ b + \beta c` and the required resources to perform the operation.
+- [nvmath.tensor.ComputeDesc](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ComputeDesc.html): See `cutensorComputeDescriptor_t`.
+- [nvmath.tensor.ContractionAlgo](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionAlgo.html): See `cutensorAlgo_t`.
+- [nvmath.tensor.ContractionAutotuneMode](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionAutotuneMode.html): See `cutensorAutotuneMode_t`.
+- [nvmath.tensor.ContractionCacheMode](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionCacheMode.html): See `cutensorCacheMode_t`.
+- [nvmath.tensor.ContractionJitMode](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionJitMode.html): See `cutensorJitMode_t`.
+- [nvmath.tensor.ContractionOptions](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionOptions.html): A data class for providing options to the `BinaryContraction` and `TernaryContraction` objects, or the wrapper functions `binary_contraction`and `ternary_contraction`.
+- [nvmath.tensor.ContractionPlanPreference](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ContractionPlanPreference.html): An interface to configure `nvmath.tensor.BinaryContraction.plan` and `nvmath.tensor.TernaryContraction.plan`.
+- [nvmath.tensor.ExecutionCUDA](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ExecutionCUDA.html): A data class for providing GPU execution options to the `BinaryContraction` and `TernaryContraction` objects, or the wrapper functions `binary_contraction`and `ternary_contraction`.
+- [nvmath.tensor.Operator](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.Operator.html): See `cutensorOperator_t`.
+- [nvmath.tensor.TernaryContraction](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.TernaryContraction.html): Create a stateful object encapsulating the specified ternary tensor contraction `\alpha a @ b @ c + \beta d` and the required resources to perform the operation.
+- [nvmath.tensor.binary_contraction](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.binary_contraction.html) (curated): Evaluate the Einstein summation convention for binary contraction on the operands.
+- [nvmath.tensor.ternary_contraction](https://docs.nvidia.com/cuda/nvmath-python/1.0.0/host-apis/tensor/generated/nvmath.tensor.ternary_contraction.html): Evaluate the Einstein summation convention for ternary contraction on the operands.

@@ -10,6 +10,7 @@ LLMs write plausible but wrong code for GPU math libraries. They call functions 
 | **MCP server** | `search_api`, `get_api_card`, `get_example`, `check_snippet`, plus an `llms.txt` resource. |
 | **`check_snippet`** | Static checker that finds hallucinated APIs, wrong or positional-only keywords, too many positional arguments and missing arguments, and suggests the real name. |
 | **Benchmark** | 26 GPU tasks across six CUDA-X libraries with NumPy/SciPy references; 17 have a "naive" solution that falls into a documented trap. |
+| **Agent Skill** | The same cards, pitfalls, verified examples and checker as a [`SKILL.md` package](skills/cupy-nvmath-gpu-math) for Claude Code and other agents that load Agent Skills. No server process needed. |
 
 ## Results
 
@@ -74,7 +75,7 @@ Caveats:
 
 - **Held-out tasks.** Tasks written independently of the curated pitfalls, so the results measure generalisation rather than delivery of known pitfalls.
 - **Harder tasks.** Sonnet 5.5 is near the ceiling on this set, so harder tasks are needed to measure stronger models.
-- **An Agent Skill as another delivery mechanism.** A Claude Agent Skill (`SKILL.md` with the API cards and the checker script bundled) would load a procedure only when relevant: look up the card, write the code, run the checker. That could close the gap in point 4 (strong models skipping verification). It would only work in Claude products, whereas MCP works in any client. The two also combine: a Skill can tell Claude when to use the MCP tools. Measure it as a fourth condition in the existing harness.
+- **Measure the Agent Skill.** The skill exists ([`skills/cupy-nvmath-gpu-math`](skills/cupy-nvmath-gpu-math)): a `SKILL.md` with the API cards and the checker script bundled, which loads a procedure only when relevant: look up the card, write the code, run the checker. That could close the gap in point 4 (strong models skipping verification). Measure it as a fourth condition in the existing harness, and inside Claude Code, where skills load natively. The two also combine: the Skill tells Claude when to use the MCP tools.
 - **Evaluation inside real coding tools.** Run the same tasks through Claude Code (headless) and other MCP clients, not only through the API.
 - **Re-run the docs condition** so the v1.1 tool is compared like for like (`llms-full.txt` received the same fixes).
 - **Checker coverage.** Check keys inside `options={...}` dicts against the options dataclass, the one statically detectable miss among the five.
@@ -120,6 +121,22 @@ claude mcp add mathlib -- uvx --from git+https://github.com/jarski/mathlib-mcp m
 ```
 
 Any MCP client works the same way: the server speaks stdio and has no runtime dependencies besides `mcp`. Semantic search is optional: `pip install mathlib-mcp[embeddings]` fuses a small embedding model into the BM25 ranking.
+
+### Or as an Agent Skill
+
+[`skills/cupy-nvmath-gpu-math`](skills/cupy-nvmath-gpu-math) packages the same knowledge as an [Agent Skill](https://agentskills.io): a `SKILL.md` procedure (find the function, read its card, write the code, run the checker), the API cards, pitfalls and verified examples as reference files, and a checker script. Nothing runs in the background; the agent reads the files it needs.
+
+```bash
+# Claude Code: a personal skill (or copy the folder into a project's .claude/skills/)
+git clone https://github.com/jarski/mathlib-mcp
+cp -r mathlib-mcp/skills/cupy-nvmath-gpu-math ~/.claude/skills/
+
+# the checker behind the skill's script, also usable on its own
+uv tool install git+https://github.com/jarski/mathlib-mcp    # provides mathlib-mcp-check
+mathlib-mcp-check my_gpu_code.py
+```
+
+`uv run python scripts/build_skill.py` regenerates the reference files from `cards.json` and writes `dist/cupy-nvmath-gpu-math.zip` for skill marketplaces. The build fails if the skill's frontmatter names other library versions than the data was built from. The skill has not been measured in the benchmark yet (see Future work); the results above are for the MCP tools.
 
 ## How it works
 
@@ -194,6 +211,7 @@ uv run python -m bench.record_verification out/gpu_validation.json && uv run mat
 uv sync
 uv run python scripts/fetch_sources.py   # pinned CuPy / nvmath-python sources -> .sources/
 uv run mathlib-mcp-build                 # regenerate src/mathlib_mcp/data/
+uv run python scripts/build_skill.py     # regenerate skills/*/references and dist/*.zip
 uv run pytest                            # includes "packaged data is up to date"
 uv run ruff check .
 ```

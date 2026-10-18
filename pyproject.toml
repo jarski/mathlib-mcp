@@ -25,6 +25,7 @@ embeddings = ["fastembed>=0.8", "numpy>=1.26"]
 [project.scripts]
 mathlib-mcp = "mathlib_mcp.server:main"
 mathlib-mcp-build = "mathlib_mcp.extract.build:main"
+mathlib-mcp-check = "mathlib_mcp.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.22,<0.13.0"]
