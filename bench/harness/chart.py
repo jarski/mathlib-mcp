@@ -26,7 +26,8 @@ THEMES = {
 }
 CONDITION_NAMES = {"none": ("No help", "model knowledge only"),
                    "docs": ("Docs in prompt", "llms-full.txt, 101–134k tokens"),
-                   "mcp": ("MCP tools", "mathlib-mcp, on demand")}
+                   "mcp": ("MCP tools", "mathlib-mcp, on demand"),
+                   "skill": ("Agent Skill", "SKILL.md, files and checker")}
 MODEL_NAMES = {"haiku": "Claude Haiku 4.5", "sonnet": "Claude Sonnet 5.5"}
 FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif'
 

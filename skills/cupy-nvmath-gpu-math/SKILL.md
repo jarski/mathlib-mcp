@@ -21,10 +21,10 @@ is often not the machine you are on. This skill replaces guessing with lookup.
 
 The material comes from the library sources at pinned versions (CuPy 14.2.0,
 nvmath-python 1.0.0): 275 API cards, 43 of them curated with pitfalls and examples
-verified on a Tesla T4. The same cards and checker, served as MCP tools, took Claude
-Haiku 4.5 from 51% to 92% on 26 GPU tasks and cut code with hallucinated APIs from 36%
-to 4% of attempts ([results](https://github.com/jarski/mathlib-mcp#results)). This
-skill packages the same material as files.
+verified on a Tesla T4. Measured on a benchmark of 26 GPU tasks run on a T4, this skill
+took Claude Haiku 4.5 from 51% of tasks solved to 100%, with no hallucinated API left
+in its final code (down from 36% of attempts); Claude Sonnet 5.5 went from 94% to 99%
+([results](https://github.com/jarski/mathlib-mcp#results)).
 
 ## Workflow
 

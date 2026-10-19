@@ -32,6 +32,8 @@ from bench.static import analyze
 from bench.tasks import ALL_TASKS, TASKS_BY_ID
 
 BOOTSTRAP = 10_000
+TOOL_NAMES = {"mcp": ("search_api", "get_api_card", "get_example", "check_snippet"),
+              "skill": ("grep", "read_file", "check_gpu_code")}
 CONTROL_TASKS = {t.id for t in ALL_TASKS if t.trap.startswith("Control task")}
 NVMATH_TASKS = {t.id for t in ALL_TASKS if "nvmath" in t.requires}
 
@@ -159,8 +161,7 @@ def build(run: Path) -> dict:
             "model_calls_per_attempt": sum(r["model_calls"] for r in rows) / n,
             "tool_calls_per_attempt": sum(r["tool_calls"] for r in rows) / n,
             "tool_use_rate": {tool: sum(tool in r["tools_used"] for r in rows) / n
-                              for tool in ("search_api", "get_api_card", "get_example",
-                                           "check_snippet")},
+                              for tool in TOOL_NAMES["mcp"] + TOOL_NAMES["skill"]},
             "turn_limit_rate": sum(r["turn_limit_reached"] for r in rows) / n,
             "per_family": {family: bootstrap_mean(per_task(
                 rows, tasks={t.id for t in ALL_TASKS if t.family == family}), rng)[0]
@@ -170,7 +171,8 @@ def build(run: Path) -> dict:
                          for t in TASKS_BY_ID},
         }
     for model in sorted({m for m, _ in groups}):
-        for a, b in (("mcp", "none"), ("docs", "none"), ("mcp", "docs")):
+        for a, b in (("mcp", "none"), ("docs", "none"), ("mcp", "docs"),
+                     ("skill", "none"), ("skill", "docs"), ("skill", "mcp")):
             if (model, a) not in groups or (model, b) not in groups:
                 continue
             pa, pb = per_task(groups[(model, a)]), per_task(groups[(model, b)])
@@ -284,16 +286,17 @@ def render(result: dict, run: Path) -> str:
             if c in conditions:
                 outcomes = ", ".join(f"{k} {v}" for k, v in conditions[c]["outcomes"].items())
                 lines.append(f"- **{model} / {c}**: {outcomes}")
-    mcp_rows = [(m, s["mcp"]) for m, s in summary["models"].items() if "mcp" in s]
-    if mcp_rows:
-        lines += ["", "## Tool use (mcp condition)", "",
-                  "| Model | search_api | get_api_card | get_example | check_snippet | "
-                  "hit turn limit |", "|---|---|---|---|---|---|"]
-        for model, s in mcp_rows:
-            rates = s["tool_use_rate"]
-            lines.append(f"| {model} | {pct(rates['search_api'])} | "
-                         f"{pct(rates['get_api_card'])} | {pct(rates['get_example'])} | "
-                         f"{pct(rates['check_snippet'])} | {pct(s['turn_limit_rate'])} |")
+    for condition, names in TOOL_NAMES.items():
+        rows = [(m, s[condition]) for m, s in summary["models"].items() if condition in s]
+        if not rows:
+            continue
+        lines += ["", f"## Tool use ({condition} condition)", "",
+                  "Share of attempts that called each tool at least once.", "",
+                  "| Model | " + " | ".join(names) + " | hit turn limit |",
+                  "|---|" + "---|" * (len(names) + 1)]
+        for model, s in rows:
+            lines.append(f"| {model} | " + " | ".join(pct(s["tool_use_rate"][n]) for n in names)
+                         + f" | {pct(s['turn_limit_rate'])} |")
     lines += ["", "## Per task (solved / attempts)", "",
               "| Task | " + " | ".join(f"{m}/{c}" for m, conds in summary["models"].items()
                                      for c in CONDITIONS if c in conds) + " |",

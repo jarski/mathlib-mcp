@@ -1,7 +1,7 @@
-"""Generate candidate solutions with Claude under the three conditions.
+"""Generate candidate solutions with Claude under the four conditions.
 
     uv run python -m bench.harness.generate --out bench/results/eval-v1 \\
-        --models haiku sonnet --conditions none docs mcp --reps 3
+        --models haiku sonnet --conditions none docs mcp skill --reps 3
 
 Writes, per run directory:
 
@@ -94,6 +94,144 @@ class McpTools:
         return text, bool(getattr(result, "is_error", False))
 
 
+# ------------------------------------------------------------------ Skill tools
+
+SKILL_DIR = REPO / "skills" / "cupy-nvmath-gpu-math"
+SKILL_PREFACE = """\
+The Agent Skill `cupy-nvmath-gpu-math` is loaded. Its folder is available through tools: \
+`grep` and `read_file` search and read its files (paths are relative to the skill folder, \
+e.g. `references/cupy.md`), and `check_gpu_code` runs `scripts/check_gpu_code.py` on code \
+you pass to it. The skill's instructions follow.
+
+"""
+
+
+class SkillTools:
+    """The skill's folder and checker script, the way a coding agent reaches them.
+
+    ``grep`` and ``read_file`` stand in for the agent's own search and file tools, scoped
+    to the skill folder; ``check_gpu_code`` stands in for running the bundled script.
+    """
+
+    READ_LIMIT, READ_MAX, GREP_MAX, CONTEXT_MAX = 200, 400, 60, 60
+
+    @classmethod
+    def instructions(cls) -> str:
+        text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        body = text[text.index("\n---\n", 4) + 5:]  # the frontmatter is for the loader
+        return SKILL_PREFACE + body.strip()
+
+    @classmethod
+    def definitions(cls) -> list[dict]:
+        return [
+            {"name": "check_gpu_code",
+             "description": "Run scripts/check_gpu_code.py on Python code: a static check "
+                            "of CuPy / nvmath-python API use (functions that do not exist, "
+                            "wrong or missing arguments, submodules that were not "
+                            "imported). Returns the script's output.",
+             "input_schema": {"type": "object", "required": ["code"], "properties": {
+                 "code": {"type": "string", "description": "the complete Python code"}}}},
+            {"name": "grep",
+             "description": "Search the skill's files with a regular expression. Returns "
+                            "matching lines as `path:line: text`, optionally followed by "
+                            "lines of context (to read a card right after its heading).",
+             "input_schema": {"type": "object", "required": ["pattern"], "properties": {
+                 "pattern": {"type": "string",
+                             "description": "Python regular expression, case-sensitive"},
+                 "path": {"type": "string",
+                          "description": "file or folder relative to the skill root, e.g. "
+                                         "references/nvmath.md (default: all files)"},
+                 "context_after": {"type": "integer",
+                                   "description": "lines to show after each match "
+                                                  f"(0-{cls.CONTEXT_MAX}, default 0)"}}}},
+            {"name": "read_file",
+             "description": "Read a file in the skill folder, with line numbers. Reads "
+                            f"{cls.READ_LIMIT} lines per call ({cls.READ_MAX} at most); "
+                            "pass offset to continue. A folder path lists its files.",
+             "input_schema": {"type": "object", "required": ["path"], "properties": {
+                 "path": {"type": "string",
+                          "description": "relative to the skill root, e.g. "
+                                         "references/pitfalls.md"},
+                 "offset": {"type": "integer",
+                            "description": "first line to read, 1-based (default 1)"},
+                 "limit": {"type": "integer",
+                           "description": f"number of lines (default {cls.READ_LIMIT}, "
+                                          f"max {cls.READ_MAX})"}}}},
+        ]
+
+    @classmethod
+    def _resolve(cls, path: str) -> Path:
+        target = (SKILL_DIR / path).resolve()
+        if not target.is_relative_to(SKILL_DIR.resolve()):
+            raise ValueError(f"{path!r} is outside the skill folder")
+        if not target.exists():
+            raise FileNotFoundError(f"{path!r} does not exist in the skill folder")
+        return target
+
+    @classmethod
+    def read_file(cls, path: str, offset: int = 1, limit: int | None = None) -> str:
+        target = cls._resolve(path)
+        if target.is_dir():
+            return "\n".join(sorted(str(p.relative_to(SKILL_DIR)) for p in target.rglob("*")
+                                    if p.is_file() and "__pycache__" not in p.parts))
+        lines = target.read_text(encoding="utf-8").splitlines()
+        limit = max(1, min(int(limit or cls.READ_LIMIT), cls.READ_MAX))
+        start = max(int(offset or 1), 1)
+        chunk = lines[start - 1:start - 1 + limit]
+        if not chunk:
+            return f"{path}: {len(lines)} lines; offset {start} is past the end"
+        end = start + len(chunk) - 1
+        header = f"{path} (lines {start}-{end} of {len(lines)})"
+        if end < len(lines):
+            header += f"; continue with offset={end + 1}"
+        return header + "\n" + "\n".join(f"{n:6}\t{line}" for n, line in enumerate(chunk, start))
+
+    @classmethod
+    def grep(cls, pattern: str, path: str | None = None, context_after: int = 0) -> str:
+        regex = re.compile(pattern)
+        target = cls._resolve(path) if path else SKILL_DIR
+        files = (sorted(p for p in target.rglob("*") if p.is_file()
+                        and "__pycache__" not in p.parts) if target.is_dir() else [target])
+        after = max(0, min(int(context_after or 0), cls.CONTEXT_MAX))
+        out: list[str] = []
+        matches = 0
+        for file in files:
+            rel = file.relative_to(SKILL_DIR)
+            lines = file.read_text(encoding="utf-8").splitlines()
+            for i, line in enumerate(lines):
+                if not regex.search(line):
+                    continue
+                matches += 1
+                if matches > cls.GREP_MAX:
+                    out.append(f"... more matches not shown (limit {cls.GREP_MAX}); narrow "
+                               "the pattern or the path")
+                    return "\n".join(out)
+                out.append(f"{rel}:{i + 1}: {line}")
+                out += [f"{rel}:{j + 1}- {lines[j]}"
+                        for j in range(i + 1, min(i + 1 + after, len(lines)))]
+        if out:
+            return "\n".join(out)
+        return f"No matches for {pattern!r}" + (f" in {path}" if path else "")
+
+    @classmethod
+    def call(cls, name: str, arguments: dict) -> tuple[str, bool]:
+        try:
+            if name == "check_gpu_code":
+                from mathlib_mcp.checker import check_snippet
+
+                return check_snippet(str(arguments["code"])).to_text(), False
+            if name == "grep":
+                return cls.grep(**arguments), False
+            if name == "read_file":
+                return cls.read_file(**arguments), False
+            return f"Tool error: unknown tool {name!r}", True
+        except (KeyError, TypeError, ValueError, OSError, re.error) as error:
+            return f"Tool error: {type(error).__name__}: {error}", True
+
+
+TOOLSETS = {"mcp": McpTools, "skill": SkillTools}
+
+
 # ------------------------------------------------------------------- one attempt
 
 
@@ -116,6 +254,9 @@ def system_for(condition: str) -> Any:
         return [{"type": "text", "text": SYSTEM_PROMPT},
                 {"type": "text", "text": DOCS_HEADER + DOCS.read_text(encoding="utf-8"),
                  "cache_control": {"type": "ephemeral"}}]
+    if condition == "skill":
+        return [{"type": "text", "text": SYSTEM_PROMPT + "\n\n" + SkillTools.instructions(),
+                 "cache_control": {"type": "ephemeral"}}]
     return [{"type": "text", "text": SYSTEM_PROMPT + "\n\n" + McpTools.instructions()}]
 
 
@@ -124,12 +265,14 @@ def extract_code(text: str) -> str | None:
     return blocks[-1].strip() + "\n" if blocks else None
 
 
-def run_attempt(client: anthropic.Anthropic, attempt: Attempt, tools: list[dict]) -> dict:
+def run_attempt(client: anthropic.Anthropic, attempt: Attempt,
+                tools: dict[str, list[dict]]) -> dict:
     model, condition = attempt.model, attempt.condition
     request: dict[str, Any] = {"model": model.id, "max_tokens": model.max_tokens,
                                "system": system_for(condition), **model.params}
-    if condition == "mcp":
-        request["tools"] = tools
+    toolset = TOOLSETS.get(condition)
+    if toolset is not None:
+        request["tools"] = tools[condition]
         request["cache_control"] = {"type": "ephemeral"}  # cache the growing conversation
     messages: list[dict] = [{"role": "user", "content": attempt.task.prompt}]
     calls: list[dict] = []
@@ -160,14 +303,14 @@ def run_attempt(client: anthropic.Anthropic, attempt: Attempt, tools: list[dict]
         messages.append({"role": "assistant", "content": response.content})
         transcript.append({"role": "assistant",
                            "content": [b.to_dict() for b in response.content]})
-        if response.stop_reason != "tool_use" or condition != "mcp" or nudged:
+        if response.stop_reason != "tool_use" or toolset is None or nudged:
             break
         results = []
         for block in response.content:
             if block.type != "tool_use":
                 continue
             started = time.perf_counter()
-            text, is_error = McpTools.call(block.name, dict(block.input))
+            text, is_error = toolset.call(block.name, dict(block.input))
             tool_calls.append({"turn": turn, "name": block.name, "input": dict(block.input),
                                "is_error": is_error, "output_chars": len(text),
                                "seconds": round(time.perf_counter() - started, 3)})
@@ -232,7 +375,7 @@ def main() -> None:
     tasks = [TASKS_BY_ID[t] for t in args.tasks] if args.tasks else ALL_TASKS
     out: Path = args.out
     (out / "transcripts").mkdir(parents=True, exist_ok=True)
-    tools = McpTools.definitions()
+    tools = {name: toolset.definitions() for name, toolset in TOOLSETS.items()}
     logging.getLogger().setLevel(logging.WARNING)  # the MCP server configures INFO logging
     for name in ("httpx", "httpx2", "mcp", "anthropic"):
         logging.getLogger(name).setLevel(logging.WARNING)
@@ -242,7 +385,9 @@ def main() -> None:
         "conditions": args.conditions, "reps": args.reps, "tasks": [t.id for t in tasks],
         "max_agent_turns": MAX_AGENT_TURNS, "system_prompt_sha": _sha(SYSTEM_PROMPT),
         "docs_sha": _sha(DOCS.read_text(encoding="utf-8")),
-        "tools": [t["name"] for t in tools], "tools_sha": _sha(json.dumps(tools, sort_keys=True)),
+        "skill_sha": _sha(SkillTools.instructions()),
+        "tools": {c: [t["name"] for t in defs] for c, defs in tools.items()},
+        "tools_sha": _sha(json.dumps(tools, sort_keys=True)),
     }
     (out / "run.json").write_text(json.dumps(config, indent=1, default=str))
 

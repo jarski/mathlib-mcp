@@ -5,14 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-CONDITIONS = ("none", "docs", "mcp")
+CONDITIONS = ("none", "docs", "mcp", "skill")
 CONDITION_LABELS = {
     "none": "no help",
     "docs": "llms-full.txt in the system prompt",
     "mcp": "mathlib-mcp tools",
+    "skill": "the Agent Skill: SKILL.md in the system prompt, its files and checker as tools",
 }
 
-MAX_AGENT_TURNS = 10  # model calls per attempt in the mcp condition
+MAX_AGENT_TURNS = 10  # model calls per attempt in the tool conditions (mcp, skill)
 
 
 @dataclass(frozen=True)

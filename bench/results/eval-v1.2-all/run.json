@@ -1,0 +1,91 @@
+{
+ "merged_from": [
+  {
+   "run": "eval-v1",
+   "conditions": [
+    "docs",
+    "none"
+   ],
+   "git_commit": "3184562",
+   "attempts": 312
+  },
+  {
+   "run": "eval-v1.1-mcp",
+   "conditions": [
+    "mcp"
+   ],
+   "git_commit": "8eeaa65",
+   "attempts": 156
+  },
+  {
+   "run": "eval-v1.2-skill",
+   "conditions": [
+    "skill"
+   ],
+   "git_commit": "e09ba32",
+   "attempts": 156
+  }
+ ],
+ "conditions": [
+  "docs",
+  "none",
+  "mcp",
+  "skill"
+ ],
+ "tasks": [
+  "batched_matmul",
+  "batched_quadratic_forms",
+  "batched_solve_vectors",
+  "cg_poisson_1d",
+  "cholesky_solve_logdet",
+  "cudss_multiple_rhs",
+  "cutensor_contraction",
+  "fft_convolve",
+  "fused_linear_relu",
+  "gemm_update_inplace",
+  "general_eigenvalues",
+  "irfft_reconstruct",
+  "laplacian_2d_smallest_eigs",
+  "low_rank_approx",
+  "lowpass_images",
+  "lstsq_with_rank",
+  "matmul_plan_reuse",
+  "nvmath_full_spectrum",
+  "nvmath_spectral_gain",
+  "pairwise_sq_dists",
+  "power_spectrum",
+  "solve_or_raise",
+  "sparse_row_normalize",
+  "spmv_from_triplets",
+  "symmetric_top_k",
+  "triangular_transposed_solve"
+ ],
+ "reps": 3,
+ "models": {
+  "haiku": {
+   "key": "haiku",
+   "id": "claude-haiku-4-5",
+   "input_per_mtok": 1.0,
+   "output_per_mtok": 5.0,
+   "cache_read_per_mtok": 0.1,
+   "cache_write_multiplier": 1.25,
+   "max_tokens": 8192,
+   "params": {}
+  },
+  "sonnet": {
+   "key": "sonnet",
+   "id": "claude-sonnet-5-5",
+   "input_per_mtok": 2.0,
+   "output_per_mtok": 10.0,
+   "cache_read_per_mtok": 0.2,
+   "cache_write_multiplier": 1.25,
+   "max_tokens": 16000,
+   "params": {
+    "output_config": {
+     "effort": "medium"
+    }
+   }
+  }
+ },
+ "git_commit": "merged"
+}

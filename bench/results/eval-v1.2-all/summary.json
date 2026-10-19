@@ -1,0 +1,699 @@
+{
+ "models": {
+  "haiku": {
+   "docs": {
+    "attempts": 78,
+    "solved": [
+     0.8717948717948718,
+     0.7564102564102563,
+     0.9615384615384616
+    ],
+    "solved_traps": 0.8484848484848485,
+    "solved_controls": 1.0,
+    "solved_nvmath": 0.8333333333333334,
+    "solved_cupy": 0.8833333333333334,
+    "functional_pass": 0.8717948717948718,
+    "api_error_rate": [
+     0.01282051282051282,
+     0.0,
+     0.038461538461538464
+    ],
+    "outcomes": {
+     "pass": 68,
+     "exception:ValueError": 6,
+     "exception:TypeError": 1,
+     "exception:NameError": 1,
+     "expected_error_not_raised": 1,
+     "exception:NotImplementedError": 1
+    },
+    "cost_total_usd": 1.1076,
+    "cost_per_attempt_usd": 0.01420025641025641,
+    "input_tokens_per_attempt": 101596.38461538461,
+    "output_tokens_per_attempt": 486.1666666666667,
+    "latency_s_per_attempt": 4.467487179487179,
+    "model_calls_per_attempt": 1.0,
+    "tool_calls_per_attempt": 0.0,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 0.8333333333333334,
+     "cuDSS": 1.0,
+     "cuFFT": 0.8888888888888888,
+     "cuSOLVER": 0.8333333333333333,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "0/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "2/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "2/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "0/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "2/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   },
+   "mcp": {
+    "attempts": 78,
+    "solved": [
+     0.9615384615384616,
+     0.8974358974358974,
+     1.0
+    ],
+    "solved_traps": 0.9545454545454546,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.95,
+    "functional_pass": 0.9615384615384616,
+    "api_error_rate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "outcomes": {
+     "pass": 75,
+     "expected_error_not_raised": 2,
+     "exception:ValueError": 1
+    },
+    "cost_total_usd": 1.452,
+    "cost_per_attempt_usd": 0.018614846153846155,
+    "input_tokens_per_attempt": 16212.910256410256,
+    "output_tokens_per_attempt": 1208.5128205128206,
+    "latency_s_per_attempt": 10.9855,
+    "model_calls_per_attempt": 4.448717948717949,
+    "tool_calls_per_attempt": 4.769230769230769,
+    "tool_use_rate": {
+     "search_api": 0.9743589743589743,
+     "get_api_card": 1.0,
+     "get_example": 0.23076923076923078,
+     "check_snippet": 1.0,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 0.9444444444444443,
+     "cuSOLVER": 0.9166666666666666,
+     "cuSPARSE": 1.0,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "2/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "1/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "3/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   },
+   "none": {
+    "attempts": 78,
+    "solved": [
+     0.5128205128205128,
+     0.34615384615384615,
+     0.6666666666666666
+    ],
+    "solved_traps": 0.4242424242424242,
+    "solved_controls": 1.0,
+    "solved_nvmath": 0.05555555555555555,
+    "solved_cupy": 0.65,
+    "functional_pass": 0.5128205128205128,
+    "api_error_rate": [
+     0.3589743589743589,
+     0.21794871794871792,
+     0.5128205128205128
+    ],
+    "outcomes": {
+     "pass": 40,
+     "exception:AttributeError": 15,
+     "exception:TypeError": 9,
+     "exception:ValueError": 5,
+     "exception:ImportError": 5,
+     "exception:ModuleNotFoundError": 2,
+     "exception:RuntimeError": 1,
+     "wrong_answer": 1
+    },
+    "cost_total_usd": 0.1926,
+    "cost_per_attempt_usd": 0.0024689487179487177,
+    "input_tokens_per_attempt": 351.38461538461536,
+    "output_tokens_per_attempt": 423.5128205128205,
+    "latency_s_per_attempt": 3.5118205128205133,
+    "model_calls_per_attempt": 1.0,
+    "tool_calls_per_attempt": 0.0,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 0.5,
+     "cuDSS": 0.0,
+     "cuFFT": 0.7222222222222222,
+     "cuSOLVER": 0.4583333333333333,
+     "cuSPARSE": 0.5833333333333333,
+     "cuTENSOR": 0.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "0/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "0/3",
+     "matmul_plan_reuse": "0/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "1/3",
+     "nvmath_spectral_gain": "0/3",
+     "batched_solve_vectors": "0/3",
+     "cholesky_solve_logdet": "1/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "1/3",
+     "symmetric_top_k": "1/3",
+     "low_rank_approx": "2/3",
+     "solve_or_raise": "2/3",
+     "triangular_transposed_solve": "1/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "1/3",
+     "laplacian_2d_smallest_eigs": "0/3",
+     "sparse_row_normalize": "3/3",
+     "cudss_multiple_rhs": "0/3",
+     "cutensor_contraction": "0/3"
+    }
+   },
+   "skill": {
+    "attempts": 78,
+    "solved": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "solved_traps": 1.0,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 1.0,
+    "functional_pass": 1.0,
+    "api_error_rate": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "outcomes": {
+     "pass": 78
+    },
+    "cost_total_usd": 3.3131,
+    "cost_per_attempt_usd": 0.04247566666666666,
+    "input_tokens_per_attempt": 78611.03846153847,
+    "output_tokens_per_attempt": 1469.448717948718,
+    "latency_s_per_attempt": 15.450153846153848,
+    "model_calls_per_attempt": 5.410256410256411,
+    "tool_calls_per_attempt": 6.0,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 1.0,
+     "read_file": 0.9230769230769231,
+     "check_gpu_code": 1.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 1.0,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 1.0,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "3/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   }
+  },
+  "sonnet": {
+   "docs": {
+    "attempts": 78,
+    "solved": [
+     0.9871794871794871,
+     0.9615384615384616,
+     1.0
+    ],
+    "solved_traps": 0.9848484848484849,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.9833333333333334,
+    "functional_pass": 0.9871794871794872,
+    "api_error_rate": [
+     0.01282051282051282,
+     0.0,
+     0.038461538461538464
+    ],
+    "outcomes": {
+     "pass": 77,
+     "exception:TypeError": 1
+    },
+    "cost_total_usd": 2.7146,
+    "cost_per_attempt_usd": 0.034802230769230766,
+    "input_tokens_per_attempt": 134398.92307692306,
+    "output_tokens_per_attempt": 368.0,
+    "latency_s_per_attempt": 3.720858974358974,
+    "model_calls_per_attempt": 1.0,
+    "tool_calls_per_attempt": 0.0,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 1.0,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   },
+   "mcp": {
+    "attempts": 78,
+    "solved": [
+     0.9871794871794871,
+     0.9615384615384616,
+     1.0
+    ],
+    "solved_traps": 0.9848484848484849,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.9833333333333334,
+    "functional_pass": 0.9871794871794872,
+    "api_error_rate": [
+     0.01282051282051282,
+     0.0,
+     0.038461538461538464
+    ],
+    "outcomes": {
+     "pass": 77,
+     "exception:TypeError": 1
+    },
+    "cost_total_usd": 0.6685,
+    "cost_per_attempt_usd": 0.008571076923076923,
+    "input_tokens_per_attempt": 3493.2179487179487,
+    "output_tokens_per_attempt": 334.0,
+    "latency_s_per_attempt": 3.8065897435897433,
+    "model_calls_per_attempt": 1.5128205128205128,
+    "tool_calls_per_attempt": 0.5641025641025641,
+    "tool_use_rate": {
+     "search_api": 0.05128205128205128,
+     "get_api_card": 0.21794871794871795,
+     "get_example": 0.14102564102564102,
+     "check_snippet": 0.11538461538461539,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 1.0,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   },
+   "none": {
+    "attempts": 78,
+    "solved": [
+     0.935897435897436,
+     0.8717948717948717,
+     0.9871794871794871
+    ],
+    "solved_traps": 0.9242424242424243,
+    "solved_controls": 1.0,
+    "solved_nvmath": 0.7777777777777778,
+    "solved_cupy": 0.9833333333333334,
+    "functional_pass": 0.9358974358974359,
+    "api_error_rate": [
+     0.02564102564102564,
+     0.0,
+     0.0641025641025641
+    ],
+    "outcomes": {
+     "pass": 73,
+     "exception:TypeError": 4,
+     "wrong_answer": 1
+    },
+    "cost_total_usd": 0.4849,
+    "cost_per_attempt_usd": 0.006217307692307692,
+    "input_tokens_per_attempt": 476.9230769230769,
+    "output_tokens_per_attempt": 526.3461538461538,
+    "latency_s_per_attempt": 4.732564102564102,
+    "model_calls_per_attempt": 1.0,
+    "tool_calls_per_attempt": 0.0,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 0.0,
+     "read_file": 0.0,
+     "check_gpu_code": 0.0
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 0.6666666666666666,
+     "cuFFT": 0.8888888888888888,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 0.6666666666666666
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "1/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "2/3",
+     "cutensor_contraction": "2/3"
+    }
+   },
+   "skill": {
+    "attempts": 78,
+    "solved": [
+     0.9871794871794871,
+     0.9615384615384616,
+     1.0
+    ],
+    "solved_traps": 0.9848484848484849,
+    "solved_controls": 1.0,
+    "solved_nvmath": 1.0,
+    "solved_cupy": 0.9833333333333334,
+    "functional_pass": 0.9871794871794872,
+    "api_error_rate": [
+     0.01282051282051282,
+     0.0,
+     0.038461538461538464
+    ],
+    "outcomes": {
+     "pass": 77,
+     "exception:TypeError": 1
+    },
+    "cost_total_usd": 1.0698,
+    "cost_per_attempt_usd": 0.013715769230769231,
+    "input_tokens_per_attempt": 12691.089743589744,
+    "output_tokens_per_attempt": 477.29487179487177,
+    "latency_s_per_attempt": 5.522858974358974,
+    "model_calls_per_attempt": 2.051282051282051,
+    "tool_calls_per_attempt": 1.0897435897435896,
+    "tool_use_rate": {
+     "search_api": 0.0,
+     "get_api_card": 0.0,
+     "get_example": 0.0,
+     "check_snippet": 0.0,
+     "grep": 0.5897435897435898,
+     "read_file": 0.0,
+     "check_gpu_code": 0.38461538461538464
+    },
+    "turn_limit_rate": 0.0,
+    "per_family": {
+     "cuBLAS": 1.0,
+     "cuDSS": 1.0,
+     "cuFFT": 1.0,
+     "cuSOLVER": 1.0,
+     "cuSPARSE": 0.9166666666666666,
+     "cuTENSOR": 1.0
+    },
+    "per_task": {
+     "batched_matmul": "3/3",
+     "gemm_update_inplace": "3/3",
+     "batched_quadratic_forms": "3/3",
+     "pairwise_sq_dists": "3/3",
+     "fused_linear_relu": "3/3",
+     "matmul_plan_reuse": "3/3",
+     "fft_convolve": "3/3",
+     "power_spectrum": "3/3",
+     "lowpass_images": "3/3",
+     "irfft_reconstruct": "3/3",
+     "nvmath_full_spectrum": "3/3",
+     "nvmath_spectral_gain": "3/3",
+     "batched_solve_vectors": "3/3",
+     "cholesky_solve_logdet": "3/3",
+     "lstsq_with_rank": "3/3",
+     "general_eigenvalues": "3/3",
+     "symmetric_top_k": "3/3",
+     "low_rank_approx": "3/3",
+     "solve_or_raise": "3/3",
+     "triangular_transposed_solve": "3/3",
+     "spmv_from_triplets": "3/3",
+     "cg_poisson_1d": "3/3",
+     "laplacian_2d_smallest_eigs": "3/3",
+     "sparse_row_normalize": "2/3",
+     "cudss_multiple_rhs": "3/3",
+     "cutensor_contraction": "3/3"
+    }
+   }
+  }
+ },
+ "deltas": {
+  "haiku: mcp - none": [
+   0.4487179487179487,
+   0.2692307692307692,
+   0.6282051282051283
+  ],
+  "haiku: docs - none": [
+   0.3589743589743589,
+   0.1794871794871795,
+   0.5384615384615384
+  ],
+  "haiku: mcp - docs": [
+   0.08974358974358974,
+   0.0,
+   0.20512820512820515
+  ],
+  "haiku: skill - none": [
+   0.4871794871794872,
+   0.32051282051282054,
+   0.6538461538461539
+  ],
+  "haiku: skill - docs": [
+   0.12820512820512822,
+   0.038461538461538464,
+   0.2435897435897436
+  ],
+  "haiku: skill - mcp": [
+   0.038461538461538464,
+   0.0,
+   0.10256410256410257
+  ],
+  "sonnet: mcp - none": [
+   0.05128205128205129,
+   0.0,
+   0.1153846153846154
+  ],
+  "sonnet: docs - none": [
+   0.05128205128205129,
+   0.0,
+   0.1153846153846154
+  ],
+  "sonnet: mcp - docs": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "sonnet: skill - none": [
+   0.05128205128205129,
+   0.0,
+   0.1153846153846154
+  ],
+  "sonnet: skill - docs": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "sonnet: skill - mcp": [
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "controls": {
+  "oracle": {
+   "expected": "pass",
+   "as_expected": 26,
+   "total": 26
+  },
+  "naive": {
+   "expected": "fail",
+   "as_expected": 17,
+   "total": 17
+  },
+  "null": {
+   "expected": "fail",
+   "as_expected": 26,
+   "total": 26
+  }
+ },
+ "errors": 0
+}
