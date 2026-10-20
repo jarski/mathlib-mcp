@@ -146,7 +146,7 @@ Any MCP client works the same way: the server speaks stdio and has no runtime de
 
 ### Or as an Agent Skill
 
-[`skills/cupy-nvmath-gpu-math`](skills/cupy-nvmath-gpu-math) packages the same knowledge as an [Agent Skill](https://agentskills.io): a `SKILL.md` procedure (find the function, read its card, write the code, run the checker), the API cards, pitfalls and verified examples as reference files, and a checker script. Nothing runs in the background; the agent reads the files it needs.
+[`skills/cupy-nvmath-gpu-math`](skills/cupy-nvmath-gpu-math) packages the same knowledge as an [Agent Skill](https://agentskills.io): a `SKILL.md` procedure (find the function, read its card, write the code, run the checker), the API cards, pitfalls and verified examples as reference files, and a checker script. Nothing runs in the background; the agent reads the files it needs. It is also listed, free, on [Agensi](https://www.agensi.io/skills/gpu-math-in-python-cupy-and-nvmath-python-cuda-x), which installs it into Claude Code, Cursor, Codex CLI and other agents.
 
 ```bash
 # Claude Code: a personal skill (or copy the folder into a project's .claude/skills/)
